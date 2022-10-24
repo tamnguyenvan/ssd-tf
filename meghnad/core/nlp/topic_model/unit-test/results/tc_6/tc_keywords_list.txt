@@ -1,0 +1,1 @@
+{'Corr': [('phone', 33.16), ('display', 19.44), ('charging', 11.07), ('years', 6.91), ('does', 6.63), ('takes', 5.14), ('photos', 4.77), ('wireless', 4.6), ('negative', 4.19), ('reviews', 4.11)], 'Inv_Corr': []}

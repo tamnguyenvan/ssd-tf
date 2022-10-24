@@ -1,0 +1,1 @@
+{'Corr': [('camera', 71.14), ('quality', 25.93), ('dual', 0.77), ('sound', 0.53), ('rear', 0.49), ('lens', 0.28), ('average', 0.27), ('picture', 0.23), ('selfie', 0.2), ('mp', 0.17)], 'Inv_Corr': []}

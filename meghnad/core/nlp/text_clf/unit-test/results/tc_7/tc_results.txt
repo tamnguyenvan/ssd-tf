@@ -1,0 +1,2 @@
+ret val: 0
+saved model dir: /home/kaushik/PycharmProjects/IXOlerator/meghnad/bin/int/text_clf/

@@ -1,0 +1,8 @@
+Model --- precision 
+
+KNearestNeighbour --- 0.452
+
+LogisticRegression --- 0.463
+
+SupportVectorMachines --- 0.433
+

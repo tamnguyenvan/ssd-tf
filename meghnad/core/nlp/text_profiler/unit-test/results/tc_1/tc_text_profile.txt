@@ -1,0 +1,25 @@
+
+
+Sequence:
+Dear sir,
+
+Hope this finds you well. We have an exciting new product XYZ we would like you to consider. Details are available in the attached flyer. 
+
+Eagerly waiting for your response.
+Key phrases:
+['would like', 'dear sir', 'consider', 'dear sir hope finds', 'details', 'new product xyz like', 'finds exciting new product', 'hope', 'finds', 'eagerly waiting', 'well', 'response', 'flyer eagerly waiting response', 'consider details available', 'exciting new product xyz', 'available', 'dear sir hope', 'product xyz', 'attached flyer']
+
+Sequence:
+Hi, how are you? Wanted to reach out to you and understand whether you are looking for any audits. We provide audit services to more than 500 firms of your size. Please feel free if you have any questions.
+Key phrases:
+['understand whether', 'audits', 'audits provide audit', 'services 500 firms', '500 firms', 'reach', 'provide audit services 500', 'please feel free', 'reach understand looking audits', 'looking', 'services 500 firms size', 'understand looking audits provide', 'wanted', 'size', 'provide audit', 'understand looking audits', 'questions', 'provide audit services', 'hi']
+
+Sequence:
+great room layout service value-would definitely return we stayed in a 3 bedroomed-suite which was well furnished and the staff perfect hosts. they even organised a birthday cake for my Mum (we were all there to celebrate).could organise for massages / manicures in our suite, perfect for relaxing.located in the CBD so not great for tourists but plenty of remarkably good valued restaurants nearby. Nov 7 2009 A quality hotel with quality service We stayed at the Ascott Beijing this summer for 1 week in a family of 5. It is centrally located.
+Key phrases:
+['stayed', 'even organised', 'remarkably good valued restaurants nearby', 'great room layout service value', 'bedroomed suite furnished staff', 'quality hotel quality service', '5', 'furnished staff perfect', 'furnished staff perfect hosts', 'would definitely return', 'suite furnished staff perfect', 'quality hotel', 'massages', 'ascott beijing', 'stayed ascott beijing summer', 'nov 2009 quality hotel', 'quality hotel quality', 'centrally located', '3 bedroomed', '2009 quality hotel', 'great', 'suite', 'room layout service value', 'stayed ascott beijing', 'stayed bedroomed suite', 'summer', 'nov 7 2009', 'quality service', 'well furnished', 'room layout service', 'hotel', 'celebrate ). could organise', 'perfect', '2009 quality hotel quality', 'staff perfect hosts', 'plenty', '1 week', 'hotel quality service stayed', 'mum', 'family', 'service stayed ascott beijing', 'cbd', 'manicures', 'ascott beijing summer', 'located', 'tourists', 'relaxing', 'hotel quality service', 'hotel quality', 'suite furnished staff', 'birthday cake']
+
+Sequence:
+Good Value for large family - Internet connection prob not hotel's fault Great for large families! We grabbed a large 3 bedroom for 6 adults and 2 kids. Great room - my chinese inlaws really liked the kitchen and washer/dryer. Big thumbs up from them. Large LCD tv was also in heavy rotation. Had a nice kids movie with popcorn and the works every Friday. Internet was down for several days
+Key phrases:
+['bedroom adults kids great', '2 kids', 'large lcd tv', 'prob hotel', 'kids great room', 'large 3 bedroom', 'large families', 'dryer', 'chinese inlaws really liked', 'hotel fault', 'also', 'popcorn', 'great room', 'nice kids movie', 'large bedroom', 'families grabbed large bedroom', 'internet connection prob hotel', 'big thumbs', 'washer', 'hotel fault great large', 'good value', 'large family', 'value large family internet', 'works every friday', 'prob hotel fault', 'heavy rotation', 'connection prob hotel', 'hotel', 'bedroom adults kids', 'internet', 'good value large family', 'large bedroom adults', 'hotel fault great', 'kitchen', 'fault great', 'grabbed', 'large family internet', '6 adults', 'several days', 'adults kids great room', 'internet connection prob']

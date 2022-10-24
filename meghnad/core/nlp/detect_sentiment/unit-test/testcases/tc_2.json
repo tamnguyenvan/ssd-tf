@@ -1,0 +1,35 @@
+{
+  "tc": [
+    {
+      "tc_id": 1,
+      "seq": "Definitely recommended.",
+      "candidate_labels": [ "Positive", "Neutral", "Negative" ],
+      "label_actual": "Positive"
+    },
+    {
+      "tc_id": 2,
+      "seq": "I'll reach in half an hour from now.",
+      "candidate_labels": [ "Positive", "Neutral", "Negative" ],
+      "label_actual": "Neutral"
+    },
+    {
+      "tc_id": 3,
+      "seq": "Didn't like the movie.",
+      "candidate_labels": [ "Positive", "Neutral", "Negative" ],
+      "label_actual": "Negative"
+    },
+    {
+      "tc_id": 4,
+      "seq": "Hoc erat mediocris movie",
+      "candidate_labels": [ "Positive", "Neutral", "Negative" ],
+      "label_actual": "Neutral"
+    },
+    {
+      "tc_id": 4,
+      "seq": "La actuación fue muy realista y emotiva. Los personajes podrían ser percibidos como reales.",
+      "candidate_labels": [ "Positive", "Neutral", "Negative" ],
+      "label_actual": "Positive"
+    }
+  ]
+
+}

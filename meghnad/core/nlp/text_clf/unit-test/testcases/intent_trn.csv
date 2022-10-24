@@ -1,0 +1,117 @@
+Utterance,Intent
+I keep getting bills but set up auto bill pay.,BillingIssues
+I have moved and want to know what my final bill is,BillingIssues
+i paid my bill on 10/21 but it does not appear that the money was taken out of my bank account.,BillingIssues
+I'd like to lower my bill - any specials for current subscribers?,BillingIssues
+If my bill is due on 11/4 why is autopay processing it on 11/8?,BillingIssues
+"Site says total Balance due by 22 OCT $83.37 thats on top of page, next down says $256.66 due 22 OCT why what",BillingIssues
+Why am I being charged 13.98 when I only have one piece of equipment,BillingIssues
+why is my billso high? the movie should be only $6.50 with tax,BillingIssues
+why is my bill so high? was told when I signed up it would be around 96.00,BillingIssues
+"i returned yor equipment 2 months ago, and am still being charged for it",BillingIssues
+I did not receive a bill this month. What do I do?,BillingIssues
+"my monthly bill was$41, now you guys sent me $ 59 for next month",BillingIssues
+i would like to lower my bill which is way too high. Is there any lower cost packages?,BillingIssues
+"i cancelled my account and returned my equipment, so why is this charge on my account?",BillingIssues
+I just paid my bill and my credit card was charged. My account still says the bill is not paid and past due.,BillingIssues
+I am long time customer of your company. Can you help me with retention? I need to reduce the cost of my plan by making some changes.,BillingIssues
+I received my new statement and I am being charge 21.99 for my service and was told it would be 19.99,BillingIssues
+"When I signed up, I was quoted max $29.99-$39.99. Now my current charges way higher. why?",BillingIssues
+can i use my checking account for a one-time payment? I normally pay my bill with my credit card.,PaymentIssues
+Please help me with one time arragement so I can pay my bill,PaymentIssues
+I want to set up auto pay but the site will not allow me,PaymentIssues
+I need to update Auto Pay with a new credit card,PaymentIssues
+I am on autopay and want to change my credit card.,PaymentIssues
+You started billing a different credit card on Auto Pay. I want my original card billed.,PaymentIssues
+where do i go to change the credit card for auto billing?,PaymentIssues
+I know that my account is past due. May I have until the 13th to make a payment?,PaymentIssues
+my credit card is expiring. how do I update my auto pay with my new credit card number?,PaymentIssues
+I need to change my credit card for auto pay. Where do I go?,PaymentIssues
+My visa acct no. has changed. I can't find any way to change the number. How do I?,PaymentIssues
+"want to pay my bill online, do not have a username as far as I know but it won't let me create a new one",PaymentIssues
+i need to pay my bill but i cant find the invoice,PaymentIssues
+I need to update the credit card I use for autopay. Can I do this online?,PaymentIssues
+i just received notice that my debit c rd had expired and my auto pay did not deduct. i just updated auto pay with new bank info. will my auto pay no go through or do i need to do something else?,PaymentIssues
+I keep getting a payment failed message when trying to pay bill. Is it because I'm using my credit card to pay bill in my father's name?,PaymentIssues
+"I set up for auto pay and its has said pending for days, is my bill going to be paid soon?",PaymentIssues
+i paid my bill on 10/21 but it does not appear that the money was taken out of my bank account.,PaymentIssues
+I have my accoun set up to auto pay on or around the 17th of every month and I need it to change to between the 2nd and 5th.,PaymentIssues
+"i keep getting phone calls about my overdue bill, but i've tried to pay it about 15 times online and keep getting a ""use another form or payment or try again later"".",PaymentIssues
+I scheduled a double payment. How can i cancel one of them?,PaymentIssues
+"i cancelled auto pay to update my credit card on file. it was scheduled to draft today, will it still draft for this month.",PaymentIssues
+I cannot access my account it keeps asking me for an email and i don't use one,AccountIssues
+how do I get my account number if I don't have my bill,AccountIssues
+where can I find the terms and conditions pertaining to billing for my account,AccountIssues
+why am i unable to sign in and access my account to make changes to my settings,AccountIssues
+I have a new credit card number that replaced hacked card..do I need to change the number in my account,AccountIssues
+Trying to set up a pass word but it wont accept any of my choices,AccountIssues
+I can't login to my account it keeps saying to many attemps but it happens on first try,AccountIssues
+how can I get the password to my the web page I created with username,AccountIssues
+I have 2 separate accounts bc i have a residence in AL and one in LA. How can I put them both on the same log in.,AccountIssues
+I'm trying to log into my account and it will not let me,AccountIssues
+How can I change the head of house name? I got married and would like for my husband to be on the account with me,AccountIssues
+I received a phone call that changes have been made to my account. What changes?,AccountIssues
+Receiving a message saying there is an issue with my account when I try to sign in,AccountIssues
+My last name is misspelled in your system and I'm afraid its keeping autopay from working,AccountIssues
+When I log in to my account I am getting immediately logged out. This is very frustrating as I am not able to complete what I needed to.,AccountIssues
+I need to make sure my scheduled install is for tomorrow between 1-3,AppointmentIssues
+"I rescheduled my installation appointment from Thursday 8 am to next Monday at 3 pm, yet I just received an automated message on my phone reminding me of my appointment tomorrow",AppointmentIssues
+i need to change an appointment time. Can i change it online?,AppointmentIssues
+just ordered triple play package but no date was set up for installation.,AppointmentIssues
+Please cancel an appointment for my house. The problem resolved. I do not have 1 hour to call and wait to tell someone.,AppointmentIssues
+Hello I have an appointment for tomorrow from 1-2 to set up new equipment and I need change it to Friday.,AppointmentIssues
+Can I make an appointment to have someone come to our home and look at our wifi service and see why it is performing so poorly?,AppointmentIssues
+I just placed and order for new service and got disconnected before setting up a at home appointment for installation,AppointmentIssues
+I had set up an appointmen for today at 8 am with a 4 hr window. it is now almost 2 pm and no one has showed up yet. what gives?,AppointmentIssues
+How do i cancel an appinement that i no longer need.,AppointmentIssues
+where can i see my appointments in my account online. I would like to cancel one that is not needed anymore.,AppointmentIssues
+I scheduled an appointment and then rescheduled it. can i change it back to the original time please?,AppointmentIssues
+I want to make sure I haven't scheduled any service appointment for my home,AppointmentIssues
+forgot to accept terms and conditions am I still scheduled for at home apointment.,AppointmentIssues
+I am trying to verify terms sent via email and received an error. I have installation scheduled for this Friday. Will that still happen?,AppointmentIssues
+cannot access my email using os x 10.11.1 el capitan on my mac laptop,EmailIssues
+I am unable to access my email,EmailIssues
+I AM trying to set up my email on my phone but i do not know the pop3 info or lthe imap info,EmailIssues
+why everytime I try to read my email keep taking me to mobile email when i want desktop email only,EmailIssues
+"When I sign in email, I don't my listing of emails. I continually get the Sign in screen",EmailIssues
+"every time i sign in for the past few days, i get in, but when I click on my email (which does show how many i am MISSING!!), I am taken back to the sign in page",EmailIssues
+I need to get my mail. I have signed in and still can't get my mail,EmailIssues
+when I try to access email I cannot. It opens but closes instantlt,EmailIssues
+not able to get into my E-Mail. Know my Info but not able to get in,EmailIssues
+where do i find an email i was composing and thought I sent it? it is not appearing in the sent or draft folder,EmailIssues
+Why can't I log into my e-mail? I have checked and rechecked to be sure the correct password is entered,EmailIssues
+My email has been hacked and I cannot stop all of the spam going to my contacts. Can my contact list be transfered to a new email address when I cancle the current one?,EmailIssues
+I am not able to get into my email for the last few hours is there a problem?,EmailIssues
+Why am I having so mnuch trouble getting into my e-mail account?,EmailIssues
+I have three email accounts. I can only get into one of them. How do I get to my other email accounts?,EmailIssues
+My email suddenly stopped and I get a message that the server password has changed and it asks for my password,EmailIssues
+"I am having trouble opening my email. I get a messge every time that asks me to """"Enter your user name and password for the following server",EmailIssues
+"I have had a email account for at least 10 years. Accessed it yesterday. NOW, my user name, password & zip are invalid. What gives?",EmailIssues
+"Our email has been hacked, we have been advised to recapture our account, how do we do that?",EmailIssues
+"I currently have over 10,000 emails in one of my accounts. Is the a way that I can do a delete that will eliminate all of them at one time?",EmailIssues
+How can I delete the extra info. I receive on my incomin g Email?,EmailIssues
+I would like to add additional email accounts but unable to.,EmailIssues
+yesterday i signed up and today went to read my email but my link has expired.,EmailIssues
+"Once I log into my email account, I click on my inbox and i get redirected back to the sign in page.",EmailIssues
+"I want my old email format back. This new version is terrible,I want my old email format back.",EmailIssues
+I am unable to sign in to my e-mail. the page begin to load and then drops out and reverts to my sign in page.,EmailIssues
+hello,Greet
+how are you?,Greet
+hi,Greet
+hi there,Greet
+all good?,Greet
+hope you are doing well,Greet
+hey,Greet
+what's up?,Greet
+good morning!,Greet
+hola,Greet
+bye,Goodbye
+goodbye,Goodbye
+see you,Goodbye
+thanks,Goodbye
+thank you,Goodbye
+have a great evening!,Goodbye
+that's all,Goodbye
+bye for now,Goodbye
+bye bye,Goodbye
+see you again,Goodbye

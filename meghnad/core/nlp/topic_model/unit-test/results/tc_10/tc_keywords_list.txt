@@ -1,0 +1,1 @@
+{'Corr': [('engine', 77.71), ('grunt', 4.67), ('make', 2.56), ('means planning', 2.15), ('meters', 2.15), ('meters torque', 2.15), ('newton', 2.15), ('newton meters', 2.15), ('offer small', 2.15), ('overnighters', 2.15)], 'Inv_Corr': []}

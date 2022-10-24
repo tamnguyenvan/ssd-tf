@@ -1,0 +1,14 @@
+Model --- roc_auc_score 
+
+RandomForest --- 0.669
+
+AdaboostClassifier --- 0.593
+
+KNearestNeighbour --- 0.79
+
+LGBM --- 0.784
+
+LogisticRegression --- 0.803
+
+SupportVectorMachines --- 0.803
+

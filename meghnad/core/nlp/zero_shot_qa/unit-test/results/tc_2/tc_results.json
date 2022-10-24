@@ -1,0 +1,1 @@
+"{'tc': [{'tc_id': 1, 'seq': 'Did you buy from us? No, I bought from Tata. Their pricing was better.', 'sent': 'Not bought.', 'response': [{'score': 0.5099478, 'sent_idx': 0, 'sent': 'Did you buy from us?'}, {'score': 0.49918637, 'sent_idx': 1, 'sent': 'No, I bought from Tata.'}]}]}"

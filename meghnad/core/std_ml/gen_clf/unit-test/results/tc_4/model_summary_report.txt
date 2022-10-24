@@ -1,0 +1,8 @@
+Model --- balanced_accuracy 
+
+LogisticRegression --- 0.298
+
+KNearestNeighbour --- 0.333
+
+NaiveBayes --- 0.45
+

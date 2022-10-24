@@ -1,0 +1,1 @@
+{'Corr': [('charge', 18.71), ('takes', 15.79), ('hours', 15.5), ('battery issue', 12.53), ('time', 9.36), ('mah', 7.22), ('4000 mah', 6.05), ('hrs', 5.19), ('taking', 4.85), ('hours charge', 4.82)], 'Inv_Corr': []}

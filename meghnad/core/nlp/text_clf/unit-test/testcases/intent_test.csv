@@ -1,0 +1,32 @@
+Utterance,Intent
+wondering why I get charged sales tax twice on my bill? Thanks,BillingIssues
+I have not received a bill in several months. Not sure what the problem is.,BillingIssues
+i would like to know how much i have to pay on this recent bill to avoid interruption,BillingIssues
+I received a 20 credit for my bill but can't apply it. Can you help?,BillingIssues
+I'd like to lower my bill - any specials for existing ustomers that you can offer?,BillingIssues
+how can I setup auot pay for this acctount,PaymentIssues
+I would like to know when my payment is due and the amount due please,PaymentIssues
+why did you not accept my checking account for a one-time payment,PaymentIssues
+How can I make further arrangements to finish paying my bill,PaymentIssues
+My account will not stay logged in. When I select a tab a warning pops up stating my session will be logged out due to inactivity then immediatley logs out,AccountIssues
+The original account is in my husbands name and he is now deceased. How can I change this,AccountIssues
+I need to get my user name and password for my account,AccountIssues
+how do i make mysel administrator beings im the only one on the account,AccountIssues
+I can't remember any of my login stuff for my account at your website,AccountIssues
+contacted a rep earlier today and need t recontact as I now have access to the equipment for Monday's appointment,AppointmentIssues
+schedule a service rep to come to my house and set me up to get your higher level of service,AppointmentIssues
+I had a installation appt yesterday would Like to know if I can reschedule for another day?,AppointmentIssues
+I just talked to a rep. I did everything he suggested but nothing helps. I need a repair person to come to my house ASAP and fix my issue.,AppointmentIssues
+I cannot sign into my email. I changed my password and have done everything I know to do,EmailIssues
+I am unable to send/recieve messages. server response: invalid user name or password.,EmailIssues
+how do I add a second email user and not change anything on my own email account,EmailIssues
+I have not been able to get into my email account for 2 days. everything else work,EmailIssues
+we are still having email problems. we can receive email but get errors when we try to send,EmailIssues
+hi hope all good,Greet
+morning!,Greet
+"hey, how are things?",Greet
+hello Danny,Greet
+talk to you later,Goodbye
+see you man! Bye!,Goodbye
+that’s all I needed. Thanks!,Goodbye
+goodbye and have a great weekend,Goodbye

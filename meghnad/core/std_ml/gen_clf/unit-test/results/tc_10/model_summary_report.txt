@@ -1,0 +1,8 @@
+Model --- f1 
+
+KNearestNeighbour --- 0.568
+
+LogisticRegression --- 0.58
+
+SupportVectorMachines --- 0.578
+

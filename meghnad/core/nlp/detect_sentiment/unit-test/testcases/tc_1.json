@@ -1,0 +1,604 @@
+{
+  "tc": [
+    {
+      "tc_id": 1,
+      "seq": "The Rock is destined to be the 21st Century 's new `` Conan '' and that he 's going to make a splash even greater than Arnold Schwarzenegger , Jean-Claud Van Damme or Steven Segal .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 2,
+      "seq": "The gorgeously elaborate continuation of `` The Lord of the Rings '' trilogy is so huge that a column of words can not adequately describe co-writer\/director Peter Jackson 's expanded vision of J.R.R. Tolkien 's Middle-earth .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 3,
+      "seq": "Singer\/composer Bryan Adams contributes a slew of songs -- a few potential hits , a few more simply intrusive to the story -- but the whole package certainly captures the intended , er , spirit of the piece .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 4,
+      "seq": "Yet the act is still charming here .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 5,
+      "seq": "Whether or not you 're enlightened by any of Derrida 's lectures on `` the other '' and `` the self , '' Derrida is an undeniably fascinating and playful fellow .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 6,
+      "seq": "Just the labour involved in creating the layered richness of the imagery in this chiaroscuro of madness and light is astonishing .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 7,
+      "seq": "Part of the charm of Satin Rouge is that it avoids the obvious with humour and lightness .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 8,
+      "seq": "a screenplay more ingeniously constructed than `` Memento ''",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 9,
+      "seq": "`` Extreme Ops '' exceeds expectations .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 10,
+      "seq": "Good fun , good action , good acting , good dialogue , good pace , good cinematography .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 11,
+      "seq": "Dramas like this make it human .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 12,
+      "seq": "Still , this flick is fun , and host to some truly excellent sequences .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 13,
+      "seq": "Australian actor\/director John Polson and award-winning English cinematographer Giles Nuttgens make a terrific effort at disguising the obvious with energy and innovation .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 14,
+      "seq": "You walk out of The Good Girl with mixed emotions -- disapproval of Justine combined with a tinge of understanding for her actions .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 15,
+      "seq": "Absorbing character study by AndrÃ© Turpin .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 16,
+      "seq": "If you love reading and\/or poetry , then by all means check it out .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 17,
+      "seq": "You 'll probably love it .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 18,
+      "seq": "`` Frailty '' has been written so well , that even a simple `` Goddammit ! ''",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 19,
+      "seq": "Grenier is terrific , bringing an unforced , rapid-fire delivery to Toback 's Heidegger - and Nietzsche-referencing dialogue .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 20,
+      "seq": "The actors are fantastic .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 21,
+      "seq": "They are what makes it worth the trip to the theatre .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 22,
+      "seq": "( Taymor ) utilizes the idea of making Kahlo 's art a living , breathing part of the movie , often catapulting the artist into her own work .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 23,
+      "seq": "It 's been done before but never so vividly or with so much passion .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 24,
+      "seq": "( `` Take Care of My Cat '' ) is an honestly nice little film that takes us on an examination of young adult life in urban South Korea through the hearts and minds of the five principals .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 25,
+      "seq": "What `` Empire '' lacks in depth it makes up for with its heart .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 26,
+      "seq": "Light , silly , photographed with colour and depth , and rather a good time .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 27,
+      "seq": "But tongue-in-cheek preposterousness has always been part of For the most part Wilde 's droll whimsy helps `` Being Earnest '' overcome its weaknesses and Parker 's creative interference ...",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 28,
+      "seq": "Much of the movie 's charm lies in the utter cuteness of Stuart and Margolo .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 29,
+      "seq": "Their computer-animated faces are very expressive .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 30,
+      "seq": "... spiced with humor ( ' I speak fluent flatula , ' advises Denlopp after a rather , er , bubbly exchange with an alien deckhand ) and witty updatings ( Silver 's parrot has been replaced with Morph , a cute alien creature who mimics everyone and everything around )",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 31,
+      "seq": "There 's an energy to Y Tu MamÃ¡ TambiÃ©n .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 32,
+      "seq": "Much of it comes from the brave , uninhibited performances by its lead actors .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 33,
+      "seq": "`` Auto Focus '' works as an unusual biopic and document of male swingers in the Playboy era",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 34,
+      "seq": "feeling to it , but like the 1920 's , the trip there is a great deal of fun .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 35,
+      "seq": "`` Cremaster 3 '' should come with the warning `` For serious film buffs only ! ''",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "positive"
+    },
+    {
+      "tc_id": 36,
+      "seq": "This is n't a new idea .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 37,
+      "seq": "... a sour little movie at its core ; an exploration of the emptiness that underlay the relentless gaiety of the 1920 's ... The film 's ending has a `` What was it all for ? ''",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 38,
+      "seq": "Made me unintentionally famous -- as the queasy-stomached critic who staggered from the theater and blacked out in the lobby .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 39,
+      "seq": "The modern-day royals have nothing on these guys when it comes to scandals .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 40,
+      "seq": "It 's only in fairy tales that princesses that are married for political reason live happily ever after .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 41,
+      "seq": "An absurdist spider web .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 42,
+      "seq": "By no means a slam-dunk and sure to ultimately disappoint the action fans who will be moved to the edge of their seats by the dynamic first act , it still comes off as a touching , transcendent love story .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 43,
+      "seq": "It 's not a great monster movie .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 44,
+      "seq": "Too often , Son of the Bride becomes an exercise in trying to predict when a preordained `` big moment '' will occur and not `` if . ''",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 45,
+      "seq": "A party-hearty teen flick that scalds like acid .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 46,
+      "seq": "Lookin ' for sin , American-style ?",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 47,
+      "seq": "Frida is n't that much different from many a Hollywood romance .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 48,
+      "seq": "... begins with promise , but runs aground after being snared in its own tangled plot .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 49,
+      "seq": "Despite its Hawaiian setting , the science-fiction trimmings and some moments of rowdy slapstick , the basic plot of `` Lilo '' could have been pulled from a tear-stained vintage Shirley Temple script .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 50,
+      "seq": "Although fairly involving as far as it goes , the film does n't end up having much that is fresh to say about growing up Catholic or , really , anything .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 51,
+      "seq": "While some will object to the idea of a Vietnam picture with such a rah-rah , patriotic tone , Soldiers ultimately achieves its main strategic objective : dramatizing the human cost of the conflict that came to define a generation .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 52,
+      "seq": "You might want to take a reality check before you pay the full ticket price to see `` Simone , '' and consider a DVD rental instead .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 53,
+      "seq": "The movie is well done , but slow .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 54,
+      "seq": "This Orange has some juice , but it 's far from fresh-squeezed .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 55,
+      "seq": "Made to be Jaglomized is the Cannes Film Festival , the annual Riviera spree of flesh , buzz , blab and money .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 56,
+      "seq": "A droll , bitchy frolic which pokes fun at the price of popularity and small-town pretension in the Lone Star State .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 57,
+      "seq": "Imperfect ?",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 58,
+      "seq": "Watching a Brian DePalma movie is like watching an Alfred Hitchcock movie after drinking twelve beers .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 59,
+      "seq": "As it is , it 's too long and unfocused .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 60,
+      "seq": "A decided lack of spontaneity in its execution and a dearth of real poignancy in its epiphanies .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 61,
+      "seq": "You 'll forget about it by Monday , though , and if they 're old enough to have developed some taste , so will your kids .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 62,
+      "seq": "The only pain you 'll feel as the credits roll is your stomach grumbling for some tasty grub .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 63,
+      "seq": "Though a capable thriller , somewhere along the way K-19 jettisoned some crucial drama .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 64,
+      "seq": "With a romantic comedy plotline straight from the ages , this Cinderella story does n't have a single surprise up its sleeve .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 65,
+      "seq": "Though it 's not very well shot or composed or edited , the score is too insistent and the dialogue is frequently overwrought and crudely literal , the film shatters you in waves .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 66,
+      "seq": "An obvious copy of one of the best films ever made , how could it not be ?",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 67,
+      "seq": "It is a popcorn film , not a must-own , or even a must-see .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 68,
+      "seq": "One Hour Photo may seem disappointing in its generalities , but it 's the little nuances that perhaps had to escape from director Mark Romanek 's self-conscious scrutiny to happen , that finally get under your skin .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 69,
+      "seq": "The Ya-Ya 's have many secrets and one is - the books are better .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 70,
+      "seq": "Not even Solondz 's thirst for controversy , sketchy characters and immature provocations can fully succeed at cheapening it .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "negative"
+    },
+    {
+      "tc_id": 71,
+      "seq": "You 'd think by now America would have had enough of plucky British eccentrics with hearts of gold .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 72,
+      "seq": "You Should Pay Nine Bucks for This : Because you can hear about suffering Afghan refugees on the news and still be unaffected .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 73,
+      "seq": "A thunderous ride at first , quiet cadences of pure finesse are few and far between ; their shortage dilutes the potency of otherwise respectable action .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 74,
+      "seq": "Post 9\/11 the philosophical message of `` Personal Freedom First '' might not be as palatable as intended .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 75,
+      "seq": "near the end takes on a whole other meaning .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 76,
+      "seq": "The Sundance Film Festival has become so buzz-obsessed that fans and producers descend upon Utah each January to ferret out The Next Great Thing .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 77,
+      "seq": "` Tadpole ' was one of the films so declared this year , but it 's really more of The Next Pretty Good Thing .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 78,
+      "seq": "It 's not life-affirming -- its vulgar and mean , but I liked it .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 79,
+      "seq": "The path Ice Age follows most closely , though , is the one established by Warner Bros. giant Chuck Jones , who died a matter of weeks before the movie 's release .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 80,
+      "seq": "`` 13 Conversations '' holds its goodwill close , but is relatively slow to come to the point .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 81,
+      "seq": "If Mr. Zhang 's subject matter is , to some degree at least , quintessentially American , his approach to storytelling might be called Iranian .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 82,
+      "seq": "Opening with some contrived banter , cliches and some loose ends , the screenplay only comes into its own in the second half .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 83,
+      "seq": "Shamelessly resorting to pee-related sight gags that might even cause Tom Green a grimace ; still , Myer 's energy and the silliness of it all eventually prevail",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 84,
+      "seq": "This version moves beyond the original 's nostalgia for the communal film experiences of yesteryear to a deeper realization of cinema 's inability to stand in for true , lived experience .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 85,
+      "seq": "Some movies blend together as they become distant memories .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 86,
+      "seq": "With three excellent principal singers , a youthful and good-looking diva and tenor and richly handsome locations , it 's enough to make you wish Jacquot had left well enough alone and just filmed the opera without all these distortions of perspective .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 87,
+      "seq": "Old people will love this movie , and I mean that in the nicest possible way : Last Orders will touch the heart of anyone old enough to have earned a 50-year friendship .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 88,
+      "seq": "Tian emphasizes the isolation of these characters by confining color to Liyan 's backyard .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 89,
+      "seq": "But if you 've paid a matinee price and bought a big tub of popcorn , there 's guilty fun to be had here .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 90,
+      "seq": "Chomp chomp !",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 91,
+      "seq": "The Grey Zone gives voice to a story that needs to be heard in the sea of Holocaust movies ... but the film suffers from its own difficulties .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 92,
+      "seq": "A movie that at its best does n't just make the most out of its characters ' flaws but insists on the virtue of imperfection .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 93,
+      "seq": "An exhilarating serving of movie fluff .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 94,
+      "seq": "Dark and disturbing , yet compelling to watch .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 95,
+      "seq": "A solid piece of journalistic work that draws a picture of a man for whom political expedience became a deadly foreign policy .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 96,
+      "seq": "Those who love Cinema Paradiso will find the new scenes interesting , but few will find the movie improved .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 97,
+      "seq": "The reason to see `` Sade '' lay with the chemistry and complex relationship between the marquis ( Auteil ) and Emilie ( Le Besco ) .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 98,
+      "seq": "... best seen as speculative history , as much an exploration of the paranoid impulse as a creative sequel to the Warren Report .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 99,
+      "seq": "Flawed , but worth seeing for Ambrose 's performance .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    },
+    {
+      "tc_id": 100,
+      "seq": "Try Hell House , which documents the cautionary Christian spook-a-rama of the same name .",
+      "candidate_labels": [ "positive", "neutral", "negative" ],
+      "label_actual": "neutral"
+    }
+  ]
+}

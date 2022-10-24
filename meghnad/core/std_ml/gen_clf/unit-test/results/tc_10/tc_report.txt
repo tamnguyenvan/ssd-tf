@@ -1,0 +1,49 @@
+KNearestNeighbour
+
+confusion_matrix:
+[[896 591]
+ [101 455]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+          No       0.90      0.60      0.72      1487
+         Yes       0.43      0.82      0.57       556
+
+    accuracy                           0.66      2043
+   macro avg       0.67      0.71      0.64      2043
+weighted avg       0.77      0.66      0.68      2043
+
+===================================================
+LogisticRegression
+
+confusion_matrix:
+[[926 561]
+ [100 456]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+          No       0.90      0.62      0.74      1487
+         Yes       0.45      0.82      0.58       556
+
+    accuracy                           0.68      2043
+   macro avg       0.68      0.72      0.66      2043
+weighted avg       0.78      0.68      0.69      2043
+
+SupportVectorMachines
+
+confusion_matrix:
+[[940 547]
+ [108 448]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+          No       0.90      0.63      0.74      1487
+         Yes       0.45      0.81      0.58       556
+
+    accuracy                           0.68      2043
+   macro avg       0.67      0.72      0.66      2043
+weighted avg       0.78      0.68      0.70      2043
+

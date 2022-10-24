@@ -1,0 +1,16 @@
+tensorflow==2.8.0
+tensorflow-hub
+huggingface_hub
+
+transformers
+
+opencv-python
+paddleocr
+paddlepaddle
+
+fuzzywuzzy
+
+pandas
+
+scikit-learn
+

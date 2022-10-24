@@ -1,0 +1,35 @@
+Method doc:
+
+Name: pred
+----  
+
+Description:
+-----------
+
+            Predict language.
+
+Arguments:
+---------        
+
+            sequence: text input for which the language needs to be predicted
+
+Returns:
+-------
+
+            language detected
+
+Created by:
+-----------        
+None
+
+Examples:
+--------        
+None
+
+Assumptions:
+-----------        
+None
+
+Others:
+-------------        
+None

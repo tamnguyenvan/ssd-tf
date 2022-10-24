@@ -1,0 +1,7 @@
+{"tc": [{"tc_id": 1, "seq": "https://th.bing.com/th/id/R.949ed88747d0ee0d49842909af82de74?rik=hgSSzuKszAqOtg&riu=http%3a%2f%2fen.pousheng.com%2fupload%2f201507%2f22%2f201507221102324664.jpg&ehk=77ptHE25C9fALwB2k9lPCxTR9AK9Xm9IgsfYv5P48yM%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1", "candidate_labels": ["adidas originals", "adidas", "nike", "puma","adidas shoes"], "label_actual": "adidas originals"}
+,{"tc_id": 2, "seq": "https://www.mind-mag.com/wp-content/uploads/2021/02/OREFICI11_cover.jpg", "candidate_labels": ["orefici milano","orefici", "the north face","timberland","Parcel", "Truck"], "label_actual": "orefici milano"}
+,{"tc_id":3,"seq":"https://th.bing.com/th/id/OIP.3lnz9uGxhTWLn-sBUd-weQHaE8?pid=ImgDet&rs=1","candidate_labels":["cheetah","leopard", "tiger","cat","lion", "bengal tiger"],"label_actual":"cheetah"}
+,{"tc_id":4,"seq":"https://cdn.utakatikotak.com/20191223/20191223_013729GettyImages-1082061448.jpg","candidate_labels":["king cobra snake","snake","python","rattle snake","water snake"],"label_actual":"king cobra snake"}
+,{"tc_id":5,"seq":"https://cdn2.bigcommerce.com/server100/6ca92/product_images/uploaded_images/american-alligator.jpg" ,"candidate_labels":["crocodile","alligator","lizard","dragon","fish"],"label_actual":"alligator"}
+,{"tc_id":6,"seq":"https://th.bing.com/th/id/OIP.aDY9kZfjO6WF4x6DS0ToOQHaE8?pid=ImgDet&rs=1","candidate_labels":["turtle","tortoise", "fish","snail"],"label_actual":"turtle"}
+]}

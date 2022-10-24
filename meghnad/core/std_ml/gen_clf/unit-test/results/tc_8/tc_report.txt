@@ -1,0 +1,181 @@
+Catboost
+
+confusion_matrix:
+[[24  0  4]
+ [ 0 14  0]
+ [13  9 16]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.65      0.86      0.74        28
+           L       0.61      1.00      0.76        14
+           M       0.80      0.42      0.55        38
+
+    accuracy                           0.68        80
+   macro avg       0.69      0.76      0.68        80
+weighted avg       0.71      0.68      0.65        80
+
+===================================================
+AdaboostClassifier
+
+confusion_matrix:
+[[25  0  3]
+ [ 0 14  0]
+ [16 16  6]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.61      0.89      0.72        28
+           L       0.47      1.00      0.64        14
+           M       0.67      0.16      0.26        38
+
+    accuracy                           0.56        80
+   macro avg       0.58      0.68      0.54        80
+weighted avg       0.61      0.56      0.49        80
+
+GBM
+
+confusion_matrix:
+[[23  0  5]
+ [ 0 12  2]
+ [13  4 21]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.64      0.82      0.72        28
+           L       0.75      0.86      0.80        14
+           M       0.75      0.55      0.64        38
+
+    accuracy                           0.70        80
+   macro avg       0.71      0.74      0.72        80
+weighted avg       0.71      0.70      0.69        80
+
+KNearestNeighbour
+
+confusion_matrix:
+[[22  0  6]
+ [ 0 14  0]
+ [13 13 12]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.63      0.79      0.70        28
+           L       0.52      1.00      0.68        14
+           M       0.67      0.32      0.43        38
+
+    accuracy                           0.60        80
+   macro avg       0.60      0.70      0.60        80
+weighted avg       0.63      0.60      0.57        80
+
+LGBM
+
+confusion_matrix:
+[[17  0 11]
+ [ 0 12  2]
+ [11  4 23]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.61      0.61      0.61        28
+           L       0.75      0.86      0.80        14
+           M       0.64      0.61      0.62        38
+
+    accuracy                           0.65        80
+   macro avg       0.67      0.69      0.68        80
+weighted avg       0.65      0.65      0.65        80
+
+LogisticRegression
+
+confusion_matrix:
+[[23  0  5]
+ [ 0 14  0]
+ [10 14 14]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.70      0.82      0.75        28
+           L       0.50      1.00      0.67        14
+           M       0.74      0.37      0.49        38
+
+    accuracy                           0.64        80
+   macro avg       0.64      0.73      0.64        80
+weighted avg       0.68      0.64      0.61        80
+
+MLP
+
+confusion_matrix:
+[[24  0  4]
+ [ 0 14  0]
+ [13 13 12]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.65      0.86      0.74        28
+           L       0.52      1.00      0.68        14
+           M       0.75      0.32      0.44        38
+
+    accuracy                           0.62        80
+   macro avg       0.64      0.72      0.62        80
+weighted avg       0.67      0.62      0.59        80
+
+RandomForest
+
+confusion_matrix:
+[[19  0  9]
+ [ 0 13  1]
+ [15  6 17]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.56      0.68      0.61        28
+           L       0.68      0.93      0.79        14
+           M       0.63      0.45      0.52        38
+
+    accuracy                           0.61        80
+   macro avg       0.62      0.68      0.64        80
+weighted avg       0.61      0.61      0.60        80
+
+SupportVectorMachines
+
+confusion_matrix:
+[[20  0  8]
+ [ 0 14  0]
+ [ 6 16 16]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.77      0.71      0.74        28
+           L       0.47      1.00      0.64        14
+           M       0.67      0.42      0.52        38
+
+    accuracy                           0.62        80
+   macro avg       0.63      0.71      0.63        80
+weighted avg       0.67      0.62      0.62        80
+
+Xgboost
+
+confusion_matrix:
+[[22  0  6]
+ [ 0 12  2]
+ [13  4 21]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           H       0.63      0.79      0.70        28
+           L       0.75      0.86      0.80        14
+           M       0.72      0.55      0.63        38
+
+    accuracy                           0.69        80
+   macro avg       0.70      0.73      0.71        80
+weighted avg       0.70      0.69      0.68        80
+

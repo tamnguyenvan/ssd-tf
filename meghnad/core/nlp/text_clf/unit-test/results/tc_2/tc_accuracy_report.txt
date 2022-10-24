@@ -1,0 +1,23 @@
+confusion_matrix:
+[[5 0 0 0 0 0 0]
+ [0 4 0 0 0 0 0]
+ [0 0 4 0 0 0 1]
+ [0 0 0 5 0 0 0]
+ [0 0 0 0 4 0 0]
+ [0 0 0 0 0 4 0]
+ [0 0 1 0 0 0 3]]
+
+classification_report:
+                   precision    recall  f1-score   support
+
+    AccountIssues       1.00      1.00      1.00         5
+AppointmentIssues       1.00      1.00      1.00         4
+    BillingIssues       0.80      0.80      0.80         5
+      EmailIssues       1.00      1.00      1.00         5
+          Goodbye       1.00      1.00      1.00         4
+            Greet       1.00      1.00      1.00         4
+    PaymentIssues       0.75      0.75      0.75         4
+
+         accuracy                           0.94        31
+        macro avg       0.94      0.94      0.94        31
+     weighted avg       0.94      0.94      0.94        31

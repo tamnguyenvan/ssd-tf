@@ -1,0 +1,22 @@
+Model --- recall 
+
+Catboost --- [0.857 1.    0.421]
+
+AdaboostClassifier --- [0.893 1.    0.158]
+
+GBM --- [0.821 0.857 0.553]
+
+KNearestNeighbour --- [0.786 1.    0.316]
+
+LGBM --- [0.607 0.857 0.605]
+
+LogisticRegression --- [0.821 1.    0.368]
+
+MLP --- [0.857 1.    0.316]
+
+RandomForest --- [0.679 0.929 0.447]
+
+SupportVectorMachines --- [0.714 1.    0.421]
+
+Xgboost --- [0.786 0.857 0.553]
+

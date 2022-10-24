@@ -1,0 +1,15 @@
+#rpunct
+#torch>=1.10.0
+#pandas>=1.4.2
+
+transformers>=4.20.0
+huggingface_hub
+
+pyannote.audio
+librosa
+soundfile
+ffmpeg-python 
+fastpunct
+
+coverage
+

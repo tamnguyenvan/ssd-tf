@@ -1,0 +1,23 @@
+confusion_matrix:
+[[1 0 0 0 0 0 0]
+ [0 1 0 0 0 0 0]
+ [0 0 1 0 0 0 0]
+ [0 0 0 1 0 0 0]
+ [0 0 0 0 1 0 0]
+ [0 0 0 0 0 0 0]
+ [0 0 0 0 0 1 0]]
+
+classification_report:
+                  precision    recall  f1-score   support
+
+adidas originals       1.00      1.00      1.00         1
+       alligator       1.00      1.00      1.00         1
+         cheetah       1.00      1.00      1.00         1
+king cobra snake       1.00      1.00      1.00         1
+  orefici milano       1.00      1.00      1.00         1
+        tortoise       0.00      0.00      0.00         0
+          turtle       0.00      0.00      0.00         1
+
+        accuracy                           0.83         6
+       macro avg       0.71      0.71      0.71         6
+    weighted avg       0.83      0.83      0.83         6

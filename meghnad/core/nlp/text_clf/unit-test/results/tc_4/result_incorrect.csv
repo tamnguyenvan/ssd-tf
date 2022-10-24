@@ -1,0 +1,32 @@
+,Utterance,Intent,labels_pred,scores_pred,correct
+0,wondering why I get charged sales tax twice on my bill? Thanks,BillingIssues,Greet,0.25309837,False
+1,I have not received a bill in several months. Not sure what the problem is.,BillingIssues,Greet,0.22349696,False
+2,i would like to know how much i have to pay on this recent bill to avoid interruption,BillingIssues,Greet,0.27121422,False
+3,I received a 20 credit for my bill but can't apply it. Can you help?,BillingIssues,Greet,0.26765323,False
+4,I'd like to lower my bill - any specials for existing ustomers that you can offer?,BillingIssues,Greet,0.20418696,False
+5,how can I setup auot pay for this acctount,PaymentIssues,Greet,0.24148874,False
+6,I would like to know when my payment is due and the amount due please,PaymentIssues,Greet,0.25934842,False
+7,why did you not accept my checking account for a one-time payment,PaymentIssues,Greet,0.2468822,False
+8,How can I make further arrangements to finish paying my bill,PaymentIssues,Greet,0.25933778,False
+9,My account will not stay logged in. When I select a tab a warning pops up stating my session will be logged out due to inactivity then immediatley logs out,AccountIssues,Greet,0.23160835,False
+10,The original account is in my husbands name and he is now deceased. How can I change this,AccountIssues,Greet,0.18631327,False
+11,I need to get my user name and password for my account,AccountIssues,Greet,0.23457482,False
+12,how do i make mysel administrator beings im the only one on the account,AccountIssues,Greet,0.21882424,False
+13,I can't remember any of my login stuff for my account at your website,AccountIssues,Greet,0.2109317,False
+14,contacted a rep earlier today and need t recontact as I now have access to the equipment for Monday's appointment,AppointmentIssues,Greet,0.1951793,False
+15,schedule a service rep to come to my house and set me up to get your higher level of service,AppointmentIssues,Greet,0.17116408,False
+16,I had a installation appt yesterday would Like to know if I can reschedule for another day?,AppointmentIssues,Greet,0.20157325,False
+17,I just talked to a rep. I did everything he suggested but nothing helps. I need a repair person to come to my house ASAP and fix my issue.,AppointmentIssues,Greet,0.19816178,False
+18,I cannot sign into my email. I changed my password and have done everything I know to do,EmailIssues,Goodbye,0.3448325,False
+19,I am unable to send/recieve messages. server response: invalid user name or password.,EmailIssues,Goodbye,0.24998626,False
+20,how do I add a second email user and not change anything on my own email account,EmailIssues,Goodbye,0.3433175,False
+21,I have not been able to get into my email account for 2 days. everything else work,EmailIssues,Goodbye,0.34296626,False
+22,we are still having email problems. we can receive email but get errors when we try to send,EmailIssues,Goodbye,0.34403425,False
+23,hi hope all good,Greet,PaymentIssues,0.22885184,False
+24,morning!,Greet,PaymentIssues,0.22866927,False
+25,"hey, how are things?",Greet,AppointmentIssues,0.23987514,False
+26,hello Danny,Greet,PaymentIssues,0.26164603,False
+27,talk to you later,Goodbye,PaymentIssues,0.17122018,False
+28,see you man! Bye!,Goodbye,PaymentIssues,0.23641011,False
+29,that’s all I needed. Thanks!,Goodbye,BillingIssues,0.15790373,False
+30,goodbye and have a great weekend,Goodbye,PaymentIssues,0.20276122,False

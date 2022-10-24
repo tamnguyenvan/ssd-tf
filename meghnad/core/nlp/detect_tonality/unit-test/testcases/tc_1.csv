@@ -1,0 +1,5 @@
+tc_id,seq,tonality
+1,"Dear sir,
+
+Hope this finds you well. We have an exciting new product XYZ we would like you to consider. Details are available in the attached flyer. Eagerly waiting for your response.","['formal', 'respectful', 'enthusiastic', 'factual']"
+2,"Hi, how are you? Wanted to reach out to you and understand whether you are looking for any audits. We provide audit services to more than 500 firms of your size. Please feel free if you have any questions.","['casual', 'respectful', 'enthusiastic', 'factual']"

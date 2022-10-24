@@ -1,0 +1,9 @@
+allennlp==2.10.0
+allennlp-models==2.2.0
+coreferee==1.2.0
+spacy==3.3.0
+fuzzywuzzy
+
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.3.0/en_core_web_lg-3.3.0-py3-none-any.whl
+https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.3.0/en_core_web_trf-3.3.0-py3-none-any.whl
+

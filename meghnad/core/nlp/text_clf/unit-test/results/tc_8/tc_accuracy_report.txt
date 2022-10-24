@@ -1,0 +1,29 @@
+confusion_matrix:
+[[[3 0]
+  [1 1]]
+
+ [[4 0]
+  [1 0]]
+
+ [[4 0]
+  [0 1]]
+
+ [[4 0]
+  [0 1]]
+
+ [[4 0]
+  [1 0]]]
+
+classification_report:
+              precision    recall  f1-score   support
+
+           0       1.00      0.50      0.67         2
+           1       0.00      0.00      0.00         1
+           2       1.00      1.00      1.00         1
+           3       1.00      1.00      1.00         1
+           4       0.00      0.00      0.00         1
+
+   micro avg       1.00      0.50      0.67         6
+   macro avg       0.60      0.50      0.53         6
+weighted avg       0.67      0.50      0.56         6
+ samples avg       0.60      0.50      0.53         6

@@ -1,0 +1,29 @@
+,comment,toxic,severe_toxic,obscene,threat,insult,identity_hate,normal,labels_pred,scores_pred,labels,correct
+6,COCKSUCKER BEFORE YOU PISS AROUND ON MY WORK,1,1,1,0,1,0,0,['normal'],[0.76],"['toxic', 'severe_toxic', 'obscene', 'insult']",False
+12,"Hey... what is it..
+@ | talk .
+What is it... an exclusive group of some WP TALIBANS...who are good at destroying, self-appointed purist who GANG UP any one who asks them questions abt their ANTI-SOCIAL and DESTRUCTIVE (non)-contribution at WP?
+
+Ask Sityush to clean up his behavior than issue me nonsensical warnings...",1,0,0,0,0,0,0,['normal'],[0.82],['toxic'],False
+16,"Bye! 
+
+Don't look, come or think of comming back! Tosser.",1,0,0,0,0,0,0,['normal'],[0.85],['toxic'],False
+42,"You are gay or antisemmitian? 
+
+Archangel WHite Tiger
+
+Meow! Greetingshhh!
+
+Uh, there are two ways, why you do erased my comment about WW2, that holocaust was brutally slaying of Jews and not gays/Gypsys/Slavs/anyone...
+
+1 - If you are anti-semitian, than shave your head bald and go to the skinhead meetings!
+
+2 - If you doubt words of the Bible, that homosexuality is a deadly sin, make a pentagram tatoo on your forehead go to the satanistic masses with your gay pals!
+
+3 - First and last warning, you fucking gay - I won't appreciate if any more nazi shwain would write in my page! I don't wish to talk to you anymore!
+
+Beware of the Dark Side!",1,0,1,0,1,1,0,['normal'],[0.67],"['toxic', 'obscene', 'insult', 'identity_hate']",False
+43,"FUCK YOUR FILTHY MOTHER IN THE ASS, DRY!",1,0,1,0,1,0,0,"['normal', 'toxic']","[0.6, 0.53]","['toxic', 'obscene', 'insult']",False
+44,"I'm Sorry 
+
+I'm sorry I screwed around with someones talk page.  It was very bad to do.  I know how having the templates on their talk page helps you assert your dominance over them.  I know I should bow down to the almighty administrators.  But then again, I'm going to go play outside....with your mom.   76.122.79.82",1,0,0,0,0,0,0,['normal'],[0.87],['toxic'],False

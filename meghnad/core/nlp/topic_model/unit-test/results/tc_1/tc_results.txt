@@ -1,0 +1,2 @@
+ret val: 0
+saved model dir: c:\users\chira\pycharmprojects\ixolerator_topic\meghnad/bin/int/topic_model/anchored_topic_model

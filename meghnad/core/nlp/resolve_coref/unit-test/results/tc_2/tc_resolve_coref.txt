@@ -1,0 +1,11 @@
+
+
+Sequence:
+Maruti Suzuki WagonR is a very good hatchback segment car. It has a decent looks and interior of this car looks nice. This car has good performance and better mileage than Balino.
+Sequence_resolved:
+{0: {'seq': 'Wagon R is a very good hatchback segment car.', 'tags': ['Wagon R']}, 1: {'seq': 'Wagon R has a decent looks and interior of Wagon R looks nice.', 'tags': ['Wagon R']}, 2: {'seq': 'Wagon R has good performance and better mileage than Baleno.', 'tags': ['Wagon R', 'Baleno']}}
+
+Sequence:
+Delighted to have Hershey's whole almond bars . Have been having Hershey's whole almond bars since a long time now . One is definitely not enough so ordered pack of 3.
+Sequence_resolved:
+{0: {'seq': 'Delighted to have Hershey .', 'tags': ['Hershey']}, 1: {'seq': 'Have been having Hershey since a long time now .', 'tags': ['Hershey']}, 2: {'seq': One is definitely not enough so ordered pack of 3., 'tags': []}}

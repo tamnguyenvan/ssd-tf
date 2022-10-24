@@ -1,0 +1,36 @@
+,tc_id,seq,label_actual,label_pred,correct
+4,5,"Whether or not you 're enlightened by any of Derrida 's lectures on `` the other '' and `` the self , '' Derrida is an undeniably fascinating and playful fellow .",positive,neutral,False
+13,14,You walk out of The Good Girl with mixed emotions -- disapproval of Justine combined with a tinge of understanding for her actions .,positive,neutral,False
+17,18,"`` Frailty '' has been written so well , that even a simple `` Goddammit ! ''",positive,negative,False
+32,33,`` Auto Focus '' works as an unusual biopic and document of male swingers in the Playboy era,positive,neutral,False
+34,35,`` Cremaster 3 '' should come with the warning `` For serious film buffs only ! '',positive,negative,False
+35,36,This is n't a new idea .,negative,neutral,False
+39,40,It 's only in fairy tales that princesses that are married for political reason live happily ever after .,negative,neutral,False
+41,42,"By no means a slam-dunk and sure to ultimately disappoint the action fans who will be moved to the edge of their seats by the dynamic first act , it still comes off as a touching , transcendent love story .",negative,positive,False
+46,47,Frida is n't that much different from many a Hollywood romance .,negative,neutral,False
+48,49,"Despite its Hawaiian setting , the science-fiction trimmings and some moments of rowdy slapstick , the basic plot of `` Lilo '' could have been pulled from a tear-stained vintage Shirley Temple script .",negative,neutral,False
+50,51,"While some will object to the idea of a Vietnam picture with such a rah-rah , patriotic tone , Soldiers ultimately achieves its main strategic objective : dramatizing the human cost of the conflict that came to define a generation .",negative,neutral,False
+52,53,"The movie is well done , but slow .",negative,positive,False
+53,54,"This Orange has some juice , but it 's far from fresh-squeezed .",negative,neutral,False
+63,64,"With a romantic comedy plotline straight from the ages , this Cinderella story does n't have a single surprise up its sleeve .",negative,neutral,False
+65,66,"An obvious copy of one of the best films ever made , how could it not be ?",negative,positive,False
+68,69,The Ya-Ya 's have many secrets and one is - the books are better .,negative,neutral,False
+70,71,You 'd think by now America would have had enough of plucky British eccentrics with hearts of gold .,neutral,negative,False
+71,72,You Should Pay Nine Bucks for This : Because you can hear about suffering Afghan refugees on the news and still be unaffected .,neutral,negative,False
+72,73,"A thunderous ride at first , quiet cadences of pure finesse are few and far between ; their shortage dilutes the potency of otherwise respectable action .",neutral,negative,False
+73,74,Post 9/11 the philosophical message of `` Personal Freedom First '' might not be as palatable as intended .,neutral,negative,False
+75,76,The Sundance Film Festival has become so buzz-obsessed that fans and producers descend upon Utah each January to ferret out The Next Great Thing .,neutral,positive,False
+76,77,"` Tadpole ' was one of the films so declared this year , but it 's really more of The Next Pretty Good Thing .",neutral,positive,False
+79,80,"`` 13 Conversations '' holds its goodwill close , but is relatively slow to come to the point .",neutral,positive,False
+81,82,"Opening with some contrived banter , cliches and some loose ends , the screenplay only comes into its own in the second half .",neutral,negative,False
+82,83,"Shamelessly resorting to pee-related sight gags that might even cause Tom Green a grimace ; still , Myer 's energy and the silliness of it all eventually prevail",neutral,negative,False
+85,86,"With three excellent principal singers , a youthful and good-looking diva and tenor and richly handsome locations , it 's enough to make you wish Jacquot had left well enough alone and just filmed the opera without all these distortions of perspective .",neutral,negative,False
+86,87,"Old people will love this movie , and I mean that in the nicest possible way : Last Orders will touch the heart of anyone old enough to have earned a 50-year friendship .",neutral,positive,False
+88,89,"But if you 've paid a matinee price and bought a big tub of popcorn , there 's guilty fun to be had here .",neutral,positive,False
+89,90,Chomp chomp !,neutral,negative,False
+90,91,The Grey Zone gives voice to a story that needs to be heard in the sea of Holocaust movies ... but the film suffers from its own difficulties .,neutral,negative,False
+91,92,A movie that at its best does n't just make the most out of its characters ' flaws but insists on the virtue of imperfection .,neutral,positive,False
+92,93,An exhilarating serving of movie fluff .,neutral,positive,False
+94,95,A solid piece of journalistic work that draws a picture of a man for whom political expedience became a deadly foreign policy .,neutral,positive,False
+96,97,The reason to see `` Sade '' lay with the chemistry and complex relationship between the marquis ( Auteil ) and Emilie ( Le Besco ) .,neutral,positive,False
+99,100,"Try Hell House , which documents the cautionary Christian spook-a-rama of the same name .",neutral,negative,False

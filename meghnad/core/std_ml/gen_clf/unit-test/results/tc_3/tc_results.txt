@@ -1,0 +1,5 @@
+ret val: 0
+
+Best performing model on training data: LogisticRegression.joblib
+
+Best performing model is saved in dir: c:\users\amk26\onedrive - inxite-out private limited\ixo\data\ixolerator-feature_churn_2022_05_19_42\meghnad/bin/int/gen_clf/

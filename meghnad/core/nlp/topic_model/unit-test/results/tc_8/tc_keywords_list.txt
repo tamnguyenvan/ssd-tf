@@ -1,0 +1,1 @@
+{'Corr': [('police', 23.19), ('killed', 14.68), ('officers', 10.3), ('authorities', 8.2), ('death', 8.12), ('arrested', 8.04), ('shooting', 7.16), ('man', 6.83), ('killing', 6.79), ('violence', 6.7)], 'Inv_Corr': []}

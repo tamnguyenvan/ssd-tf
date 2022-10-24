@@ -1,0 +1,7 @@
+{"tc": [{"tc_id": 1, "seq": "http://images.cocodataset.org/val2017/000000039769.jpg", "candidate_labels": ["cats", "lions", "dogs", "birds"], "label_actual": "cats"}
+,{"tc_id": 2, "seq": "https://d.newsweek.com/en/full/1226008/fedex-logo.jpg", "candidate_labels": ["Fed Ex","Fed Express", "American Express","Courier","Parcel", "Truck"], "label_actual": "Fed Ex"}
+,{"tc_id":3,"seq":"https://ps-image-bucket.s3.amazonaws.com/trbusiness.com/wp-content/uploads/old-site/stories/Products/tobacco/jti%20mevius%20small.jpg","candidate_labels":["Winston","Mevious", "Marvel","Malboro","Ciggerete", "Classic"],"label_actual":"Mevious"}
+,{"tc_id":4,"seq":"https://www.pngarts.com/files/4/Adidas-Logo-PNG-Pic.png","candidate_labels":["adidas","nike","shoes","abibas","bata","redtape","adidas shoes"],"label_actual":"adidas"}
+,{"tc_id":5,"seq":"https://th.bing.com/th/id/OIP.PODNWnYLw0WNdW-9aiiGDwHaEK?pid=ImgDet&rs=1" ,"candidate_labels":["bear","polar bear","fox","wolf","brown bear"],"label_actual":"brown bear"}
+,{"tc_id":6,"seq":"https://th.bing.com/th/id/R.dbb37d00b68e0e79c67ba94d3a990977?rik=%2bm5iykutghdrXw&riu=http%3a%2f%2fimages.says.com%2fuploads%2fstory_source%2fsource_image%2f125104%2f287f.jpeg&ehk=SF5HktqQ0Ir%2bKih7cjqeo1Hw%2bvmJe9elq1bUrpTjuok%3d&risl=&pid=ImgRaw&r=0","candidate_labels":["BAT","British American Tobacco", "JTI","Malboro","Dunhill", "Classic","Pall Mall"],"label_actual":"British American Tobacco"}
+]}
