@@ -32,7 +32,7 @@ _obj_det_cfg = {
     },
     'data_cfg':
     {
-        'img_size': (128, 128, 3),
+        'img_size': (300, 300),
         'train_dir': None,
         'test_dir': None,
         'val_dir': None,
@@ -40,12 +40,17 @@ _obj_det_cfg = {
     },
     'model_cfg':
     {
-        'model': 'MobileNet',
+        'model': 'MobileNetV2',
         'saved_weights_path': None,
         'initialize_weight': False,
-        'input_shape': (128, 128, 3),
+        'input_shape': (300, 300, 3),
+        'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
+        'num_anchors': [4, 6, 6, 6, 4, 4],
+        'feature_map_sizes': [19, 10, 5, 3, 2, 1],
+        'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
+        'neg_ratio': 3,
         'trainable': False,
-        'num_classes': 4,
+        'num_classes': 3,
         'saved_model_path': None,
     },
     'model_params':
@@ -55,7 +60,7 @@ _obj_det_cfg = {
         'cv': 5,
         'batch_size': 1,
         'optimizer': 'adam',
-        'learning_rate': 0.0001,
+        'learning_rate': 0.001,
     },
     'user_cfg':
     {
@@ -74,6 +79,9 @@ class ObjDetConfig(MeghnadConfig):
 
     def get_model_cfg(self):
         return self.cfg['model_cfg']
+
+    def get_model_params(self):
+        return self.cfg['model_params']
 
     def get_data_cfg(self):
         return self.cfg['data_cfg']

@@ -7,7 +7,7 @@ from utils import ret_values
 from utils.log import Log
 import meghnad.core.cv.obj_det.cfg.config as cfg
 
-from .models.retinanet import RetinaNet
+from .models import ssd
 
 
 log = Log()
@@ -36,15 +36,17 @@ class ModelLoader:
     def load_model(self):
         weights = None if self.initialize_weight else self.saved_weights_path if self.saved_weights_path is not None else 'imagenet'
         try:
-            models = cfg.ObjDetConfig().get_models_by_names()
+            config = cfg.ObjDetConfig()
+            models = config.get_models_by_names()
             if self.aarch not in models:
                 log.ERROR(sys._getframe().f_lineno,
                           __file__, __name__, "Invalid model selected")
                 return ret_values.IXO_RET_INVALID_INPUTS
 
-            model = RetinaNet(self.num_classes, self.aarch)
+            model_config = config.get_model_cfg()
+            model = ssd(self.aarch, self.input_shape,
+                        self.num_classes, model_config['num_anchors'])
         except Exception as e:
-            print(e)
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, e)
             return ret_values.IXO_RET_INVALID_INPUTS

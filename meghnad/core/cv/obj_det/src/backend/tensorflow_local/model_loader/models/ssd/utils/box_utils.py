@@ -1,189 +1,212 @@
 import tensorflow as tf
-from ..anchors import AnchorBox
 
 
-def swap_xy(boxes):
-    """Swaps order the of x and y coordinates of the boxes.
-
-    Arguments:
-        boxes: A tensor with shape `(num_boxes, 4)` representing bounding boxes.
-
+def compute_area(top_left, bot_right):
+    """ Compute area given top_left and bottom_right coordinates
+    Args:
+        top_left: tensor (num_boxes, 2)
+        bot_right: tensor (num_boxes, 2)
     Returns:
-        swapped boxes with shape same as that of boxes.
+        area: tensor (num_boxes,)
     """
-    return tf.stack([boxes[:, 1], boxes[:, 0], boxes[:, 3], boxes[:, 2]], axis=-1)
+    # top_left: N x 2
+    # bot_right: N x 2
+    hw = tf.clip_by_value(bot_right - top_left, 0.0, 512.0)
+    area = hw[..., 0] * hw[..., 1]
+
+    return area
 
 
-def convert_to_xywh(boxes):
-    """Changes the box format to center, width and height.
-
-    Arguments:
-        boxes: A tensor of rank 2 or higher with a shape of `(..., num_boxes, 4)`
-            representing bounding boxes where each box is of the format
-            `[xmin, ymin, xmax, ymax]`.
-
+def compute_iou(boxes_a, boxes_b):
+    """ Compute overlap between boxes_a and boxes_b
+    Args:
+        boxes_a: tensor (num_boxes_a, 4)
+        boxes_b: tensor (num_boxes_b, 4)
     Returns:
-        converted boxes with shape same as that of boxes.
+        overlap: tensor (num_boxes_a, num_boxes_b)
     """
-    return tf.concat(
-        [(boxes[..., :2] + boxes[..., 2:]) / 2.0, boxes[..., 2:] - boxes[..., :2]],
-        axis=-1,
-    )
+    # boxes_a => num_boxes_a, 1, 4
+    boxes_a = tf.expand_dims(boxes_a, 1)
+
+    # boxes_b => 1, num_boxes_b, 4
+    boxes_b = tf.expand_dims(boxes_b, 0)
+    top_left = tf.math.maximum(boxes_a[..., :2], boxes_b[..., :2])
+    bot_right = tf.math.minimum(boxes_a[..., 2:], boxes_b[..., 2:])
+
+    overlap_area = compute_area(top_left, bot_right)
+    area_a = compute_area(boxes_a[..., :2], boxes_a[..., 2:])
+    area_b = compute_area(boxes_b[..., :2], boxes_b[..., 2:])
+
+    overlap = overlap_area / (area_a + area_b - overlap_area)
+
+    return overlap
 
 
-def convert_to_corners(boxes):
-    """Changes the box format to corner coordinates
-
-    Arguments:
-        boxes: A tensor of rank 2 or higher with a shape of `(..., num_boxes, 4)`
-            representing bounding boxes where each box is of the format
-            `[x, y, width, height]`.
-
+def compute_target(default_boxes, gt_boxes, gt_labels, iou_threshold=0.5):
+    """ Compute regression and classification targets
+    Args:
+        default_boxes: tensor (num_default, 4)
+                       of format (cx, cy, w, h)
+        gt_boxes: tensor (num_gt, 4)
+                  of format (xmin, ymin, xmax, ymax)
+        gt_labels: tensor (num_gt,)
     Returns:
-        converted boxes with shape same as that of boxes.
+        gt_confs: classification targets, tensor (num_default,)
+        gt_locs: regression targets, tensor (num_default, 4)
     """
-    return tf.concat(
-        [boxes[..., :2] - boxes[..., 2:] / 2.0,
-         boxes[..., :2] + boxes[..., 2:] / 2.0],
-        axis=-1,
-    )
+    # Convert default boxes to format (xmin, ymin, xmax, ymax)
+    # in order to compute overlap with gt boxes
+    transformed_default_boxes = transform_center_to_corner(default_boxes)
+    iou = compute_iou(transformed_default_boxes, gt_boxes)
+
+    best_gt_iou = tf.math.reduce_max(iou, 1)
+    best_gt_idx = tf.math.argmax(iou, 1)
+
+    best_default_iou = tf.math.reduce_max(iou, 0)
+    best_default_idx = tf.math.argmax(iou, 0)
+
+    best_gt_idx = tf.tensor_scatter_nd_update(
+        best_gt_idx,
+        tf.expand_dims(best_default_idx, 1),
+        tf.range(best_default_idx.shape[0], dtype=tf.int64))
+
+    # Normal way: use a for loop
+    # for gt_idx, default_idx in enumerate(best_default_idx):
+    #     best_gt_idx = tf.tensor_scatter_nd_update(
+    #         best_gt_idx,
+    #         tf.expand_dims([default_idx], 1),
+    #         [gt_idx])
+
+    best_gt_iou = tf.tensor_scatter_nd_update(
+        best_gt_iou,
+        tf.expand_dims(best_default_idx, 1),
+        tf.ones_like(best_default_idx, dtype=tf.float32))
+
+    gt_confs = tf.gather(gt_labels, best_gt_idx)
+    gt_confs = tf.where(
+        tf.less(best_gt_iou, iou_threshold),
+        tf.zeros_like(gt_confs),
+        gt_confs)
+
+    gt_boxes = tf.gather(gt_boxes, best_gt_idx)
+    gt_locs = encode(default_boxes, gt_boxes)
+
+    return gt_confs, gt_locs
 
 
-def compute_iou(boxes1, boxes2):
-    """Computes pairwise IOU matrix for given two sets of boxes
-
-    Arguments:
-        boxes1: A tensor with shape `(N, 4)` representing bounding boxes
-            where each box is of the format `[x, y, width, height]`.
-            boxes2: A tensor with shape `(M, 4)` representing bounding boxes
-            where each box is of the format `[x, y, width, height]`.
-
+def encode(default_boxes, boxes, variance=[0.1, 0.2]):
+    """ Compute regression values
+    Args:
+        default_boxes: tensor (num_default, 4)
+                       of format (cx, cy, w, h)
+        boxes: tensor (num_default, 4)
+               of format (xmin, ymin, xmax, ymax)
+        variance: variance for center point and size
     Returns:
-        pairwise IOU matrix with shape `(N, M)`, where the value at ith row
-            jth column holds the IOU between ith box and jth box from
-            boxes1 and boxes2 respectively.
+        locs: regression values, tensor (num_default, 4)
     """
-    boxes1_corners = convert_to_corners(boxes1)
-    boxes2_corners = convert_to_corners(boxes2)
-    lu = tf.maximum(boxes1_corners[:, None, :2], boxes2_corners[:, :2])
-    rd = tf.minimum(boxes1_corners[:, None, 2:], boxes2_corners[:, 2:])
-    intersection = tf.maximum(0.0, rd - lu)
-    intersection_area = intersection[:, :, 0] * intersection[:, :, 1]
-    boxes1_area = boxes1[:, 2] * boxes1[:, 3]
-    boxes2_area = boxes2[:, 2] * boxes2[:, 3]
-    union_area = tf.maximum(
-        boxes1_area[:, None] + boxes2_area - intersection_area, 1e-8
-    )
-    return tf.clip_by_value(intersection_area / union_area, 0.0, 1.0)
+    # Convert boxes to (cx, cy, w, h) format
+    transformed_boxes = transform_corner_to_center(boxes)
+
+    locs = tf.concat([
+        (transformed_boxes[..., :2] - default_boxes[:, :2]
+         ) / (default_boxes[:, 2:] * variance[0]),
+        tf.math.log(transformed_boxes[..., 2:] / default_boxes[:, 2:]) / variance[1]],
+        axis=-1)
+
+    return locs
 
 
-class LabelEncoder:
-    """Transforms the raw labels into targets for training.
-
-    This class has operations to generate targets for a batch of samples which
-    is made up of the input images, bounding boxes for the objects present and
-    their class ids.
-
-    Attributes:
-      anchor_box: Anchor box generator to encode the bounding boxes.
-      box_variance: The scaling factors used to scale the bounding box targets.
+def decode(default_boxes, locs, variance=[0.1, 0.2]):
+    """ Decode regression values back to coordinates
+    Args:
+        default_boxes: tensor (num_default, 4)
+                       of format (cx, cy, w, h)
+        locs: tensor (batch_size, num_default, 4)
+              of format (cx, cy, w, h)
+        variance: variance for center point and size
+    Returns:
+        boxes: tensor (num_default, 4)
+               of format (xmin, ymin, xmax, ymax)
     """
+    locs = tf.concat([
+        locs[..., :2] * variance[0] *
+        default_boxes[:, 2:] + default_boxes[:, :2],
+        tf.math.exp(locs[..., 2:] * variance[1]) * default_boxes[:, 2:]], axis=-1)
 
-    def __init__(self):
-        self._anchor_box = AnchorBox()
-        self._box_variance = tf.convert_to_tensor(
-            [0.1, 0.1, 0.2, 0.2], dtype=tf.float32
-        )
+    boxes = transform_center_to_corner(locs)
 
-    def _match_anchor_boxes(
-        self, anchor_boxes, gt_boxes, match_iou=0.5, ignore_iou=0.4
-    ):
-        """Matches ground truth boxes to anchor boxes based on IOU.
+    return boxes
 
-        1. Calculates the pairwise IOU for the M `anchor_boxes` and N `gt_boxes`
-          to get a `(M, N)` shaped matrix.
-        2. The ground truth box with the maximum IOU in each row is assigned to
-          the anchor box provided the IOU is greater than `match_iou`.
-        3. If the maximum IOU in a row is less than `ignore_iou`, the anchor
-          box is assigned with the background class.
-        4. The remaining anchor boxes that do not have any class assigned are
-          ignored during training.
 
-        Arguments:
-          anchor_boxes: A float tensor with the shape `(total_anchors, 4)`
-            representing all the anchor boxes for a given input image shape,
-            where each anchor box is of the format `[x, y, width, height]`.
-          gt_boxes: A float tensor with shape `(num_objects, 4)` representing
-            the ground truth boxes, where each box is of the format
-            `[x, y, width, height]`.
-          match_iou: A float value representing the minimum IOU threshold for
-            determining if a ground truth box can be assigned to an anchor box.
-          ignore_iou: A float value representing the IOU threshold under which
-            an anchor box is assigned to the background class.
+def transform_corner_to_center(boxes):
+    """ Transform boxes of format (xmin, ymin, xmax, ymax)
+        to format (cx, cy, w, h)
+    Args:
+        boxes: tensor (num_boxes, 4)
+               of format (xmin, ymin, xmax, ymax)
+    Returns:
+        boxes: tensor (num_boxes, 4)
+               of format (cx, cy, w, h)
+    """
+    center_box = tf.concat([
+        (boxes[..., :2] + boxes[..., 2:]) / 2,
+        boxes[..., 2:] - boxes[..., :2]], axis=-1)
 
-        Returns:
-          matched_gt_idx: Index of the matched object
-          positive_mask: A mask for anchor boxes that have been assigned ground
-            truth boxes.
-          ignore_mask: A mask for anchor boxes that need to by ignored during
-            training
-        """
-        iou_matrix = compute_iou(anchor_boxes, gt_boxes)
-        max_iou = tf.reduce_max(iou_matrix, axis=1)
-        matched_gt_idx = tf.argmax(iou_matrix, axis=1)
-        positive_mask = tf.greater_equal(max_iou, match_iou)
-        negative_mask = tf.less(max_iou, ignore_iou)
-        ignore_mask = tf.logical_not(
-            tf.logical_or(positive_mask, negative_mask))
-        return (
-            matched_gt_idx,
-            tf.cast(positive_mask, dtype=tf.float32),
-            tf.cast(ignore_mask, dtype=tf.float32),
-        )
+    return center_box
 
-    def _compute_box_target(self, anchor_boxes, matched_gt_boxes):
-        """Transforms the ground truth boxes into targets for training"""
-        box_target = tf.concat(
-            [
-                (matched_gt_boxes[:, :2] -
-                 anchor_boxes[:, :2]) / anchor_boxes[:, 2:],
-                tf.math.log(matched_gt_boxes[:, 2:] / anchor_boxes[:, 2:]),
-            ],
-            axis=-1,
-        )
-        box_target = box_target / self._box_variance
-        return box_target
 
-    def _encode_sample(self, image_shape, gt_boxes, cls_ids):
-        """Creates box and classification targets for a single sample"""
-        anchor_boxes = self._anchor_box.get_anchors(
-            image_shape[1], image_shape[2])
-        cls_ids = tf.cast(cls_ids, dtype=tf.float32)
-        matched_gt_idx, positive_mask, ignore_mask = self._match_anchor_boxes(
-            anchor_boxes, gt_boxes
-        )
-        matched_gt_boxes = tf.gather(gt_boxes, matched_gt_idx)
-        box_target = self._compute_box_target(anchor_boxes, matched_gt_boxes)
-        matched_gt_cls_ids = tf.gather(cls_ids, matched_gt_idx)
-        cls_target = tf.where(
-            tf.not_equal(positive_mask, 1.0), -1.0, matched_gt_cls_ids
-        )
-        cls_target = tf.where(tf.equal(ignore_mask, 1.0), -2.0, cls_target)
-        cls_target = tf.expand_dims(cls_target, axis=-1)
-        label = tf.concat([box_target, cls_target], axis=-1)
-        return label
+def transform_center_to_corner(boxes):
+    """ Transform boxes of format (cx, cy, w, h)
+        to format (xmin, ymin, xmax, ymax)
+    Args:
+        boxes: tensor (num_boxes, 4)
+               of format (cx, cy, w, h)
+    Returns:
+        boxes: tensor (num_boxes, 4)
+               of format (xmin, ymin, xmax, ymax)
+    """
+    corner_box = tf.concat([
+        boxes[..., :2] - boxes[..., 2:] / 2,
+        boxes[..., :2] + boxes[..., 2:] / 2], axis=-1)
 
-    def encode_batch(self, batch_images, gt_boxes, cls_ids):
-        """Creates box and classification targets for a batch"""
-        images_shape = tf.shape(batch_images)
-        batch_size = images_shape[0]
+    return corner_box
 
-        labels = tf.TensorArray(
-            dtype=tf.float32, size=batch_size, dynamic_size=True)
-        for i in range(batch_size):
-            label = self._encode_sample(images_shape, gt_boxes[i], cls_ids[i])
-            labels = labels.write(i, label)
-        # TODO
-        batch_images = tf.keras.applications.resnet.preprocess_input(
-            batch_images)
-        return batch_images, labels.stack()
+
+def compute_nms(boxes, scores, nms_threshold, limit=200):
+    """ Perform Non Maximum Suppression algorithm
+        to eliminate boxes with high overlap
+    Args:
+        boxes: tensor (num_boxes, 4)
+               of format (xmin, ymin, xmax, ymax)
+        scores: tensor (num_boxes,)
+        nms_threshold: NMS threshold
+        limit: maximum number of boxes to keep
+    Returns:
+        idx: indices of kept boxes
+    """
+    if boxes.shape[0] == 0:
+        return tf.constant([], dtype=tf.int32)
+    selected = [0]
+    idx = tf.argsort(scores, direction='DESCENDING')
+    idx = idx[:limit]
+    boxes = tf.gather(boxes, idx)
+
+    iou = compute_iou(boxes, boxes)
+
+    while True:
+        row = iou[selected[-1]]
+        next_indices = row <= nms_threshold
+        # iou[:, ~next_indices] = 1.0
+        iou = tf.where(
+            tf.expand_dims(tf.math.logical_not(next_indices), 0),
+            tf.ones_like(iou, dtype=tf.float32),
+            iou)
+
+        if not tf.math.reduce_any(next_indices):
+            break
+
+        selected.append(tf.argsort(
+            tf.dtypes.cast(next_indices, tf.int32), direction='DESCENDING')[0].numpy())
+
+    return tf.gather(idx, selected)
