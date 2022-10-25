@@ -37,32 +37,12 @@ class ModelLoader:
         weights = None if self.initialize_weight else self.saved_weights_path if self.saved_weights_path is not None else 'imagenet'
         try:
             models = cfg.ObjDetConfig().get_models_by_names()
-            print(self.aarch)
-            print(self.aarch not in models)
-            print("path", tf.__path__)
-            print(tf.__version__)
             if self.aarch not in models:
                 log.ERROR(sys._getframe().f_lineno,
                           __file__, __name__, "Invalid model selected")
                 return ret_values.IXO_RET_INVALID_INPUTS
 
             model = RetinaNet(self.num_classes, self.aarch)
-            # func = globals()[self.aarch]
-            # print("function", func)
-            # print(tf.__version__)
-
-            # model = tf.keras.Sequential()
-            # if self.trainable:
-            #     model.add(func(
-            #         input_shape=self.input_shape,
-            #         weights=weights,
-            #         include_top=False,
-            #         classes=self.num_classes
-            #     ))
-            # else:
-            #     model.add(func())
-            # model.add(tf.keras.layers.Flatten())
-            # model.add(tf.keras.layers.Dense(4))
         except Exception as e:
             print(e)
             log.ERROR(sys._getframe().f_lineno,
@@ -70,7 +50,6 @@ class ModelLoader:
             return ret_values.IXO_RET_INVALID_INPUTS
 
         self.model = model
-        # self.model.build((None,) + self.input_shape)
         return ret_values.IXO_RET_SUCCESS, self.model
 
     def load_model_from_url(self, url, model_dir=None):

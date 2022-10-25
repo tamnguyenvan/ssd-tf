@@ -33,8 +33,7 @@ def _float_list_feature(value):
 def build_example(image_dir, image_info):
 
     image_path = os.path.join(image_dir, image_info['filename'])
-    with tf.io.gfile.GFile(image_path, 'rb') as f:
-        image = f.read()
+    image = open(image_path, 'rb').read()
 
     ext = image_info['filename'].split('.')[-1]
     if ext.lower() in ('jpg', 'jpeg'):

@@ -13,7 +13,7 @@ log = Log()
 class DataLoader:
     def __init__(self,
                  batch_size=1,
-                 img_size=(600, 600, 3),
+                 img_size=(300, 300),
                  label_encoder=None,
                  train_test_val_split=(0.7, 0.2, 0.1)):
         self.batch_size = batch_size
@@ -23,26 +23,6 @@ class DataLoader:
         self.train_dataset = None
         self.validation_dataset = None
         self.test_dataset = None
-
-    def resize_and_pad_image(
-        self, image, min_side=800.0, max_side=1333.0, jitter=[640, 1024], stride=128.0
-    ):
-        image_shape = tf.cast(tf.shape(image)[:2], dtype=tf.float32)
-        if jitter is not None:
-            min_side = tf.random.uniform(
-                (), jitter[0], jitter[1], dtype=tf.float32)
-        ratio = min_side / tf.reduce_min(image_shape)
-        if ratio * tf.reduce_max(image_shape) > max_side:
-            ratio = max_side / tf.reduce_max(image_shape)
-        image_shape = ratio * image_shape
-        image = tf.image.resize(image, tf.cast(image_shape, dtype=tf.int32))
-        padded_image_shape = tf.cast(
-            tf.math.ceil(image_shape / stride) * stride, dtype=tf.int32
-        )
-        image = tf.image.pad_to_bounding_box(
-            image, 0, 0, padded_image_shape[0], padded_image_shape[1]
-        )
-        return image, image_shape, ratio
 
     def _parse_tf_example(self, tf_example):
         """_summary_
@@ -64,11 +44,11 @@ class DataLoader:
             'image/object/class/label': tf.io.VarLenFeature(tf.int64),
         }
         parsed_example = tf.io.parse_single_example(tf_example, example_fmt)
-        image = tf.image.decode_image(
-            parsed_example['image/encoded'], channels=3)
+        image = tf.image.decode_jpeg(parsed_example['image/encoded'])
         image_height = parsed_example['image/height']
         image_width = parsed_example['image/width']
         image = tf.reshape(image, (image_height, image_width, 3))
+        image = tf.image.resize(image, self.img_size)
 
         xmins = tf.sparse.to_dense(parsed_example['image/object/bbox/xmin'])
         xmaxs = tf.sparse.to_dense(parsed_example['image/object/bbox/xmax'])
@@ -77,16 +57,12 @@ class DataLoader:
         classes = tf.cast(tf.sparse.to_dense(
             parsed_example['image/object/class/label']), tf.int32)
 
-        image, image_shape, _ = self.resize_and_pad_image(
-            image
-        )
-
         bboxes = tf.stack([
-            xmins * image_shape[1],
-            ymins * image_shape[0],
-            (xmaxs - xmins) * image_shape[1],
-            (ymaxs - ymins) * image_shape[0]
-        ])
+            xmins * self.img_size[1],
+            ymins * self.img_size[0],
+            (xmaxs - xmins) * self.img_size[1],
+            (ymaxs - ymins) * self.img_size[0]
+        ], 1)
         return image, bboxes, classes
 
     def load_data_from_directory(self, path, augment=False,
@@ -105,9 +81,9 @@ class DataLoader:
         train_dataset = train_dataset.padded_batch(
             batch_size=self.batch_size, padding_values=(0.0, 1e-8, -1), drop_remainder=True
         )
-        train_dataset = train_dataset.map(
-            self.label_encoder.encode_batch, num_parallel_calls=autotune
-        )
+        # train_dataset = train_dataset.map(
+        #     self.label_encoder.encode_batch, num_parallel_calls=autotune
+        # )
         train_dataset = train_dataset.apply(
             tf.data.experimental.ignore_errors())
         self.train_dataset = train_dataset.prefetch(autotune)
@@ -122,9 +98,9 @@ class DataLoader:
         validation_dataset = validation_dataset.padded_batch(
             batch_size=self.batch_size, padding_values=(0.0, 1e-8, -1), drop_remainder=True
         )
-        validation_dataset = validation_dataset.map(
-            self.label_encoder.encode_batch, num_parallel_calls=autotune
-        )
+        # validation_dataset = validation_dataset.map(
+        #     self.label_encoder.encode_batch, num_parallel_calls=autotune
+        # )
         validation_dataset = validation_dataset.apply(
             tf.data.experimental.ignore_errors())
         self.validation_dataset = validation_dataset.prefetch(autotune)
@@ -139,9 +115,9 @@ class DataLoader:
         test_dataset = test_dataset.padded_batch(
             batch_size=self.batch_size, padding_values=(0.0, 1e-8, -1), drop_remainder=True
         )
-        test_dataset = test_dataset.map(
-            self.label_encoder.encode_batch, num_parallel_calls=autotune
-        )
+        # test_dataset = test_dataset.map(
+        #     self.label_encoder.encode_batch, num_parallel_calls=autotune
+        # )
         test_dataset = test_dataset.apply(
             tf.data.experimental.ignore_errors())
         self.test_dataset = test_dataset.prefetch(autotune)
