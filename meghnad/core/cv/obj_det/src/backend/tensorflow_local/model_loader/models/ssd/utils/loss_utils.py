@@ -1,81 +1,85 @@
 import tensorflow as tf
 
 
-class RetinaNetBoxLoss(tf.losses.Loss):
-    """Implements Smooth L1 loss"""
+def hard_negative_mining(loss, gt_confs, neg_ratio):
+    """ Hard negative mining algorithm
+        to pick up negative examples for back-propagation
+        base on classification loss values
+    Args:
+        loss: list of classification losses of all default boxes (B, num_default)
+        gt_confs: classification targets (B, num_default)
+        neg_ratio: negative / positive ratio
+    Returns:
+        conf_loss: classification loss
+        loc_loss: regression loss
+    """
+    # loss: B x N
+    # gt_confs: B x N
+    pos_idx = gt_confs > 0
+    num_pos = tf.reduce_sum(tf.dtypes.cast(pos_idx, tf.int32), axis=1)
+    num_neg = num_pos * neg_ratio
 
-    def __init__(self, delta):
-        super(RetinaNetBoxLoss, self).__init__(
-            reduction="none", name="RetinaNetBoxLoss"
-        )
-        self._delta = delta
+    rank = tf.argsort(loss, axis=1, direction='DESCENDING')
+    rank = tf.argsort(rank, axis=1)
+    neg_idx = rank < tf.expand_dims(num_neg, 1)
 
-    def call(self, y_true, y_pred):
-        difference = y_true - y_pred
-        absolute_difference = tf.abs(difference)
-        squared_difference = difference ** 2
-        loss = tf.where(
-            tf.less(absolute_difference, self._delta),
-            0.5 * squared_difference,
-            absolute_difference - 0.5,
-        )
-        return tf.reduce_sum(loss, axis=-1)
-
-
-class RetinaNetClassificationLoss(tf.losses.Loss):
-    """Implements Focal loss"""
-
-    def __init__(self, alpha, gamma):
-        super(RetinaNetClassificationLoss, self).__init__(
-            reduction="none", name="RetinaNetClassificationLoss"
-        )
-        self._alpha = alpha
-        self._gamma = gamma
-
-    def call(self, y_true, y_pred):
-        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=y_true, logits=y_pred
-        )
-        probs = tf.nn.sigmoid(y_pred)
-        alpha = tf.where(tf.equal(y_true, 1.0),
-                         self._alpha, (1.0 - self._alpha))
-        pt = tf.where(tf.equal(y_true, 1.0), probs, 1 - probs)
-        loss = alpha * tf.pow(1.0 - pt, self._gamma) * cross_entropy
-        return tf.reduce_sum(loss, axis=-1)
+    return pos_idx, neg_idx
 
 
-class RetinaNetLoss(tf.losses.Loss):
-    """Wrapper to combine both the losses"""
+class SSDLoss(object):
+    """ Class for SSD Losses
+    Attributes:
+        neg_ratio: negative / positive ratio
+        num_classes: number of classes
+    """
 
-    def __init__(self, num_classes=80, alpha=0.25, gamma=2.0, delta=1.0):
-        super(RetinaNetLoss, self).__init__(
-            reduction="auto", name="RetinaNetLoss")
-        self._clf_loss = RetinaNetClassificationLoss(alpha, gamma)
-        self._box_loss = RetinaNetBoxLoss(delta)
-        self._num_classes = num_classes
+    def __init__(self, neg_ratio, num_classes):
+        self.neg_ratio = neg_ratio
+        self.num_classes = num_classes
 
-    def call(self, y_true, y_pred):
-        y_pred = tf.cast(y_pred, dtype=tf.float32)
-        box_labels = y_true[:, :, :4]
-        box_predictions = y_pred[:, :, :4]
-        cls_labels = tf.one_hot(
-            tf.cast(y_true[:, :, 4], dtype=tf.int32),
-            depth=self._num_classes,
-            dtype=tf.float32,
-        )
-        cls_predictions = y_pred[:, :, 4:]
-        positive_mask = tf.cast(tf.greater(
-            y_true[:, :, 4], -1.0), dtype=tf.float32)
-        ignore_mask = tf.cast(
-            tf.equal(y_true[:, :, 4], -2.0), dtype=tf.float32)
-        clf_loss = self._clf_loss(cls_labels, cls_predictions)
-        box_loss = self._box_loss(box_labels, box_predictions)
-        clf_loss = tf.where(tf.equal(ignore_mask, 1.0), 0.0, clf_loss)
-        box_loss = tf.where(tf.equal(positive_mask, 1.0), box_loss, 0.0)
-        normalizer = tf.reduce_sum(positive_mask, axis=-1)
-        clf_loss = tf.math.divide_no_nan(
-            tf.reduce_sum(clf_loss, axis=-1), normalizer)
-        box_loss = tf.math.divide_no_nan(
-            tf.reduce_sum(box_loss, axis=-1), normalizer)
-        loss = clf_loss + box_loss
-        return loss
+    def __call__(self, confs, locs, gt_confs, gt_locs):
+        """ Compute losses for SSD
+            regression loss: smooth L1
+            classification loss: cross entropy
+        Args:
+            confs: outputs of classification heads (B, num_default, num_classes)
+            locs: outputs of regression heads (B, num_default, 4)
+            gt_confs: classification targets (B, num_default)
+            gt_locs: regression targets (B, num_default, 4)
+        Returns:
+            conf_loss: classification loss
+            loc_loss: regression loss
+        """
+        cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(
+            from_logits=True, reduction='none')
+
+        # compute classification losses
+        # without reduction
+        temp_loss = cross_entropy(
+            gt_confs, confs)
+        pos_idx, neg_idx = hard_negative_mining(
+            temp_loss, gt_confs, self.neg_ratio)
+
+        # classification loss will consist of positive and negative examples
+
+        cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(
+            from_logits=True, reduction='sum')
+        smooth_l1_loss = tf.keras.losses.Huber(reduction='sum')
+
+        conf_loss = cross_entropy(
+            gt_confs[tf.math.logical_or(pos_idx, neg_idx)],
+            confs[tf.math.logical_or(pos_idx, neg_idx)])
+
+        # regression loss only consist of positive examples
+        loc_loss = smooth_l1_loss(
+            # tf.boolean_mask(gt_locs, pos_idx),
+            # tf.boolean_mask(locs, pos_idx))
+            gt_locs[pos_idx],
+            locs[pos_idx])
+
+        num_pos = tf.reduce_sum(tf.dtypes.cast(pos_idx, tf.float32))
+
+        conf_loss = conf_loss / num_pos
+        loc_loss = loc_loss / num_pos
+
+        return conf_loss, loc_loss
