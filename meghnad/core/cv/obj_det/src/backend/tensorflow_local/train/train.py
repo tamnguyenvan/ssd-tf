@@ -100,7 +100,6 @@ class ModelTrainer:
         val_log_dir = os.path.join(self.log_dir, 'val')
         train_summary_writer = tf.summary.create_file_writer(train_log_dir)
         val_summary_writer = tf.summary.create_file_writer(val_log_dir)
-
         for epoch in range(epochs):
             avg_loss = 0.0
             avg_conf_loss = 0.0
