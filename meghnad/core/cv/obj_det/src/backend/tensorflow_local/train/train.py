@@ -174,6 +174,8 @@ class ModelTrainer:
 
             if (epoch + 1) % self.save_checkpoint_every == 0:
                 model_name = self.model_loader.aarch
+                if not os.path.isdir(self.checkpoint_dir):
+                    os.makedirs(self.checkpoint_dir, exist_ok=True)
                 self.model.save_weights(
                     os.path.join(self.checkpoint_dir, f'{model_name}_ssd_epoch_{epoch + 1}.h5'))
 
