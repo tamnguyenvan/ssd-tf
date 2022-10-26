@@ -46,6 +46,8 @@ class ModelLoader:
             model_config = config.get_model_cfg()
             model = ssd(self.aarch, self.input_shape,
                         self.num_classes, model_config['num_anchors'])
+            if weights is not None:
+                model.load_weights(weights)
         except Exception as e:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, e)

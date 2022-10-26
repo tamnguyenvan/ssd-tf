@@ -178,7 +178,7 @@ def test_case9(path):
         train_dataset=d_loader.train_dataset,
         validation_dataset=d_loader.validation_dataset,
         test_dataset=d_loader.test_dataset,
-        model=m_loader.model,
+        model_loader=m_loader,
         learning_rate=1e-4,
         loss=SSDLoss(model_config['neg_ratio'], model_config['num_classes'])
     )

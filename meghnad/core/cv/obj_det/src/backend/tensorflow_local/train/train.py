@@ -50,19 +50,22 @@ class ModelTrainer:
                  train_dataset=None,
                  validation_dataset=None,
                  test_dataset=None,
-                 model=None,
+                 model_loader=None,
                  loss='mae',
                  metrics=["accuracy"],
                  learning_rate=0.001,
                  optimizer="Adam",
                  weight_decay=1e-4,
                  store_tensorboard_logs=True,
-                 log_dir=None,
+                 log_dir='training_logs',
+                 checkpoint_dir='checkpoints',
+                 save_checkpoint_every=5,
                  prediction_postprocessing=None):
         self.train_dataset = train_dataset
         self.validation_dataset = validation_dataset
         self.test_dataset = test_dataset
-        self.model = model
+        self.model_loader = model_loader
+        self.model = model_loader.model
         self.learning_rate = learning_rate
         self.optimizer = get_optimizer(optimizer, learning_rate=learning_rate)
         self.weight_decay = weight_decay
@@ -71,7 +74,9 @@ class ModelTrainer:
         self.total_epochs_ran = 0
         self.prediction_postprocessing = prediction_postprocessing
         self.tensorboard_callback = None
-        self.log_dir = log_dir if log_dir else 'training_logs'
+        self.log_dir = log_dir
+        self.checkpoint_dir = checkpoint_dir
+        self.save_checkpoint_every = save_checkpoint_every
         if store_tensorboard_logs:
             self.tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir,
                                                                        histogram_freq=1)
@@ -167,9 +172,10 @@ class ModelTrainer:
                 tf.summary.scalar('conf_loss', avg_val_conf_loss, step=epoch)
                 tf.summary.scalar('loc_loss', avg_val_loc_loss, step=epoch)
 
-            if (epoch + 1) % 5 == 0:
+            if (epoch + 1) % self.save_checkpoint_every == 0:
+                model_name = self.model_loader.aarch
                 self.model.save_weights(
-                    os.path.join(self.log_dir, 'ssd_epoch_{}.h5'.format(epoch + 1)))
+                    os.path.join(self.checkpoint_dir, f'{model_name}_ssd_epoch_{epoch + 1}.h5'))
 
             self.total_epochs_ran += 1
         # self.total_epochs_ran += self.history.epoch[-1]
