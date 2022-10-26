@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/tamnv/Projects/upwork/ixolerator/')
+
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.data_loader.data_loader import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.model_loader import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.train import *
@@ -123,6 +123,10 @@ def test_case9(path):
     config = cfg.ObjDetConfig()
     model_config = config.get_model_cfg()
     model_params = config.get_model_params()
+    print('Model config')
+    print(model_config)
+    print('Model params')
+    print(model_params)
 
     # label_encoder = LabelEncoder()
     img_size = model_config['input_shape'][:2]
@@ -175,14 +179,15 @@ def test_case9(path):
         validation_dataset=d_loader.validation_dataset,
         test_dataset=d_loader.test_dataset,
         model=m_loader.model,
+        learning_rate=1e-4,
         loss=SSDLoss(model_config['neg_ratio'], model_config['num_classes'])
     )
     trainer.compile_model()
-    ret = trainer.train(epochs=2)
+    ret = trainer.train(epochs=200)
 
 
 def _perform_tests():
-    path = '/home/tamnv/Downloads/dataset-Dog-Cat'
+    path = '/content/ixolerator/dataset-Dog-Cat'
     test_case9(path)
 
 

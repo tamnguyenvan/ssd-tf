@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Input
 from tensorflow.keras import Model
 from .common import get_backbone, create_extra_layers, create_heads
 

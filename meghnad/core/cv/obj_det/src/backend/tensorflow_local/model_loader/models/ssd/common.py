@@ -3,7 +3,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D
 
 
-def get_backbone(name, image_size=300):
+def get_backbone(name, image_size=(300, 300)):
     if name == 'MobileNetV2':
         return [
             tf.keras.applications.MobileNetV2(

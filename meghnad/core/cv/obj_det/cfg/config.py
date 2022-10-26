@@ -58,7 +58,7 @@ _obj_det_cfg = {
         'loss': 'mean_absolute_error',
         'metrics': ['accuracy'],
         'cv': 5,
-        'batch_size': 1,
+        'batch_size': 32,
         'optimizer': 'adam',
         'learning_rate': 0.001,
     },

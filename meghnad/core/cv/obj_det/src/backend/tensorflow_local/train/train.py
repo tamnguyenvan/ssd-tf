@@ -30,6 +30,21 @@ def train_step(imgs, gt_confs, gt_locs, model, criterion, optimizer, weight_deca
     return loss, conf_loss, loc_loss, l2_loss
 
 
+@tf.function
+def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
+    confs, locs = model(imgs, training=False)
+
+    conf_loss, loc_loss = criterion(
+        confs, locs, gt_confs, gt_locs)
+
+    loss = conf_loss + loc_loss
+    l2_loss = [tf.nn.l2_loss(t) for t in model.trainable_variables]
+    l2_loss = weight_decay * tf.math.reduce_sum(l2_loss)
+    loss += l2_loss
+
+    return loss, conf_loss, loc_loss, l2_loss
+
+
 class ModelTrainer:
     def __init__(self,
                  train_dataset=None,
@@ -40,7 +55,7 @@ class ModelTrainer:
                  metrics=["accuracy"],
                  learning_rate=0.001,
                  optimizer="Adam",
-                 weight_decay=5e-4,
+                 weight_decay=1e-4,
                  store_tensorboard_logs=True,
                  log_dir=None,
                  prediction_postprocessing=None):
@@ -126,17 +141,17 @@ class ModelTrainer:
             avg_val_loc_loss = 0.0
             avg_val_l2_loss = 0.0
             for i, (imgs, gt_confs, gt_locs) in enumerate(self.validation_dataset):
-                val_confs, val_locs = self.model(imgs)
-                val_conf_loss, val_loc_loss = self.loss(
-                    val_confs, val_locs, gt_confs, gt_locs)
-                val_loss = val_conf_loss + val_loc_loss
+                val_loss, val_conf_loss, val_loc_loss, val_l2_loss = test_step(
+                    imgs, gt_confs, gt_locs,
+                    self.model, self.loss, self.weight_decay
+                )
                 avg_val_loss = (avg_val_loss * i + val_loss.numpy()) / (i + 1)
                 avg_val_conf_loss = (avg_val_conf_loss *
                                      i + val_conf_loss.numpy()) / (i + 1)
                 avg_val_loc_loss = (avg_val_loc_loss * i +
                                     val_loc_loss.numpy()) / (i + 1)
                 avg_val_l2_loss = (avg_val_l2_loss * i +
-                                   avg_val_l2_loss.numpy()) / (i + 1)
+                                   val_l2_loss.numpy()) / (i + 1)
             print(
                 f'Epoch {epoch + 1} | Val_Loss: {avg_val_loss:.4f} '
                 f'Val_Conf: {avg_val_conf_loss:.4f} '
@@ -152,7 +167,7 @@ class ModelTrainer:
                 tf.summary.scalar('conf_loss', avg_val_conf_loss, step=epoch)
                 tf.summary.scalar('loc_loss', avg_val_loc_loss, step=epoch)
 
-            if (epoch + 1) % 1 == 0:
+            if (epoch + 1) % 5 == 0:
                 self.model.save_weights(
                     os.path.join(self.log_dir, 'ssd_epoch_{}.h5'.format(epoch + 1)))
 
