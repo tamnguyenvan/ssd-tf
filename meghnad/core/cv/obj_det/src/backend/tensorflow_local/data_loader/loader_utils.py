@@ -48,6 +48,7 @@ def build_example(image_dir, image_info):
     ymaxs = bboxes[..., 3].tolist()
     class_names = [name.encode('utf-8') for name in image_info['class_names']]
     tf_example = tf.train.Example(features=tf.train.Features(feature={
+        'image/id': _int64_feature(image_info['id']),
         'image/height': _int64_feature(image_info['height']),
         'image/width': _int64_feature(image_info['width']),
         'image/filename': _bytes_feature(image_info['filename'].encode('utf-8')),
@@ -92,6 +93,7 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
                 image_height = info['height']
                 image_width = info['width']
                 data[image_id] = {
+                    'id': image_id,
                     'filename': info['file_name'],
                     'height': image_height,
                     'width': image_width,

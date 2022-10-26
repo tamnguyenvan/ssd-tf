@@ -30,7 +30,7 @@ class DataLoader:
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
 
-    def _parse_tf_example(self, tf_example):
+    def _parse_tf_example(self, tf_example, training=True):
         """_summary_
 
         Parameters
@@ -39,6 +39,7 @@ class DataLoader:
             _description_
         """
         example_fmt = {
+            'image/id': tf.io.FixedLenFeature([], tf.int64),
             'image/height': tf.io.FixedLenFeature([], tf.int64),
             'image/width': tf.io.FixedLenFeature([], tf.int64),
             'image/encoded': tf.io.FixedLenFeature([], tf.string),
@@ -50,9 +51,10 @@ class DataLoader:
             'image/object/class/label': tf.io.VarLenFeature(tf.int64),
         }
         parsed_example = tf.io.parse_single_example(tf_example, example_fmt)
+        image_id = tf.cast(parsed_example['image/id'], tf.int32)
         image = tf.image.decode_jpeg(parsed_example['image/encoded'])
-        image_height = parsed_example['image/height']
-        image_width = parsed_example['image/width']
+        image_height = tf.cast(parsed_example['image/height'], tf.int32)
+        image_width = tf.cast(parsed_example['image/width'], tf.int32)
         image = tf.reshape(image, (image_height, image_width, 3))
         image = tf.cast(tf.image.resize(image, self.img_size), tf.float32)
         image /= 255.0
@@ -77,7 +79,10 @@ class DataLoader:
         labels = tf.reshape(labels, [self.max_boxes])
         gt_confs, gt_locs = compute_target(
             self.default_boxes, bboxes, labels)
-        return image, gt_confs, gt_locs
+        if training:
+            return image, gt_confs, gt_locs
+        else:
+            return image_id, tf.stack([image_height, image_width]), image, gt_confs, gt_locs
 
     def load_data_from_directory(self, path, augment=False,
                                  rescale=True, rand_flip=False, rotate=False):
@@ -88,9 +93,9 @@ class DataLoader:
         train_dataset = self.read_data(self.connector['trn_data_path'],
                                        self.connector['trn_file_path'],
                                        dataset='train')
-        # train_dataset = train_dataset.shuffle(8 * self.batch_size)
+        train_dataset = train_dataset.shuffle(8 * self.batch_size)
         train_dataset = train_dataset.map(
-            self._parse_tf_example, num_parallel_calls=autotune,
+            lambda x: self._parse_tf_example(x, True), num_parallel_calls=autotune,
         )
         train_dataset = train_dataset.padded_batch(
             batch_size=self.batch_size, padding_values=(0.0, 0, 0.0), drop_remainder=True
@@ -107,10 +112,10 @@ class DataLoader:
                                             self.connector['val_file_path'],
                                             dataset='val')
         validation_dataset = validation_dataset.map(
-            self._parse_tf_example, num_parallel_calls=autotune,
+            lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
         validation_dataset = validation_dataset.padded_batch(
-            batch_size=self.batch_size, padding_values=(0.0, 0, 0.0), drop_remainder=True
+            batch_size=self.batch_size, padding_values=(0, 0, 0.0, 0, 0.0), drop_remainder=True
         )
         # validation_dataset = validation_dataset.map(
         #     self.label_encoder.encode_batch, num_parallel_calls=autotune
@@ -124,10 +129,10 @@ class DataLoader:
                                       self.connector['test_file_path'],
                                       dataset='test')
         test_dataset = test_dataset.map(
-            self._parse_tf_example, num_parallel_calls=autotune,
+            lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
         test_dataset = test_dataset.padded_batch(
-            batch_size=self.batch_size, padding_values=(0.0, 0, 0.0), drop_remainder=True
+            batch_size=self.batch_size, padding_values=(0, 0, 0.0, 0, 0.0), drop_remainder=True
         )
         # test_dataset = test_dataset.map(
         #     self.label_encoder.encode_batch, num_parallel_calls=autotune

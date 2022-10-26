@@ -3,6 +3,7 @@ import os
 import sys
 
 import tensorflow as tf
+from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.eval import ModelEvaluator
 from utils import ret_values
 from utils.log import Log
 from .train_utils import get_optimizer
@@ -47,12 +48,11 @@ def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
 
 class ModelTrainer:
     def __init__(self,
-                 train_dataset=None,
-                 validation_dataset=None,
-                 test_dataset=None,
-                 model_loader=None,
-                 loss='mae',
-                 metrics=["accuracy"],
+                 data_loader,
+                 model_loader,
+                 model_config,
+                 loss,
+                 metrics=["map"],
                  learning_rate=0.001,
                  optimizer="Adam",
                  weight_decay=1e-4,
@@ -61,9 +61,10 @@ class ModelTrainer:
                  checkpoint_dir='checkpoints',
                  save_checkpoint_every=5,
                  prediction_postprocessing=None):
-        self.train_dataset = train_dataset
-        self.validation_dataset = validation_dataset
-        self.test_dataset = test_dataset
+        self.train_dataset = data_loader.train_dataset
+        self.validation_dataset = data_loader.validation_dataset
+        self.test_dataset = data_loader.test_dataset
+        self.evaluator = ModelEvaluator(model_loader, model_config, data_loader, phase='validation')
         self.model_loader = model_loader
         self.model = model_loader.model
         self.learning_rate = learning_rate
@@ -81,6 +82,7 @@ class ModelTrainer:
             self.tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir,
                                                                        histogram_freq=1)
         self.history = None
+        self.best_path = ''
 
     def compile_model(self):
         self.model.compile(optimizer=self.optimizer,
@@ -115,11 +117,15 @@ class ModelTrainer:
         #                               epochs=epochs + self.total_epochs_ran,
         #                               initial_epoch=self.total_epochs_ran,
         #                               verbose=2)
+        if not os.path.isdir(self.checkpoint_dir):
+            os.makedirs(self.checkpoint_dir, exist_ok=True)
+        model_name = self.model_loader.aarch
 
         train_log_dir = os.path.join(self.log_dir, 'train')
         val_log_dir = os.path.join(self.log_dir, 'val')
         train_summary_writer = tf.summary.create_file_writer(train_log_dir)
         val_summary_writer = tf.summary.create_file_writer(val_log_dir)
+        best_map = 0
         for epoch in range(epochs):
             avg_loss = 0.0
             avg_conf_loss = 0.0
@@ -139,28 +145,31 @@ class ModelTrainer:
                 if (i + 1) % 1 == 0:
                     print('Epoch: {} Batch {} Time: {:.2}s | Loss: {:.4f} Conf: {:.4f} Loc: {:.4f} L2 Loss {:.4f}'.format(
                         epoch + 1, i + 1, time.time() - start, avg_loss, avg_conf_loss, avg_loc_loss, avg_l2_loss))
+                break
 
-            print(f'End epoch {epoch + 1}. Validating...')
-            avg_val_loss = 0.0
-            avg_val_conf_loss = 0.0
-            avg_val_loc_loss = 0.0
-            avg_val_l2_loss = 0.0
-            for i, (imgs, gt_confs, gt_locs) in enumerate(self.validation_dataset):
-                val_loss, val_conf_loss, val_loc_loss, val_l2_loss = test_step(
-                    imgs, gt_confs, gt_locs,
-                    self.model, self.loss, self.weight_decay
-                )
-                avg_val_loss = (avg_val_loss * i + val_loss.numpy()) / (i + 1)
-                avg_val_conf_loss = (avg_val_conf_loss *
-                                     i + val_conf_loss.numpy()) / (i + 1)
-                avg_val_loc_loss = (avg_val_loc_loss * i +
-                                    val_loc_loss.numpy()) / (i + 1)
-                avg_val_l2_loss = (avg_val_l2_loss * i +
-                                   val_l2_loss.numpy()) / (i + 1)
-            print(
-                f'Epoch {epoch + 1} | Val_Loss: {avg_val_loss:.4f} '
-                f'Val_Conf: {avg_val_conf_loss:.4f} '
-                f'Val_Loc: {avg_val_loc_loss:.4f} Val_L2_Loss: {avg_val_l2_loss:.4f}')
+            print('Evaluating...')
+            map, map50 = self.evaluator.eval()
+            # print(f'End epoch {epoch + 1}. Validating...')
+            # avg_val_loss = 0.0
+            # avg_val_conf_loss = 0.0
+            # avg_val_loc_loss = 0.0
+            # avg_val_l2_loss = 0.0
+            # for i, (imgs, gt_confs, gt_locs) in enumerate(self.validation_dataset):
+            #     val_loss, val_conf_loss, val_loc_loss, val_l2_loss = test_step(
+            #         imgs, gt_confs, gt_locs,
+            #         self.model, self.loss, self.weight_decay
+            #     )
+            #     avg_val_loss = (avg_val_loss * i + val_loss.numpy()) / (i + 1)
+            #     avg_val_conf_loss = (avg_val_conf_loss *
+            #                          i + val_conf_loss.numpy()) / (i + 1)
+            #     avg_val_loc_loss = (avg_val_loc_loss * i +
+            #                         val_loc_loss.numpy()) / (i + 1)
+            #     avg_val_l2_loss = (avg_val_l2_loss * i +
+            #                        val_l2_loss.numpy()) / (i + 1)
+            # print(
+            #     f'Epoch {epoch + 1} | Val_Loss: {avg_val_loss:.4f} '
+            #     f'Val_Conf: {avg_val_conf_loss:.4f} '
+            #     f'Val_Loc: {avg_val_loc_loss:.4f} Val_L2_Loss: {avg_val_l2_loss:.4f}')
 
             with train_summary_writer.as_default():
                 tf.summary.scalar('loss', avg_loss, step=epoch)
@@ -168,17 +177,26 @@ class ModelTrainer:
                 tf.summary.scalar('loc_loss', avg_loc_loss, step=epoch)
 
             with val_summary_writer.as_default():
-                tf.summary.scalar('loss', avg_val_loss, step=epoch)
-                tf.summary.scalar('conf_loss', avg_val_conf_loss, step=epoch)
-                tf.summary.scalar('loc_loss', avg_val_loc_loss, step=epoch)
+                # tf.summary.scalar('loss', avg_val_loss, step=epoch)
+                # tf.summary.scalar('conf_loss', avg_val_conf_loss, step=epoch)
+                # tf.summary.scalar('loc_loss', avg_val_loc_loss, step=epoch)
+                tf.summary.scalar('mAP', map, step=epoch)
 
-            if (epoch + 1) % self.save_checkpoint_every == 0:
-                model_name = self.model_loader.aarch
-                if not os.path.isdir(self.checkpoint_dir):
-                    os.makedirs(self.checkpoint_dir, exist_ok=True)
-                self.model.save_weights(
-                    os.path.join(self.checkpoint_dir, f'{model_name}_ssd_epoch_{epoch + 1}.h5'))
+            # if (epoch + 1) % self.save_checkpoint_every == 0:
+
+            # Save the last model
+            self.model.save_weights(
+                os.path.join(self.checkpoint_dir, f'{model_name}_ssd_last.h5'))
+
+            # Save the best
+            if map > best_map:
+                best_map = map
+                self.best_path = os.path.join(self.checkpoint_dir, f'{model_name}_ssd_best.h5')
+                self.model.save_weights(self.best_path)
 
             self.total_epochs_ran += 1
         # self.total_epochs_ran += self.history.epoch[-1]
         return ret_values.IXO_RET_SUCCESS
+
+    def get_best_model(self):
+        return self.best_path

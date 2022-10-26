@@ -1,4 +1,10 @@
 import sys
+sys.path.append('/home/tamnv/Projects/upwork/ixolerator')
+import tensorflow as tf
+
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    tf.config.set_visible_devices(gpus, 'GPU')
 
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.data_loader.data_loader import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.model_loader import *
@@ -141,8 +147,8 @@ def test_case9(path):
     d_loader.load_data_from_directory(
         path=path, augment=False, rescale=False, rand_flip=False, rotate=False
     )
-    for images, bboxes, labels in d_loader.train_dataset.take(1):
-        break
+    # for images, bboxes, labels in d_loader.train_dataset.take(1):
+    #     break
     # from matplotlib import pyplot as plt
     # import cv2
     # img = images[0] * 255
@@ -175,19 +181,60 @@ def test_case9(path):
     )
     m_loader.load_model()
     trainer = ModelTrainer(
-        train_dataset=d_loader.train_dataset,
-        validation_dataset=d_loader.validation_dataset,
-        test_dataset=d_loader.test_dataset,
+        data_loader=d_loader,
         model_loader=m_loader,
+        model_config=model_config,
         learning_rate=1e-4,
         loss=SSDLoss(model_config['neg_ratio'], model_config['num_classes'])
     )
     trainer.compile_model()
-    ret = trainer.train(epochs=200)
+    trainer.train(epochs=20)
+
+    best_checkpoint_path = trainer.get_best_model()
+    evaluator = ModelEvaluator(
+        m_loader,
+        model_config,
+        d_loader,
+        weights=best_checkpoint_path,
+        phase='validation'
+    )
+    evaluator.eval()
+
+
+def test_case10(path):
+    config = cfg.ObjDetConfig()
+    model_config = config.get_model_cfg()
+    model_params = config.get_model_params()
+    print('Model config')
+    print(model_config)
+    print('Model params')
+    print(model_params)
+
+    # label_encoder = LabelEncoder()
+    img_size = model_config['input_shape'][:2]
+    print('image size', img_size)
+    d_loader = DataLoader(
+        batch_size=model_params['batch_size'],
+        img_size=img_size,
+        scales=model_config['scales'],
+        feature_map_sizes=model_config['feature_map_sizes'],
+        aspect_ratios=model_config['aspect_ratios']
+    )
+    d_loader.load_data_from_directory(
+        path=path, augment=False, rescale=False, rand_flip=False, rotate=False
+    )
+    m_loader = ModelLoader(
+        aarch=model_config['model'],
+        num_classes=model_config['num_classes'],
+        input_shape=model_config['input_shape'],
+        initialize_weight='',
+    )
+    evaluator = ModelEvaluator(m_loader, d_loader.test_dataset)
+
 
 
 def _perform_tests():
-    path = '/content/ixolerator/dataset-Dog-Cat'
+    path = '/home/tamnv/Downloads/dataset-Dog-Cat'
     test_case9(path)
 
 
