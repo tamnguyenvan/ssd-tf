@@ -34,7 +34,6 @@ class ModelLoader:
         self.saved_model_path = saved_model_path
 
     def load_model(self):
-        weights = None if self.initialize_weight else self.saved_weights_path if self.saved_weights_path is not None else 'imagenet'
         try:
             config = cfg.ObjDetConfig()
             models = config.get_models_by_names()
@@ -46,8 +45,8 @@ class ModelLoader:
             model_config = config.get_model_cfg()
             model = ssd(self.aarch, self.input_shape,
                         self.num_classes, model_config['num_anchors'])
-            if weights is not None:
-                model.load_weights(weights)
+            if self.initialize_weight:
+                model.load_weights(self.initialize_weight)
         except Exception as e:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, e)
