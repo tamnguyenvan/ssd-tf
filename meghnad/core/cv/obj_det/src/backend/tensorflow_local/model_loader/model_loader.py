@@ -18,7 +18,7 @@ class ModelLoader:
                  aarch,
                  num_classes,
                  saved_weights_path=None,
-                 initialize_weight=False,
+                 weights=False,
                  input_shape=(320, 320, 3),
                  trainable=False,
                  pooling_type=None,
@@ -26,7 +26,7 @@ class ModelLoader:
         self.aarch = aarch
         self.model = None
         self.saved_weights_path = saved_weights_path
-        self.initialize_weight = initialize_weight
+        self.weights = weights
         self.input_shape = input_shape
         self.trainable = trainable
         self.pooling_type = pooling_type
@@ -45,8 +45,8 @@ class ModelLoader:
             model_config = config.get_model_cfg()
             model = ssd(self.aarch, self.input_shape,
                         self.num_classes, model_config['num_anchors'])
-            if self.initialize_weight:
-                model.load_weights(self.initialize_weight)
+            if self.weights:
+                model.load_weights(self.weights)
         except Exception as e:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, e)

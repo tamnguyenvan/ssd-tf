@@ -6,11 +6,13 @@ gpus = tf.config.list_physical_devices('GPU')
 if gpus:
     tf.config.set_visible_devices(gpus, 'GPU')
 
+import cv2
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.data_loader.data_loader import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.model_loader import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.train import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.eval import *
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.inference.pred import *
+from meghnad.core.cv.obj_det.src.backend.tensorflow_local.inference import vis_utils
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.utils.box_utils import encode
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.utils.loss_utils import SSDLoss
 import meghnad.core.cv.obj_det.cfg.config as cfg
@@ -184,7 +186,7 @@ def test_case9(path):
         data_loader=d_loader,
         model_loader=m_loader,
         model_config=model_config,
-        learning_rate=1e-4,
+        learning_rate=model_params['learning_rate'],
         loss=SSDLoss(model_config['neg_ratio'], model_config['num_classes'])
     )
     trainer.compile_model()
@@ -227,15 +229,55 @@ def test_case10(path):
         aarch=model_config['model'],
         num_classes=model_config['num_classes'],
         input_shape=model_config['input_shape'],
-        initialize_weight='',
+        trainable=model_config['trainable'],
     )
-    evaluator = ModelEvaluator(m_loader, d_loader.test_dataset)
+    m_loader.load_model()
+    best_path = './checkpoints/MobileNetV2_ssd_last.h5'
+    evaluator = ModelEvaluator(
+        m_loader,
+        model_config,
+        d_loader,
+        weights=best_path,
+        phase='validation'
+    )
+    evaluator.eval()
 
+
+def test_case11(path):
+    config = cfg.ObjDetConfig()
+    model_config = config.get_model_cfg()
+    model_params = config.get_model_params()
+    print('Model config')
+    print(model_config)
+    print('Model params')
+    print(model_params)
+
+    m_loader = ModelLoader(
+        aarch=model_config['model'],
+        num_classes=model_config['num_classes'],
+        input_shape=model_config['input_shape'],
+        weights='./checkpoints/MobileNetV2_ssd_last.h5',
+    )
+    m_loader.load_model()
+
+    predictor = ModelInference(
+        model_loader=m_loader,
+        model_config=model_config
+    )
+    image = cv2.imread(path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    success, (bboxes, classes, scores) = predictor.predict(image)
+    class_map = {}
+    image = vis_utils.draw_bboxes(image, bboxes, classes, scores)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    cv2.imshow('output', image)
+    cv2.waitKey(0)
 
 
 def _perform_tests():
     path = '/home/tamnv/Downloads/dataset-Dog-Cat'
-    test_case9(path)
+    path = '/home/tamnv/Downloads/dataset-Dog-Cat/images/0a50fec4ab1a8354.jpg'
+    test_case11(path)
 
 
 if __name__ == '__main__':

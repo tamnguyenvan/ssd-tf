@@ -59,12 +59,14 @@ class ModelTrainer:
                  store_tensorboard_logs=True,
                  log_dir='training_logs',
                  checkpoint_dir='checkpoints',
+                 print_every=10,
                  save_checkpoint_every=5,
                  prediction_postprocessing=None):
         self.train_dataset = data_loader.train_dataset
         self.validation_dataset = data_loader.validation_dataset
         self.test_dataset = data_loader.test_dataset
-        self.evaluator = ModelEvaluator(model_loader, model_config, data_loader, phase='validation')
+        self.evaluator = ModelEvaluator(
+            model_loader, model_config, data_loader, phase='validation')
         self.model_loader = model_loader
         self.model = model_loader.model
         self.learning_rate = learning_rate
@@ -77,6 +79,7 @@ class ModelTrainer:
         self.tensorboard_callback = None
         self.log_dir = log_dir
         self.checkpoint_dir = checkpoint_dir
+        self.print_every = print_every
         self.save_checkpoint_every = save_checkpoint_every
         if store_tensorboard_logs:
             self.tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir,
@@ -142,10 +145,9 @@ class ModelTrainer:
                                  conf_loss.numpy()) / (i + 1)
                 avg_loc_loss = (avg_loc_loss * i + loc_loss.numpy()) / (i + 1)
                 avg_l2_loss = (avg_l2_loss * i + l2_loss.numpy()) / (i + 1)
-                if (i + 1) % 1 == 0:
+                if (i + 1) % self.print_every == 0:
                     print('Epoch: {} Batch {} Time: {:.2}s | Loss: {:.4f} Conf: {:.4f} Loc: {:.4f} L2 Loss {:.4f}'.format(
                         epoch + 1, i + 1, time.time() - start, avg_loss, avg_conf_loss, avg_loc_loss, avg_l2_loss))
-                break
 
             print('Evaluating...')
             map, map50 = self.evaluator.eval()
@@ -191,7 +193,8 @@ class ModelTrainer:
             # Save the best
             if map > best_map:
                 best_map = map
-                self.best_path = os.path.join(self.checkpoint_dir, f'{model_name}_ssd_best.h5')
+                self.best_path = os.path.join(
+                    self.checkpoint_dir, f'{model_name}_ssd_best.h5')
                 self.model.save_weights(self.best_path)
 
             self.total_epochs_ran += 1
