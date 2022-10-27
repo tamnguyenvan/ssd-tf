@@ -11,6 +11,7 @@ from utils.ret_values import *
 from utils.log import Log
 from meghnad.cfg.config import MeghnadConfig
 
+
 _obj_det_cfg = {
     'modelNames':
     {
@@ -36,31 +37,59 @@ _obj_det_cfg = {
         'train_dir': None,
         'test_dir': None,
         'val_dir': None,
+        'num_classes': 3,
         'train_test_val_split': (0.7, 0.2, 0.1),
     },
     'model_cfg':
     {
-        'model': 'MobileNetV2',
-        'saved_weights_path': None,
-        'initialize_weight': False,
-        'input_shape': (300, 300, 3),
-        'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
-        'num_anchors': [4, 6, 6, 6, 4, 4],
-        'feature_map_sizes': [19, 10, 5, 3, 2, 1],
-        'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
-        'neg_ratio': 3,
-        'trainable': False,
-        'num_classes': 3,
-        'saved_model_path': None,
+        # 'model': 'MobileNetV2',
+        # 'saved_weights_path': None,
+        # 'initialize_weight': False,
+        'MobileNetV2': {
+            'input_shape': (300, 300, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 6, 4, 4],
+            'feature_map_sizes': [19, 10, 5, 3, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
+            'neg_ratio': 3,
+        },
+        'EfficientNetB3': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        },
+        'EfficientNetV2S': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        }
     },
     'model_params':
     {
-        'loss': 'mean_absolute_error',
-        'metrics': ['accuracy'],
-        'cv': 5,
-        'batch_size': 32,
-        'optimizer': 'adam',
-        'learning_rate': 0.001,
+        'MobileNetV2': {
+            'metrics': ['map'],
+            'batch_size': 2,
+            'optimizer': 'adam',
+            'learning_rate': 0.001,
+        },
+        'EfficientNetB3': {
+            'metrics': ['map'],
+            'batch_size': 1,
+            'optimizer': 'adam',
+            'learning_rate': 0.001,
+        },
+        'EfficientNetV2S': {
+            'metrics': ['map'],
+            'batch_size': 1,
+            'optimizer': 'adam',
+            'learning_rate': 0.001,
+        }
     },
     'user_cfg':
     {
@@ -77,11 +106,11 @@ class ObjDetConfig(MeghnadConfig):
         super().__init__()
         self.cfg = _obj_det_cfg
 
-    def get_model_cfg(self):
-        return self.cfg['model_cfg']
+    def get_model_cfg(self, model_name):
+        return self.cfg['model_cfg'][model_name]
 
-    def get_model_params(self):
-        return self.cfg['model_params']
+    def get_model_params(self, model_name):
+        return self.cfg['model_params'][model_name]
 
     def get_data_cfg(self):
         return self.cfg['data_cfg']

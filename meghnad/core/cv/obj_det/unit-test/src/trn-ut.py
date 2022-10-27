@@ -129,8 +129,11 @@ def test_case8(path):
 
 def test_case9(path):
     config = cfg.ObjDetConfig()
-    model_config = config.get_model_cfg()
-    model_params = config.get_model_params()
+    model_name = 'EfficientNetV2S'
+    data_config = config.get_data_cfg()
+    model_config = config.get_model_cfg(model_name)
+    model_params = config.get_model_params(model_name)
+    print('Model name:', model_name)
     print('Model config')
     print(model_config)
     print('Model params')
@@ -176,10 +179,9 @@ def test_case9(path):
     # compute_target(default_boxes, bbox, label)
 
     m_loader = ModelLoader(
-        aarch=model_config['model'],
-        num_classes=model_config['num_classes'],
-        input_shape=model_config['input_shape'],
-        trainable=model_config['trainable'],
+        aarch=model_name,
+        num_classes=data_config['num_classes'],
+        model_config=model_config
     )
     m_loader.load_model()
     trainer = ModelTrainer(
@@ -187,7 +189,7 @@ def test_case9(path):
         model_loader=m_loader,
         model_config=model_config,
         learning_rate=model_params['learning_rate'],
-        loss=SSDLoss(model_config['neg_ratio'], model_config['num_classes'])
+        loss=SSDLoss(model_config['neg_ratio'], data_config['num_classes'])
     )
     trainer.compile_model()
     trainer.train(epochs=20)
@@ -205,8 +207,10 @@ def test_case9(path):
 
 def test_case10(path):
     config = cfg.ObjDetConfig()
-    model_config = config.get_model_cfg()
-    model_params = config.get_model_params()
+    model_name = 'MobileNetV2'
+    data_config = config.get_data_cfg()
+    model_config = config.get_model_cfg(model_name)
+    model_params = config.get_model_params(model_name)
     print('Model config')
     print(model_config)
     print('Model params')
@@ -226,10 +230,9 @@ def test_case10(path):
         path=path, augment=False, rescale=False, rand_flip=False, rotate=False
     )
     m_loader = ModelLoader(
-        aarch=model_config['model'],
-        num_classes=model_config['num_classes'],
-        input_shape=model_config['input_shape'],
-        trainable=model_config['trainable'],
+        aarch=model_name,
+        num_classes=data_config['num_classes'],
+        model_config=model_config
     )
     m_loader.load_model()
     best_path = './checkpoints/MobileNetV2_ssd_last.h5'
@@ -245,17 +248,19 @@ def test_case10(path):
 
 def test_case11(path):
     config = cfg.ObjDetConfig()
-    model_config = config.get_model_cfg()
-    model_params = config.get_model_params()
+    model_name = 'MobileNetV2'
+    data_config = config.get_data_cfg()
+    model_config = config.get_model_cfg(model_name)
+    model_params = config.get_model_params(model_name)
     print('Model config')
     print(model_config)
     print('Model params')
     print(model_params)
 
     m_loader = ModelLoader(
-        aarch=model_config['model'],
-        num_classes=model_config['num_classes'],
-        input_shape=model_config['input_shape'],
+        aarch=model_name,
+        num_classes=data_config['num_classes'],
+        model_config=model_config,
         weights='./checkpoints/MobileNetV2_ssd_last.h5',
     )
     m_loader.load_model()
@@ -276,8 +281,8 @@ def test_case11(path):
 
 def _perform_tests():
     path = '/home/tamnv/Downloads/dataset-Dog-Cat'
-    path = '/home/tamnv/Downloads/dataset-Dog-Cat/images/0a50fec4ab1a8354.jpg'
-    test_case11(path)
+    # path = '/home/tamnv/Downloads/dataset-Dog-Cat/images/0a50fec4ab1a8354.jpg'
+    test_case9(path)
 
 
 if __name__ == '__main__':

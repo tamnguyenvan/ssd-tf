@@ -6,7 +6,8 @@ from .common import get_backbone, create_extra_layers, create_heads
 def ssd(backbone, input_shape, num_classes, num_anchors):
     image_size = input_shape[:2]
 
-    base_model, feature_names = get_backbone(backbone, image_size)
+    base_model, feature_names, base_output_name = get_backbone(
+        backbone, image_size)
     extra_layers = create_extra_layers(backbone)
     conf_head_layers, loc_head_layers = create_heads(
         backbone, num_classes, num_anchors)
@@ -18,7 +19,7 @@ def ssd(backbone, input_shape, num_classes, num_anchors):
     for name in feature_names:
         features.append(base_model.get_layer(name).output)
 
-    x = base_model.output
+    x = base_model.get_layer(base_output_name).output
     for layer in extra_layers:
         x = layer(x)
         features.append(x)

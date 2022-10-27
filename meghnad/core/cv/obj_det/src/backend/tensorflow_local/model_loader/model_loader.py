@@ -17,21 +17,13 @@ class ModelLoader:
     def __init__(self,
                  aarch,
                  num_classes,
-                 saved_weights_path=None,
-                 weights=False,
-                 input_shape=(320, 320, 3),
-                 trainable=False,
-                 pooling_type=None,
-                 saved_model_path=None):
+                 model_config,
+                 weights=None):
         self.aarch = aarch
         self.model = None
-        self.saved_weights_path = saved_weights_path
-        self.weights = weights
-        self.input_shape = input_shape
-        self.trainable = trainable
-        self.pooling_type = pooling_type
         self.num_classes = num_classes
-        self.saved_model_path = saved_model_path
+        self.model_config = model_config
+        self.weights = weights
 
     def load_model(self):
         try:
@@ -42,9 +34,10 @@ class ModelLoader:
                           __file__, __name__, "Invalid model selected")
                 return ret_values.IXO_RET_INVALID_INPUTS
 
-            model_config = config.get_model_cfg()
-            model = ssd(self.aarch, self.input_shape,
-                        self.num_classes, model_config['num_anchors'])
+            model = ssd(self.aarch,
+                        self.model_config['input_shape'],
+                        self.num_classes,
+                        self.model_config['num_anchors'])
             if self.weights:
                 model.load_weights(self.weights)
         except Exception as e:
