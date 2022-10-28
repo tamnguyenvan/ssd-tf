@@ -21,7 +21,6 @@ _obj_det_cfg = {
     },
     'modelArchs':
     {
-        'ResNet50',
         'MobileNet',
         'MobileNetV2',
         'EfficientNetB3',
