@@ -21,7 +21,6 @@ _obj_det_cfg = {
     },
     'modelArchs':
     {
-        'ResNet50',
         'MobileNet',
         'MobileNetV2',
         'EfficientNetB3',
@@ -33,7 +32,6 @@ _obj_det_cfg = {
     },
     'data_cfg':
     {
-        'img_size': (300, 300),
         'train_dir': None,
         'test_dir': None,
         'val_dir': None,
@@ -42,9 +40,6 @@ _obj_det_cfg = {
     },
     'model_cfg':
     {
-        # 'model': 'MobileNetV2',
-        # 'saved_weights_path': None,
-        # 'initialize_weight': False,
         'MobileNetV2': {
             'input_shape': (300, 300, 3),
             'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
@@ -61,7 +56,39 @@ _obj_det_cfg = {
             'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
             'neg_ratio': 3,
         },
+        'EfficientNetB4': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        },
+        'EfficientNetB5': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        },
         'EfficientNetV2S': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        },
+        'EfficientNetV2M': {
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+        },
+        'EfficientNetV2L': {
             'input_shape': (512, 512, 3),
             'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
             'num_anchors': [4, 6, 6, 4, 4],
@@ -84,9 +111,33 @@ _obj_det_cfg = {
             'optimizer': 'adam',
             'learning_rate': 0.0001,
         },
+        'EfficientNetB4': {
+            'metrics': ['map'],
+            'batch_size': 2,
+            'optimizer': 'adam',
+            'learning_rate': 0.0001,
+        },
+        'EfficientNetB5': {
+            'metrics': ['map'],
+            'batch_size': 1,
+            'optimizer': 'adam',
+            'learning_rate': 0.0001,
+        },
         'EfficientNetV2S': {
             'metrics': ['map'],
             'batch_size': 4,
+            'optimizer': 'adam',
+            'learning_rate': 0.0001,
+        },
+        'EfficientNetV2M': {
+            'metrics': ['map'],
+            'batch_size': 2,
+            'optimizer': 'adam',
+            'learning_rate': 0.0001,
+        },
+        'EfficientNetV2L': {
+            'metrics': ['map'],
+            'batch_size': 1,
             'optimizer': 'adam',
             'learning_rate': 0.0001,
         }

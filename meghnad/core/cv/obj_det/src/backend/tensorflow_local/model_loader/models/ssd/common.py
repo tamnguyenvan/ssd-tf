@@ -3,6 +3,10 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Activation, MaxPooling2D
 
 
+class UnsupportedBackboneError(Exception):
+    pass
+
+
 def get_backbone(name, image_size=(300, 300)):
     if name == 'MobileNet':
         pass
@@ -20,6 +24,20 @@ def get_backbone(name, image_size=(300, 300)):
             ('block7b_add',),
             'block7b_add'
         ]
+    elif name == 'EfficientNetB4':
+        return [
+            tf.keras.applications.EfficientNetB4(
+                input_shape=(image_size[0], image_size[1], 3), include_top=False),
+            ('block7b_add',),
+            'block7b_add'
+        ]
+    elif name == 'EfficientNetB5':
+        return [
+            tf.keras.applications.EfficientNetB5(
+                input_shape=(image_size[0], image_size[1], 3), include_top=False),
+            ('block7c_add',),
+            'block7c_add'
+        ]
     elif name == 'EfficientNetV2S':
         return [
             tf.keras.applications.EfficientNetV2S(
@@ -27,6 +45,22 @@ def get_backbone(name, image_size=(300, 300)):
             ('block6o_add',),
             'block6o_add'
         ]
+    elif name == 'EfficientNetV2M':
+        return [
+            tf.keras.applications.EfficientNetV2M(
+                input_shape=(image_size[0], image_size[1], 3), include_top=False),
+            ('block7e_add',),
+            'block7e_add'
+        ]
+    elif name == 'EfficientNetV2L':
+        return [
+            tf.keras.applications.EfficientNetV2L(
+                input_shape=(image_size[0], image_size[1], 3), include_top=False),
+            ('block7g_add',),
+            'block7g_add'
+        ]
+    else:
+        raise UnsupportedBackboneError(f'Unsupported backbone {name}')
 
 
 def create_extra_layers(backbone):
@@ -60,6 +94,74 @@ def create_extra_layers(backbone):
 
         return extra_layers
     elif backbone == 'EfficientNetB3':
+        extra_layers = [
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                MaxPooling2D((2, 2))
+            ])
+        ]
+        return extra_layers
+    elif backbone == 'EfficientNetB4':
+        extra_layers = [
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                MaxPooling2D((2, 2))
+            ])
+        ]
+        return extra_layers
+    elif backbone == 'EfficientNetB5':
         extra_layers = [
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
@@ -127,6 +229,76 @@ def create_extra_layers(backbone):
             ])
         ]
         return extra_layers
+    elif backbone == 'EfficientNetV2M':
+        extra_layers = [
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                MaxPooling2D((2, 2))
+            ])
+        ]
+        return extra_layers
+    elif backbone == 'EfficientNetV2L':
+        extra_layers = [
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
+                BatchNormalization(),
+                Activation('relu'),
+                MaxPooling2D((2, 2))
+            ]),
+            Sequential([
+                MaxPooling2D((2, 2))
+            ])
+        ]
+        return extra_layers
+    else:
+        UnsupportedBackboneError(f'Unsupported backbone {backbone}')
 
 
 def create_heads(backbone, num_classes, num_anchors):
