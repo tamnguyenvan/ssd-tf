@@ -73,21 +73,21 @@ _obj_det_cfg = {
     {
         'MobileNetV2': {
             'metrics': ['map'],
-            'batch_size': 2,
+            'batch_size': 8,
             'optimizer': 'adam',
-            'learning_rate': 0.001,
+            'learning_rate': 0.0001,
         },
         'EfficientNetB3': {
             'metrics': ['map'],
-            'batch_size': 1,
+            'batch_size': 8,
             'optimizer': 'adam',
-            'learning_rate': 0.001,
+            'learning_rate': 0.0001,
         },
         'EfficientNetV2S': {
             'metrics': ['map'],
-            'batch_size': 1,
+            'batch_size': 2,
             'optimizer': 'adam',
-            'learning_rate': 0.001,
+            'learning_rate': 0.0001,
         }
     },
     'user_cfg':

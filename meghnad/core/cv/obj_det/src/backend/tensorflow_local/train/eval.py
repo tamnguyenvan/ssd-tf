@@ -99,6 +99,7 @@ class ModelEvaluator:
                     }
                     results.append(result)
 
+        print('=======================', len(results))
         if len(results):
             ann_json = None
             if self.phase == 'validation':

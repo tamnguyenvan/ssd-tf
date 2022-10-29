@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/home/tamnv/Projects/upwork/ixolerator')
+sys.path.append('D:\\10-27-22\ixolerator')
 import tensorflow as tf
 
 gpus = tf.config.list_physical_devices('GPU')
@@ -129,7 +129,7 @@ def test_case8(path):
 
 def test_case9(path):
     config = cfg.ObjDetConfig()
-    model_name = 'EfficientNetV2S'
+    model_name = 'MobileNetV2'
     data_config = config.get_data_cfg()
     model_config = config.get_model_cfg(model_name)
     model_params = config.get_model_params(model_name)
@@ -270,18 +270,19 @@ def test_case11(path):
         model_config=model_config
     )
     image = cv2.imread(path)
+    print(image.shape)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     success, (bboxes, classes, scores) = predictor.predict(image)
-    class_map = {}
-    image = vis_utils.draw_bboxes(image, bboxes, classes, scores)
+    class_map = {1: 'Cat', 2: 'Dog'}
+    image = vis_utils.draw_bboxes(image, bboxes, classes, scores, class_map)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     cv2.imshow('output', image)
     cv2.waitKey(0)
 
 
 def _perform_tests():
-    path = '/home/tamnv/Downloads/dataset-Dog-Cat'
-    # path = '/home/tamnv/Downloads/dataset-Dog-Cat/images/0a50fec4ab1a8354.jpg'
+    path = 'C:\\Users\\Prudhvi\\Downloads\\dataset1'
+    # path = 'C:\\Users\\Prudhvi\\Downloads\\dataset1\\images\\0a50fec4ab1a8354.jpg'
     test_case9(path)
 
 
