@@ -129,7 +129,7 @@ def test_case8(path):
 
 def test_case9(path):
     config = cfg.ObjDetConfig()
-    model_name = 'EfficientNetV2S'
+    model_name = 'MobileNetV2'
     data_config = config.get_data_cfg()
     model_config = config.get_model_cfg(model_name)
     model_params = config.get_model_params(model_name)

@@ -1,4 +1,7 @@
+import os
 import sys
+import tempfile
+import json
 
 import numpy as np
 import tensorflow as tf
@@ -45,9 +48,11 @@ class ModelEvaluator:
         #               __file__, __name__, "Test data is empty")
         #     return ret_values.IXO_RET_INVALID_INPUTS
 
-        results = []
+        results = {'annotations': []}
+        ann_id = 0
         for batch_image_ids, batch_image_shapes, batch_images, _, _ in self.dataset:
-            batch_confs, batch_locs = self.model_loader.model(batch_images, training=False)
+            batch_confs, batch_locs = self.model_loader.model(
+                batch_images, training=False)
             for image_id, image_shape, confs, locs in zip(
                 batch_image_ids, batch_image_shapes, batch_confs, batch_locs
             ):
@@ -91,33 +96,38 @@ class ModelEvaluator:
 
                 for box, cls, score in zip(boxes, classes, scores):
                     x1, y1, x2, y2 = box
-                    result = {
+                    ann_id += 1
+                    results['annotations'].append({
+                        'id': ann_id,
                         'image_id': image_id,
                         'bbox': [x1, y1, x2 - x1, y2 - y1],
+                        'area': (x2 - x1) * (y2 - y1),
                         'category_id': cls,
                         'score': score
-                    }
-                    results.append(result)
+                    })
 
-        if len(results):
-            ann_json = None
-            if self.phase == 'validation':
-                ann_json = self.data_loader.connector['val_file_path']
-            elif self.phase == 'test':
-                ann_json = self.data_loader.connector['test_file_path']
-            else:
-                raise FileNotFoundError('Not found ground truth annotation file')
-
-            anno = COCO(ann_json)  # init annotations api
-            pred = anno.loadRes(results)  # init predictions api
-            eval = COCOeval(anno, pred, 'bbox')
-            eval.evaluate()
-            eval.accumulate()
-            eval.summarize()
-            map, map50 = eval.stats[:2]
+        ann_json = None
+        if self.phase == 'validation':
+            ann_json = self.data_loader.connector['val_file_path']
+        elif self.phase == 'test':
+            ann_json = self.data_loader.connector['test_file_path']
         else:
-            print('No valid validation results')
-            map, map50 = 0.0, 0.0
+            raise FileNotFoundError(
+                'Not found ground truth annotation file')
+
+        pred_file = tempfile.NamedTemporaryFile('wt').name
+        with open(pred_file, 'wt') as f:
+            json.dump(results, f)
+
+        gt = COCO(ann_json)  # init annotations api
+        pred = COCO(pred_file)
+        eval = COCOeval(gt, pred, 'bbox')
+        eval.evaluate()
+        eval.accumulate()
+        eval.summarize()
+        map, map50 = eval.stats[:2]
+        if os.path.isfile(pred_file):
+            os.remove(pred_file)
         return map, map50
 
         # return ret_values.IXO_RET_SUCCESS, loss, metrics
