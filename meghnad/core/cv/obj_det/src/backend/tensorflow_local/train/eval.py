@@ -91,6 +91,10 @@ class ModelEvaluator:
                 out_scores = tf.concat(out_scores, axis=0)
 
                 boxes = tf.clip_by_value(out_boxes, 0.0, 1.0).numpy()
+                boxes = boxes * \
+                    np.array([[image_width, image_height, image_width, image_height]]).astype(
+                        np.float32)
+                boxes = boxes.astype(np.int32).tolist()
                 classes = np.array(out_labels)
                 scores = out_scores.numpy()
 
@@ -102,8 +106,8 @@ class ModelEvaluator:
                         'image_id': image_id,
                         'bbox': [x1, y1, x2 - x1, y2 - y1],
                         'area': (x2 - x1) * (y2 - y1),
-                        'category_id': cls,
-                        'score': score
+                        'category_id': int(cls),
+                        'score': float(score)
                     })
 
         ann_json = None
