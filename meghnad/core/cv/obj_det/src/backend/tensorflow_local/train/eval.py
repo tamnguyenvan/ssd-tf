@@ -91,6 +91,8 @@ class ModelEvaluator:
                 out_scores = tf.concat(out_scores, axis=0)
 
                 boxes = tf.clip_by_value(out_boxes, 0.0, 1.0).numpy()
+                boxes = boxes * np.array([[image_width, image_height, image_width, image_height]]).astype(np.float32)
+                boxes = boxes.astype(np.int32).tolist()
                 classes = np.array(out_labels)
                 scores = out_scores.numpy()
 
@@ -102,28 +104,16 @@ class ModelEvaluator:
                         'image_id': image_id,
                         'bbox': [x1, y1, x2 - x1, y2 - y1],
                         'area': (x2 - x1) * (y2 - y1),
-                        'category_id': cls,
-                        'score': score
-                    }
-                    results.append(result)
+                        'category_id': int(cls),
+                        'score': float(score)
+                    })
 
-        print('=======================', len(results))
-        if len(results):
-            ann_json = None
-            if self.phase == 'validation':
-                ann_json = self.data_loader.connector['val_file_path']
-            elif self.phase == 'test':
-                ann_json = self.data_loader.connector['test_file_path']
-            else:
-                raise FileNotFoundError('Not found ground truth annotation file')
-
-            anno = COCO(ann_json)  # init annotations api
-            pred = anno.loadRes(results)  # init predictions api
-            eval = COCOeval(anno, pred, 'bbox')
-            eval.evaluate()
-            eval.accumulate()
-            eval.summarize()
-            map, map50 = eval.stats[:2]
+        print(results)
+        ann_json = None
+        if self.phase == 'validation':
+            ann_json = self.data_loader.connector['val_file_path']
+        elif self.phase == 'test':
+            ann_json = self.data_loader.connector['test_file_path']
         else:
             raise FileNotFoundError(
                 'Not found ground truth annotation file')

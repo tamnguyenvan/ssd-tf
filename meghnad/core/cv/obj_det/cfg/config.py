@@ -79,7 +79,7 @@ _obj_det_cfg = {
         },
         'EfficientNetB3': {
             'metrics': ['map'],
-            'batch_size': 8,
+            'batch_size': 4,
             'optimizer': 'adam',
             'learning_rate': 0.0001,
         },

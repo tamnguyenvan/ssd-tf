@@ -129,7 +129,7 @@ def test_case8(path):
 
 def test_case9(path):
     config = cfg.ObjDetConfig()
-    model_name = 'MobileNetV2'
+    model_name = 'EfficientNetB3'
     data_config = config.get_data_cfg()
     model_config = config.get_model_cfg(model_name)
     model_params = config.get_model_params(model_name)
@@ -192,7 +192,7 @@ def test_case9(path):
         loss=SSDLoss(model_config['neg_ratio'], data_config['num_classes'])
     )
     trainer.compile_model()
-    trainer.train(epochs=20)
+    trainer.train(epochs=200)
 
     best_checkpoint_path = trainer.get_best_model()
     evaluator = ModelEvaluator(
