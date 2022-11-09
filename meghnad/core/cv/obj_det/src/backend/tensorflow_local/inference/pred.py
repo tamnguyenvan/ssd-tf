@@ -119,7 +119,7 @@ class ModelInference:
 
         return ret_values.IXO_RET_SUCCESS, (boxes, classes, scores)
 
-    def write_prediction(self, path, predictions):
+    def write_prediction(self, path):
         test_ann_file = os.path.join(path, 'test_annotations.json')
         with open(test_ann_file, 'r') as f:
             annotations = json.load(f)

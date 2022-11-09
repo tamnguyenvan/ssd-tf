@@ -38,6 +38,8 @@ def draw_bboxes(image, bboxes, classes, scores, class_map=None):
     """
     image_clone = image.copy()
     for bbox, cls, score in zip(bboxes, classes, scores):
+        #print(cls.shape, score.shape)
+        #print('signifier', bbox, cls, score)
         x1, y1, x2, y2 = list(map(int, bbox))
         print(bbox, cls, score)
         color = colors(cls)

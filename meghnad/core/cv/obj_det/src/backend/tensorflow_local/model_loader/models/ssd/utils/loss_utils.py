@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 def hard_negative_mining(loss, gt_confs, neg_ratio):
     """ Hard negative mining algorithm
         to pick up negative examples for back-propagation

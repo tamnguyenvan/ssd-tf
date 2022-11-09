@@ -1,7 +1,9 @@
 import time
 import os
+import math
 import sys
 
+import numpy as np
 import tensorflow as tf
 from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.eval import ModelEvaluator
 from utils import ret_values
@@ -55,13 +57,15 @@ class ModelTrainer:
                  metrics=["map"],
                  learning_rate=0.001,
                  optimizer="Adam",
-                 weight_decay=1e-4,
+                 weight_decay=1e-5,
                  store_tensorboard_logs=True,
                  log_dir='training_logs',
                  checkpoint_dir='checkpoints',
+                 resume_path=None,
                  print_every=10,
                  save_checkpoint_every=5,
                  prediction_postprocessing=None):
+        self.data_loader = data_loader
         self.train_dataset = data_loader.train_dataset
         self.validation_dataset = data_loader.validation_dataset
         self.test_dataset = data_loader.test_dataset
@@ -79,6 +83,7 @@ class ModelTrainer:
         self.tensorboard_callback = None
         self.log_dir = log_dir
         self.checkpoint_dir = checkpoint_dir
+        self.resume_path = resume_path
         self.print_every = print_every
         self.save_checkpoint_every = save_checkpoint_every
         if store_tensorboard_logs:
@@ -122,14 +127,45 @@ class ModelTrainer:
         #                               verbose=2)
         if not os.path.isdir(self.checkpoint_dir):
             os.makedirs(self.checkpoint_dir, exist_ok=True)
+
         model_name = self.model_loader.aarch
+
+        # Found a checkpoint
+        ckpt = tf.train.Checkpoint(model=self.model, optimizer=self.optimizer, start_epoch=tf.Variable(0))
+        if self.resume_path:
+            ckpt.read(self.resume_path)
+            print(f'Resume training from {self.resume_path}')
+        else:
+            if self.checkpoint_dir:
+                ckpt_filenames = os.listdir(self.checkpoint_dir)
+                prefix = f'{model_name}_last.ckpt'
+                for filename in ckpt_filenames:
+                    if filename.startswith(prefix):
+                        ckpt_path = os.path.join(self.checkpoint_dir, prefix)
+                        ckpt.read(ckpt_path)
+                        print(f'Resume training from {ckpt_path}')
+                        break
+
 
         train_log_dir = os.path.join(self.log_dir, 'train')
         val_log_dir = os.path.join(self.log_dir, 'val')
         train_summary_writer = tf.summary.create_file_writer(train_log_dir)
         val_summary_writer = tf.summary.create_file_writer(val_log_dir)
+
+        base_lr = float(self.optimizer.learning_rate.numpy())
+        warmup_learning_rate = base_lr / 6
+        warmup_steps = 2000
+        self.optimizer.learning_rate.assign(warmup_learning_rate)
+        steps_per_epoch = max(1, self.data_loader.train_size // self.data_loader.batch_size)
+        total_steps = epochs * steps_per_epoch
+        global_step = 0
+
+        print('Steps per epoch', steps_per_epoch)
+        print('Total steps', total_steps)
+
         best_map = 0
-        for epoch in range(epochs):
+        start_epoch = ckpt.start_epoch.numpy()
+        for epoch in range(start_epoch, epochs):
             avg_loss = 0.0
             avg_conf_loss = 0.0
             avg_loc_loss = 0.0
@@ -148,6 +184,20 @@ class ModelTrainer:
                 if (i + 1) % self.print_every == 0:
                     print('Epoch: {} Batch {} Time: {:.2}s | Loss: {:.4f} Conf: {:.4f} Loc: {:.4f} L2 Loss {:.4f}'.format(
                         epoch + 1, i + 1, time.time() - start, avg_loss, avg_conf_loss, avg_loc_loss, avg_l2_loss))
+
+                global_step = epoch * steps_per_epoch + i + 1
+                if global_step <= warmup_steps:
+                    slope = (base_lr - warmup_learning_rate) / warmup_steps
+                    new_lr = warmup_learning_rate + slope * tf.cast(global_step, tf.float32)
+                    self.optimizer.learning_rate.assign(new_lr)
+                    # print('Global step', global_step, 'learning rate', float(self.optimizer.learning_rate.numpy()))
+                else:
+                    new_lr = 0.5 * base_lr * (1 + tf.cos(
+                        math.pi *
+                        (tf.cast(i + 1, tf.float32) - warmup_steps
+                         ) / float(total_steps - warmup_steps)))
+                    self.optimizer.learning_rate.assign(new_lr)
+            print('Current learning rate:', self.optimizer.learning_rate.numpy())
 
             print('Evaluating...')
             map, map50 = self.evaluator.eval()
@@ -186,16 +236,23 @@ class ModelTrainer:
 
             # if (epoch + 1) % self.save_checkpoint_every == 0:
 
-            # Save the last model
-            self.model.save_weights(
-                os.path.join(self.checkpoint_dir, f'{model_name}_ssd_last.h5'))
+            # Checkpoint
+            ckpt.start_epoch.assign_add(1)
+            save_path = ckpt.write(os.path.join(self.checkpoint_dir, f'{model_name}_last.ckpt'))
+            print("Saved checkpoint for epoch {}: {}".format(int(ckpt.start_epoch), save_path))
+
+            # # Save the last model
+            # self.model.save_weights(
+            #     os.path.join(self.checkpoint_dir, f'{model_name}_ssd_last.h5'))
 
             # Save the best
             if map > best_map:
                 best_map = map
-                self.best_path = os.path.join(
-                    self.checkpoint_dir, f'{model_name}_ssd_best.h5')
-                self.model.save_weights(self.best_path)
+                # self.best_path = os.path.join(
+                #     self.checkpoint_dir, f'{model_name}_ssd_best.h5')
+                # self.model.save_weights(self.best_path)
+                self.best_path = ckpt.write(os.path.join(self.checkpoint_dir, f'{model_name}_best.ckpt'))
+                print(f'Saved best model as {self.best_path}')
 
             self.total_epochs_ran += 1
         # self.total_epochs_ran += self.history.epoch[-1]

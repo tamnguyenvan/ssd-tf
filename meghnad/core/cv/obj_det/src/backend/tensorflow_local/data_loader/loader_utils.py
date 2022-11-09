@@ -68,11 +68,13 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
     if tfrecord_file is None:
         tfrecord_file = 'sample.tfrecord'
 
-    if not os.path.isfile(tfrecord_file):
-        with open(ann_file) as f:
-            json_data = json.load(f)
+    with open(ann_file) as f:
+        json_data = json.load(f)
 
-        image_data = json_data['images']
+    image_data = json_data['images']
+    num_samples = len(image_data)
+
+    if not os.path.isfile(tfrecord_file):
         ann_data = json_data['annotations']
         categories = json_data['categories']
 
@@ -128,4 +130,4 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
 
     # Initialize a dataset from the above tfreocrd file
     dataset = tf.data.TFRecordDataset(tfrecord_file)
-    return dataset
+    return dataset, num_samples

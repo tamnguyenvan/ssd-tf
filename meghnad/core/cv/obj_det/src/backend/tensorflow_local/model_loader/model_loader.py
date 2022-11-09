@@ -2,6 +2,7 @@ import os
 import sys
 
 import tensorflow as tf
+import tensorflow_hub as hub
 
 from utils import ret_values
 from utils.log import Log
@@ -25,7 +26,7 @@ class ModelLoader:
         self.model_config = model_config
         self.weights = weights
 
-    def load_model(self):
+    def load_model(self, from_hub=False):
         try:
             config = cfg.ObjDetConfig()
             models = config.get_models_by_names()
@@ -33,13 +34,15 @@ class ModelLoader:
                 log.ERROR(sys._getframe().f_lineno,
                           __file__, __name__, "Invalid model selected")
                 return ret_values.IXO_RET_INVALID_INPUTS
-
-            model = ssd(self.aarch,
-                        self.model_config['input_shape'],
-                        self.num_classes,
-                        self.model_config['num_anchors'])
-            if self.weights:
-                model.load_weights(self.weights)
+            if not from_hub:
+                model = ssd(self.aarch,
+                            self.model_config['input_shape'],
+                            self.num_classes,
+                            self.model_config['num_anchors'])
+                if self.weights:
+                    model.load_weights(self.weights)
+            # elif from_hub:
+            #     model = hub.load("https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2")
         except Exception as e:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, e)

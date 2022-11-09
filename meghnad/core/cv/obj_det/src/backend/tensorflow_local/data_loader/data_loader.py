@@ -1,4 +1,5 @@
 import os
+import json
 import sys
 import glob
 import numpy as np
@@ -14,18 +15,23 @@ log = Log()
 
 class DataLoader:
     def __init__(self,
+                 num_classes,
                  batch_size=4,
                  img_size=(300, 300),
                  scales=[0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.075],
                  feature_map_sizes=[38, 19, 10, 5, 3, 1],
                  aspect_ratios=[[2], [2, 3], [2, 3], [2, 3], [2], [2]]):
+        self.num_classes = num_classes
         self.batch_size = batch_size
         self.img_size = img_size
         self.max_boxes = 100
         # self.label_encoder = label_encoder
         self.train_dataset = None
+        self.train_size = 0
         self.validation_dataset = None
+        self.val_size = 0
         self.test_dataset = None
+        self.test_size = 0
 
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
@@ -89,8 +95,13 @@ class DataLoader:
         self.config_connectors(path)
         autotune = tf.data.AUTOTUNE
 
+        # Load class map
+        with open(self.connector['test_file_path']) as f:
+            test_ann_data = json.load(f)
+            self.class_map = {cate['id']: cate['name'] for cate in test_ann_data['categories']}
+
         # Training set
-        train_dataset = self.read_data(self.connector['trn_data_path'],
+        train_dataset, self.train_size = self.read_data(self.connector['trn_data_path'],
                                        self.connector['trn_file_path'],
                                        dataset='train')
         train_dataset = train_dataset.shuffle(8 * self.batch_size)
@@ -108,7 +119,7 @@ class DataLoader:
         self.train_dataset = train_dataset.prefetch(autotune)
 
         # Validation set
-        validation_dataset = self.read_data(self.connector['val_data_path'],
+        validation_dataset, self.val_size = self.read_data(self.connector['val_data_path'],
                                             self.connector['val_file_path'],
                                             dataset='val')
         validation_dataset = validation_dataset.map(
@@ -125,7 +136,7 @@ class DataLoader:
         self.validation_dataset = validation_dataset.prefetch(autotune)
 
         # Testing set
-        test_dataset = self.read_data(self.connector['test_data_path'],
+        test_dataset, self.test_size = self.read_data(self.connector['test_data_path'],
                                       self.connector['test_file_path'],
                                       dataset='test')
         test_dataset = test_dataset.map(
@@ -279,11 +290,11 @@ class DataLoader:
     def read_data(self, image_dir, annotation_file, dataset='train'):
         # try:
         tfrecord_file = f'{dataset}.tfrecord'
-        dataset = get_tfrecord_dataset(
+        dataset, num_samples = get_tfrecord_dataset(
             image_dir, annotation_file, tfrecord_file)
         # except:
         #     return None
-        return dataset
+        return dataset, num_samples
 
     def read_pred_data(self, path):
         images = []
