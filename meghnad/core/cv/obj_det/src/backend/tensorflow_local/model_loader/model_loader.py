@@ -51,35 +51,35 @@ class ModelLoader:
         self.model = model
         return ret_values.IXO_RET_SUCCESS, self.model
 
-    def load_model_from_url(self, url, model_dir=None):
-        path_to_downloaded_dataset = tf.keras.utils.get_file(
-            origin=url, extract=True, cache_dir=model_dir)
-        path = os.path.dirname(path_to_downloaded_dataset)
-        if not os.path.exists(path):
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Invalid path for data: {} ".format(path))
-            return ret_values.IXO_RET_INVALID_INPUTS
-        self.saved_model_path = path
-        return ret_values.IXO_RET_SUCCESS, self.saved_model_path, self.model
+    # def load_model_from_url(self, url, model_dir=None):
+    #     path_to_downloaded_dataset = tf.keras.utils.get_file(
+    #         origin=url, extract=True, cache_dir=model_dir)
+    #     path = os.path.dirname(path_to_downloaded_dataset)
+    #     if not os.path.exists(path):
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Invalid path for data: {} ".format(path))
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     self.saved_model_path = path
+    #     return ret_values.IXO_RET_SUCCESS, self.saved_model_path, self.model
 
-    def load_model_from_directory(self, filepath, compile):
-        if not os.path.exists(filepath):
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Invalid path for model: {} ".format(filepath))
-            return ret_values.IXO_RET_INVALID_INPUTS
-        model = tf.keras.models.load_model(filepath, compile=compile)
-        self.model = model
+    # def load_model_from_directory(self, filepath, compile):
+    #     if not os.path.exists(filepath):
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Invalid path for model: {} ".format(filepath))
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     model = tf.keras.models.load_model(filepath, compile=compile)
+    #     self.model = model
 
-    def save_model_to_directory(self, model, file_path, overwrite):
-        if not self.model:
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "model not initialized")
-            return ret_values.IXO_RET_INVALID_INPUTS
-        if not os.path.exists(file_path):
-            os.mkdir(file_path)
-        model.save(file_path,
-                   overwrite=overwrite,
-                   include_optimizer=True)
+    # def save_model_to_directory(self, model, file_path, overwrite):
+    #     if not self.model:
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "model not initialized")
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     if not os.path.exists(file_path):
+    #         os.mkdir(file_path)
+    #     model.save(file_path,
+    #                overwrite=overwrite,
+    #                include_optimizer=True)

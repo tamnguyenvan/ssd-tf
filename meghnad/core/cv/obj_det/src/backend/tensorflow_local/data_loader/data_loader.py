@@ -14,18 +14,22 @@ log = Log()
 
 
 class DataLoader:
-    def __init__(self,
-                 num_classes,
-                 batch_size=4,
-                 img_size=(300, 300),
-                 scales=[0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.075],
-                 feature_map_sizes=[38, 19, 10, 5, 3, 1],
-                 aspect_ratios=[[2], [2, 3], [2, 3], [2, 3], [2], [2]]):
-        self.num_classes = num_classes
-        self.batch_size = batch_size
-        self.img_size = img_size
+    def __init__(self, data_cfg, model_cfg):
+        self.data_cfg = data_cfg
+        self.model_cfg = model_cfg
+
+        self.num_classes = data_cfg['num_classes']
+        self.batch_size = model_cfg.get('batch_size', 4)
+        self.img_size = model_cfg['img_size']
         self.max_boxes = 100
-        # self.label_encoder = label_encoder
+        scales = model_cfg.get(
+            'scales', [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.075])
+
+        feature_map_sizes = model_cfg.get(
+            'feature_map_sizes', [38, 19, 10, 5, 3, 1])
+        aspect_ratios = model_cfg.get(
+            'aspect_ratios', [[2], [2, 3], [2, 3], [2, 3], [2], [2]])
+
         self.train_dataset = None
         self.train_size = 0
         self.validation_dataset = None
@@ -35,6 +39,8 @@ class DataLoader:
 
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
+
+        self._load_data_from_directory(data_cfg['path'])
 
     def _parse_tf_example(self, tf_example, training=True):
         """_summary_
@@ -90,20 +96,21 @@ class DataLoader:
         else:
             return image_id, tf.stack([image_height, image_width]), image, gt_confs, gt_locs
 
-    def load_data_from_directory(self, path, augment=False,
-                                 rescale=True, rand_flip=False, rotate=False):
-        self.config_connectors(path)
+    def _load_data_from_directory(self, path, augment=False,
+                                  rescale=True, rand_flip=False, rotate=False):
+        self._config_connectors(path)
         autotune = tf.data.AUTOTUNE
 
         # Load class map
         with open(self.connector['test_file_path']) as f:
             test_ann_data = json.load(f)
-            self.class_map = {cate['id']: cate['name'] for cate in test_ann_data['categories']}
+            self.class_map = {cate['id']: cate['name']
+                              for cate in test_ann_data['categories']}
 
         # Training set
         train_dataset, self.train_size = self.read_data(self.connector['trn_data_path'],
-                                       self.connector['trn_file_path'],
-                                       dataset='train')
+                                                        self.connector['trn_file_path'],
+                                                        dataset='train')
         train_dataset = train_dataset.shuffle(8 * self.batch_size)
         train_dataset = train_dataset.map(
             lambda x: self._parse_tf_example(x, True), num_parallel_calls=autotune,
@@ -120,8 +127,8 @@ class DataLoader:
 
         # Validation set
         validation_dataset, self.val_size = self.read_data(self.connector['val_data_path'],
-                                            self.connector['val_file_path'],
-                                            dataset='val')
+                                                           self.connector['val_file_path'],
+                                                           dataset='val')
         validation_dataset = validation_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
@@ -137,8 +144,8 @@ class DataLoader:
 
         # Testing set
         test_dataset, self.test_size = self.read_data(self.connector['test_data_path'],
-                                      self.connector['test_file_path'],
-                                      dataset='test')
+                                                      self.connector['test_file_path'],
+                                                      dataset='test')
         test_dataset = test_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
@@ -209,7 +216,7 @@ class DataLoader:
 
         return ret_values.IXO_RET_SUCCESS
 
-    def config_connectors(self, path: str):
+    def _config_connectors(self, path: str):
         """Dataset supposed to be COCO format"""
         self.connector = {}
         self.connector['trn_data_path'] = os.path.join(path, 'images')
