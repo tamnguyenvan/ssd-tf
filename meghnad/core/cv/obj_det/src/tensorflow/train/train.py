@@ -15,7 +15,7 @@ from utils.common_defs import class_header, method_header
 from .select_model import ObjDetSelectModel
 
 
-__all__ = ['ModelTrainer']
+__all__ = ['TfObjDetTrn']
 
 
 log = Log()
