@@ -1,5 +1,5 @@
 import sys
-sys.path.append('D:\\10-27-22\ixolerator')
+sys.path.append('D:\\ixolerator')
 import os
 
 
@@ -11,23 +11,23 @@ if gpus:
     tf.config.set_visible_devices(gpus, 'GPU')
 
 import cv2
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.data_loader.data_loader import *
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.model_loader import *
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.train import *
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.train.eval import *
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.inference.pred import *
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.inference import vis_utils
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.utils.box_utils import encode
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.utils.loss_utils import SSDLoss
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import *
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.model_loader import *
+from meghnad.core.cv.obj_det.src.tensorflow.train.train import *
+from meghnad.core.cv.obj_det.src.tensorflow.train.eval import *
+from meghnad.core.cv.obj_det.src.tensorflow.inference.pred import *
+from meghnad.core.cv.obj_det.src.tensorflow.inference import vis_utils
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_box_utils import encode
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_loss_utils import SSDLoss
 import meghnad.core.cv.obj_det.cfg.config as cfg
 import unittest
 
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.anchors import generate_default_boxes
-from meghnad.core.cv.obj_det.src.backend.tensorflow_local.model_loader.models.ssd.utils.box_utils import compute_target
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.anchors import generate_default_boxes
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_box_utils import compute_target
 
 
 
-def test_case9(path):
+def test_case1(path):
     config = cfg.ObjDetConfig()
     model_name = 'MobileNetV2'
     data_config = config.get_data_cfg()
@@ -39,10 +39,9 @@ def test_case9(path):
     print('Model params')
     print(model_params)
 
-    # label_encoder = LabelEncoder()
     img_size = model_config['input_shape'][:2]
     print('image size', img_size)
-    d_loader = DataLoader(
+    d_loader = TfObjDetDataLoader(
         num_classes=data_config['num_classes'],
         batch_size=model_params['batch_size'],
         img_size=img_size,
@@ -53,13 +52,13 @@ def test_case9(path):
     d_loader.load_data_from_directory(
         path=path, augment=False, rescale=False, rand_flip=False, rotate=False
     )
-    m_loader = ModelLoader(
+    m_loader = TfObjDetModelLoader(
         aarch=model_name,
         num_classes=data_config['num_classes'],
         model_config=model_config
     )
     m_loader.load_model()
-    trainer = ModelTrainer(
+    trainer = TfObjDetTrn(
         data_loader=d_loader,
         model_loader=m_loader,
         model_config=model_config,
@@ -70,7 +69,7 @@ def test_case9(path):
     trainer.train(epochs=200)
 
     best_checkpoint_path = trainer.get_best_model()
-    evaluator = ModelEvaluator(
+    evaluator = TfObjDetEval(
         m_loader,
         model_config,
         d_loader,
@@ -79,8 +78,7 @@ def test_case9(path):
     )
     evaluator.eval()
 
-
-def test_case10(path):
+def test_case2(path):
     config = cfg.ObjDetConfig()
     model_name = 'MobileNetV2'
     data_config = config.get_data_cfg()
@@ -91,10 +89,9 @@ def test_case10(path):
     print('Model params')
     print(model_params)
 
-    # label_encoder = LabelEncoder()
     img_size = model_config['input_shape'][:2]
     print('image size', img_size)
-    d_loader = DataLoader(
+    d_loader = TfObjDetDataLoader(
         num_classes=data_config['num_classes'],
         batch_size=model_params['batch_size'],
         img_size=img_size,
@@ -105,56 +102,14 @@ def test_case10(path):
     d_loader.load_data_from_directory(
         path=path, augment=False, rescale=False, rand_flip=False, rotate=False
     )
-    m_loader = ModelLoader(
-        aarch=model_name,
-        num_classes=data_config['num_classes'],
-        model_config=model_config
-    )
-    m_loader.load_model()
-    best_path = './checkpoints/MobileNetV2_ssd_last.h5'
-    evaluator = ModelEvaluator(
-        m_loader,
-        model_config,
-        d_loader,
-        ckpt_path=best_path,
-        phase='validation'
-    )
-    evaluator.eval()
-
-
-def test_case11(path):
-    config = cfg.ObjDetConfig()
-    model_name = 'MobileNetV2'
-    data_config = config.get_data_cfg()
-    model_config = config.get_model_cfg(model_name)
-    model_params = config.get_model_params(model_name)
-    print('Model config')
-    print(model_config)
-    print('Model params')
-    print(model_params)
-
-    # label_encoder = LabelEncoder()
-    img_size = model_config['input_shape'][:2]
-    print('image size', img_size)
-    d_loader = DataLoader(
-        num_classes=data_config['num_classes'],
-        batch_size=model_params['batch_size'],
-        img_size=img_size,
-        scales=model_config['scales'],
-        feature_map_sizes=model_config['feature_map_sizes'],
-        aspect_ratios=model_config['aspect_ratios']
-    )
-    d_loader.load_data_from_directory(
-        path=path, augment=False, rescale=False, rand_flip=False, rotate=False
-    )
-    m_loader = ModelLoader(
+    m_loader = TfObjDetModelLoader(
         aarch=model_name,
         num_classes=data_config['num_classes'],
         model_config=model_config
     )
     m_loader.load_model()
 
-    evaluator = ModelEvaluator(
+    evaluator = TfObjDetTrn(
         m_loader,
         model_config,
         d_loader,
@@ -166,24 +121,10 @@ def test_case11(path):
     )
     evaluator.eval()
 
-
-    # image = cv2.imread(path)
-    # print(image.shape)
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # success, (bboxes, classes, scores) = predictor.predict(image)
-    # #class_map = {1: 'Cat', 2: 'Dog'}
-    # image = vis_utils.draw_bboxes(image, bboxes, classes, scores)
-    # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    #
-    #cv2.imshow('output', image)
-    #cv2.waitKey(0)
-
-
-def test_case12(dataset_path):
+def test_case3(dataset_path):
     image_dir = os.path.join(dataset_path, 'images')
     test_ann_file = os.path.join(dataset_path, 'test_annotations.json')
     import json
-    import cv2
     from pycocotools.coco import COCO
 
     coco = COCO(test_ann_file)
@@ -209,11 +150,10 @@ def test_case12(dataset_path):
             cv2.putText(img, cate_info['name'], (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1., (0, 255, 0), 2, cv2.LINE_AA)
 
         cv2.imwrite(f'test{i+1}.png', img)
-        # cv2.waitKey(0)
 
 def _perform_tests():
-    path = 'C:\\Users\\Prudhvi\\Downloads\\dataset-Apple-Banana-Sandwich-Cake-Blender-Toaster-Doughnut-Pizza-Knife-Bottle'
-    test_case9(path)
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    test_case2(path)
 
 
 if __name__ == '__main__':
