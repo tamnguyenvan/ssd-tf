@@ -2,6 +2,7 @@ import time
 import os
 import math
 import sys
+from typing import List
 
 import tensorflow as tf
 from utils import ret_values
@@ -27,25 +28,25 @@ def train_step(imgs, gt_confs, gt_locs, model, criterion, optimizer, weight_deca
 
     Parameters
     ----------
-    imgs : _type_
-        _description_
-    gt_confs : _type_
-        _description_
-    gt_locs : _type_
-        _description_
-    model : _type_
-        _description_
-    criterion : _type_
-        _description_
-    optimizer : _type_
-        _description_
-    weight_decay : _type_
-        _description_
+    imgs : tf.Tensor
+        Images for training. A tensor has shape of [N, H, W, C]
+    gt_confs : tf.Tensor
+        Classification targets. A tensor has shape of [B, num_default]
+    gt_locs : tf.Tensor
+        Regression targets. A tensor has shape of [B, num_default, 4]
+    model : tf.keras.Model
+        An instance of tf.keras.Model
+    criterion : function
+        Loss function
+    optimizer : Optimizer class
+        Optimizer for updating weights
+    weight_decay : float
+        Weights decay
 
     Returns
     -------
-    _type_
-        _description_
+    [loss, conf_loss, loc_loss, l2_loss]
+        Returns a list of losses.
     """
     with tf.GradientTape() as tape:
         confs, locs = model(imgs)
@@ -70,23 +71,23 @@ def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
 
     Parameters
     ----------
-    imgs : _type_
-        _description_
-    gt_confs : _type_
-        _description_
-    gt_locs : _type_
-        _description_
-    model : _type_
-        _description_
-    criterion : _type_
-        _description_
-    weight_decay : _type_
-        _description_
+    imgs : tf.Tensor
+        Images for training. A tensor has shape of [N, H, W, C]
+    gt_confs : tf.Tensor
+        Classification targets. A tensor has shape of [B, num_default]
+    gt_locs : tf.Tensor
+        Regression targets. A tensor has shape of [B, num_default, 4]
+    model : tf.keras.Model
+        An instance of tf.keras.Model
+    criterion : function
+        Loss function
+    weight_decay : float
+        Weights decay
 
     Returns
     -------
-    _type_
-        _description_
+    [loss, conf_loss, loc_loss, l2_loss]
+        Returns a list of losses.
     """
     confs, locs = model(imgs, training=False)
 
@@ -101,7 +102,19 @@ def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
     return loss, conf_loss, loc_loss, l2_loss
 
 
-def load_config_from_settings(settings):
+def load_config_from_settings(settings: List[str]):
+    """Returns configs from given settings
+
+    Parameters
+    ----------
+    settings : List[str]
+        A list of string represents settings.
+
+    Returns
+    -------
+    [model_cfgs]
+        A list of string represents corresponding model configs
+    """
     settings = [f'{setting}_models' for setting in settings]
     cfg_obj = ObjDetConfig()
     data_cfg = cfg_obj.get_data_cfg()
@@ -118,7 +131,7 @@ def load_config_from_settings(settings):
 
 @class_header()
 class TfObjDetTrn:
-    def __init__(self, settings):
+    def __init__(self, settings: List[str]) -> None:
         self.settings = settings
         self.model_cfgs, self.data_cfg = load_config_from_settings(settings)
         self.model_selection = ObjDetSelectModel(self.model_cfgs)
