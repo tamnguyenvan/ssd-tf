@@ -31,6 +31,7 @@ def test_case9(path):
 
     settings = ['light']
     trainer = ModelTrainer(settings=settings)
+    trainer.config_connectors(path)
     trainer.train(epochs=10)
 
     # model_name = 'MobileNetV2'
