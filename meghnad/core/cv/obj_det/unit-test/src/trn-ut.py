@@ -1,9 +1,8 @@
 import sys
-sys.path.append('D:\\ixolerator')
+sys.path.append('D:\\10-27-22\ixolerator')
 import os
 
 
-import glob
 import tensorflow as tf
 
 gpus = tf.config.list_physical_devices('GPU')
@@ -11,26 +10,21 @@ if gpus:
     tf.config.set_visible_devices(gpus, 'GPU')
 
 import cv2
-from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import *
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.model_loader import *
-from meghnad.core.cv.obj_det.src.tensorflow.train.train import *
-from meghnad.core.cv.obj_det.src.tensorflow.train.eval import *
-from meghnad.core.cv.obj_det.src.tensorflow.inference.pred import *
-from meghnad.core.cv.obj_det.src.tensorflow.inference import vis_utils
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_box_utils import encode
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_loss_utils import SSDLoss
-from meghnad.core.cv.obj_det.cfg import ObjDetConfig
+
+from meghnad.core.cv.obj_det.src.tensorflow.train import TFObjDetTrn
 import unittest
 
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.anchors import generate_default_boxes
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_box_utils import compute_target
 
+def test_case1():
+    settings = ['light']
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    trainer = TFObjDetTrn(settings=settings)
+    trainer.config_connectors(path)
+    trainer.train(epochs=10)
 
 def test_case9(path):
-    config = ObjDetConfig()
-
     settings = ['light']
-    trainer = ModelTrainer(settings=settings)
+    trainer = TFObjDetTrn(settings=settings)
     trainer.config_connectors(path)
     trainer.train(epochs=10)
 
@@ -172,8 +166,7 @@ def test_case12(dataset_path):
 
 
 def _perform_tests():
-    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
-    test_case2(path)
+    test_case1()
 
 
 if __name__ == '__main__':

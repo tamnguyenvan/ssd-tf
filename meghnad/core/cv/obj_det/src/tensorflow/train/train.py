@@ -2,28 +2,38 @@ import time
 import os
 import math
 import sys
-from typing import List
+from typing import List, Tuple
 
 import tensorflow as tf
+
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import TFObjDetDataLoader
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.losses import SSDLoss
+from meghnad.core.cv.obj_det.cfg import ObjDetConfig
+
 from utils import ret_values
 from utils.log import Log
-from meghnad.core.cv.obj_det.src.tensorflow.train.eval import TfObjDetEval
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_loss_utils import SSDLoss
-from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import DataLoader
-from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 from utils.common_defs import class_header, method_header
 
-from .select_model import ObjDetSelectModel
+from .select_model import TFObjDetSelectModel
+from .eval import TFObjDetEval
+from .train_utils import get_optimizer
 
 
-__all__ = ['TfObjDetTrn']
+__all__ = ['TFObjDetTrn']
 
 
 log = Log()
 
 
 @tf.function
-def train_step(imgs, gt_confs, gt_locs, model, criterion, optimizer, weight_decay):
+def train_step(
+        imgs: tf.Tensor,
+        gt_confs: tf.Tensor,
+        gt_locs: tf.Tensor,
+        model,
+        criterion,
+        optimizer,
+        weight_decay: float =1e-5):
     """Process a training step.
 
     Parameters
@@ -102,7 +112,7 @@ def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
     return loss, conf_loss, loc_loss, l2_loss
 
 
-def load_config_from_settings(settings: List[str]):
+def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
     """Returns configs from given settings
 
     Parameters
@@ -120,30 +130,37 @@ def load_config_from_settings(settings: List[str]):
     data_cfg = cfg_obj.get_data_cfg()
 
     model_cfgs = []
+    data_cfgs = []
     for setting in settings:
-        model_settings = cfg_obj.get_model_settings(setting)
-        model_names = model_settings[setting]
+        model_names = cfg_obj.get_model_settings(setting)
         for model_name in model_names:
             model_cfg = cfg_obj.get_model_cfg(model_name)
             model_cfgs.append(model_cfg)
-    return model_cfgs
+            data_cfgs.append(data_cfg)
+    return model_cfgs, data_cfgs
 
 
-@class_header()
-class TfObjDetTrn:
+@class_header(description='')
+class TFObjDetTrn:
     def __init__(self, settings: List[str]) -> None:
         self.settings = settings
-        self.model_cfgs, self.data_cfg = load_config_from_settings(settings)
-        self.model_selection = ObjDetSelectModel(self.model_cfgs)
-        self.data_loaders = None
+        self.model_cfgs, self.data_cfgs = load_config_from_settings(settings)
+        self.model_selection = TFObjDetSelectModel(self.model_cfgs)
+        self.data_loaders = []
 
-    @method_header()
+    @method_header(description='')
     def config_connectors(self, data_path: str) -> None:
-        self.data_loaders = [DataLoader(self.data_cfg, model_cfg)
-                             for model_cfg in self.model_cfgs]
+        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg)
+                             for data_cfg, model_cfg in zip(self.data_cfgs, self.model_cfgs)]
 
-    @method_header()
-    def train(self, epochs: int = 10) -> object:
+    @method_header(description='')
+    def train(self,
+              epochs: int = 10,
+              checkpoint_dir: str = './checkpoints',
+              logdir: str = './training_logs',
+              resume_path: str = None,
+              print_every: int = 10,
+              **kwargs) -> object:
         try:
             epochs = int(epochs)
             if epochs <= 0:
@@ -156,47 +173,56 @@ class TfObjDetTrn:
                       __file__, __name__, "Epochs value must be a positive integer")
             return ret_values.IXO_RET_INVALID_INPUTS
 
-        # if self.model is None:
-        #     log.ERROR(sys._getframe().f_lineno,
-        #               __file__, __name__, "Model not initialized")
-        #     return ret_values.IXO_RET_INVALID_INPUTS
-        # if not os.path.isdir(self.checkpoint_dir):
-        #     os.makedirs(self.checkpoint_dir, exist_ok=True)
+        best_map_over_all_models = 0.
+        for i, model in enumerate(self.model_selection.models):
+            data_loader = self.data_loaders[i]
+            model_cfg = self.model_cfgs[i]
+            hyp = model_cfg['hyp_params']
+            opt = hyp.get('optimizer', 'Adam')
+            weight_decay = hyp.get('weight_decay', 1e-5)
 
-        # model_name = self.model_loader.aarch
+            optimizer = get_optimizer(opt)
+            criterion = SSDLoss(model_cfg['neg_ratio'], model_cfg['num_classes'])
+            evaluator = TFObjDetEval(model)
 
-        # # Found a checkpoint
-        # ckpt = tf.train.Checkpoint(
-        #     model=self.model, optimizer=self.optimizer, start_epoch=tf.Variable(0))
-        # if self.resume_path:
-        #     ckpt.read(self.resume_path)
-        #     print(f'Resume training from {self.resume_path}')
-        # else:
-        #     if self.checkpoint_dir:
-        #         ckpt_filenames = os.listdir(self.checkpoint_dir)
-        #         prefix = f'{model_name}_last.ckpt'
-        #         for filename in ckpt_filenames:
-        #             if filename.startswith(prefix):
-        #                 ckpt_path = os.path.join(self.checkpoint_dir, prefix)
-        #                 ckpt.read(ckpt_path)
-        #                 print(f'Resume training from {ckpt_path}')
-        #                 break
+            model_name = model_cfg['arch']
+            log_dir = os.path.join(logdir, model_name)
 
-        for data_loader, (model, optimizer, loss) in zip(data_loader, self.model_selection.models):
-            # train_log_dir = os.path.join(self.log_dir, 'train')
-            # val_log_dir = os.path.join(self.log_dir, 'val')
-            # train_summary_writer = tf.summary.create_file_writer(train_log_dir)
-            # val_summary_writer = tf.summary.create_file_writer(val_log_dir)
+            # Found a checkpoint
+            ckpt = tf.train.Checkpoint(
+                model=model, optimizer=optimizer, start_epoch=tf.Variable(0))
+            if resume_path:
+                ckpt.read(resume_path)
+                print(f'Resume training from {resume_path}')
+            else:
+                if checkpoint_dir:
+                    ckpt_filenames = os.listdir(checkpoint_dir)
+                    prefix = f'{model_name}_last.ckpt'
+                    for filename in ckpt_filenames:
+                        if filename.startswith(prefix):
+                            ckpt_path = os.path.join(
+                                checkpoint_dir, prefix)
+                            ckpt.read(ckpt_path)
+                            print(f'Resume training from {ckpt_path}')
+                            break
 
+            # Setup summary writers
+            train_log_dir = os.path.join(log_dir, 'train')
+            val_log_dir = os.path.join(log_dir, 'val')
+            train_summary_writer = tf.summary.create_file_writer(train_log_dir)
+            val_summary_writer = tf.summary.create_file_writer(val_log_dir)
+
+            # Setup learning rate scheduler
             base_lr = float(optimizer.learning_rate.numpy())
             warmup_learning_rate = base_lr / 6
             warmup_steps = 2000
             optimizer.learning_rate.assign(warmup_learning_rate)
             steps_per_epoch = max(
-                1, self.data_loader.train_size // self.data_loader.batch_size)
+                1, data_loader.train_size // data_loader.batch_size)
             total_steps = epochs * steps_per_epoch
             global_step = 0
 
+            # TODO: replace print by Log?
             print('Steps per epoch', steps_per_epoch)
             print('Total steps', total_steps)
 
@@ -213,7 +239,7 @@ class TfObjDetTrn:
                     # Forward + Backward
                     loss, conf_loss, loc_loss, l2_loss = train_step(
                         imgs, gt_confs, gt_locs,
-                        model, self.loss, self.optimizer, self.weight_decay
+                        model, criterion, optimizer, weight_decay
                     )
 
                     # Compute average losses
@@ -223,7 +249,7 @@ class TfObjDetTrn:
                     avg_loc_loss = (avg_loc_loss * i +
                                     loc_loss.numpy()) / (i + 1)
                     avg_l2_loss = (avg_l2_loss * i + l2_loss.numpy()) / (i + 1)
-                    if (i + 1) % self.print_every == 0:
+                    if (i + 1) % print_every == 0:
                         print('Epoch: {} Batch {} Time: {:.2}s | Loss: {:.4f} Conf: {:.4f} Loc: {:.4f} L2 Loss {:.4f}'.format(
                             epoch + 1, i + 1, time.time() - start, avg_loss, avg_conf_loss, avg_loc_loss, avg_l2_loss))
 
@@ -233,19 +259,20 @@ class TfObjDetTrn:
                         slope = (base_lr - warmup_learning_rate) / warmup_steps
                         new_lr = warmup_learning_rate + slope * \
                             tf.cast(global_step, tf.float32)
-                        self.optimizer.learning_rate.assign(new_lr)
+                        optimizer.learning_rate.assign(new_lr)
                     else:
                         new_lr = 0.5 * base_lr * (1 + tf.cos(
                             math.pi *
                             (tf.cast(i + 1, tf.float32) - warmup_steps
                              ) / float(total_steps - warmup_steps)))
-                        self.optimizer.learning_rate.assign(new_lr)
+                        optimizer.learning_rate.assign(new_lr)
+                    break
                 print('Current learning rate:',
-                      self.optimizer.learning_rate.numpy())
+                      optimizer.learning_rate.numpy())
 
                 # Start evaluation at the end of epoch
                 print('Evaluating...')
-                map, map50 = self.evaluator.eval()
+                map, map50 = evaluator.eval(data_loader)
 
                 with train_summary_writer.as_default():
                     tf.summary.scalar('loss', avg_loss, step=epoch)
@@ -258,18 +285,22 @@ class TfObjDetTrn:
                 # Checkpoint
                 ckpt.start_epoch.assign_add(1)
                 save_path = ckpt.write(os.path.join(
-                    self.checkpoint_dir, f'{model_name}_last.ckpt'))
+                    checkpoint_dir, f'{model_name}_last.ckpt'))
                 print("Saved checkpoint for epoch {}: {}".format(
                     int(ckpt.start_epoch), save_path))
 
                 # Save the best
                 if map > best_map:
                     best_map = map
-                    self.best_path = ckpt.write(os.path.join(
-                        self.checkpoint_dir, f'{model_name}_best.ckpt'))
-                    print(f'Saved best model as {self.best_path}')
+                    best_path = ckpt.write(os.path.join(
+                        checkpoint_dir, f'{model_name}_best.ckpt'))
+                    print(f'Saved best model as {best_path}')
 
-                self.total_epochs_ran += 1
+                if map > best_map_over_all_models:
+                    best_map_over_all_models = map
+                    self.model_selection.best_model = model
+
+            # TODO: save the best model here
             return ret_values.IXO_RET_SUCCESS
 
     def get_best_model(self):

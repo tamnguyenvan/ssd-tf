@@ -1,26 +1,27 @@
 import os
 import json
-import sys
-import glob
-import numpy as np
 import tensorflow as tf
 from utils import ret_values
 from utils.log import Log
+
 from .loader_utils import get_tfrecord_dataset
 from ..model_loader.ssd.anchors import generate_default_boxes
 from ..model_loader.ssd.utils.ssd_box_utils import compute_target
 
+
+__all__ = ['TFObjDetDataLoader']
+
 log = Log()
 
 
-class TfObjDetDataLoader:
-    def __init__(self, data_cfg, model_cfg):
+class TFObjDetDataLoader:
+    def __init__(self, data_path, data_cfg, model_cfg):
         self.data_cfg = data_cfg
         self.model_cfg = model_cfg
 
-        self.num_classes = data_cfg['num_classes']
         self.batch_size = model_cfg.get('batch_size', 4)
-        self.img_size = model_cfg['img_size']
+        self.img_size = model_cfg['input_shape'][:2]
+        self.num_classes = model_cfg['num_classes']
         self.max_boxes = 100
         scales = model_cfg.get(
             'scales', [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.075])
@@ -40,7 +41,7 @@ class TfObjDetDataLoader:
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
 
-        self._load_data_from_directory(data_cfg['path'])
+        self._load_data_from_directory(data_path)
 
     def _parse_tf_example(self, tf_example, training=True):
         """_summary_
@@ -154,58 +155,58 @@ class TfObjDetDataLoader:
                 rescale=rescale, random_flip=rand_flip, random_rotation=rotate)
         return self.train_dataset, self.validation_dataset, self.test_dataset
 
-    def augment_data(self, rescale=True, random_flip=False, random_rotation=False):
+    # def augment_data(self, rescale=True, random_flip=False, random_rotation=False):
 
-        data_augmentation_layers = tf.keras.Sequential()
-        if rescale:
-            data_augmentation_layers.add(
-                tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255))
-        if random_flip:
-            data_augmentation_layers.add(
-                tf.keras.layers.RandomFlip('horizontal'))
-        if random_rotation:
-            data_augmentation_layers.add(tf.keras.layers.RandomRotation(0.2))
-        if not self.train_dataset:
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Training data is null")
-            return ret_values.IXO_RET_INVALID_INPUTS
-        if not self.validation_dataset:
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Validation data is null")
-            return ret_values.IXO_RET_INVALID_INPUTS
-        if not self.test_dataset:
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Test data is null")
-            return ret_values.IXO_RET_INVALID_INPUTS
-        self.train_dataset = (
-            self.train_dataset
-                .shuffle(self.batch_size * 100)
-                .batch(self.batch_size)
-                .map(lambda x, y: (data_augmentation_layers(x), y),
-                     num_parallel_calls=tf.data.experimental.AUTOTUNE)
-                .prefetch(tf.data.experimental.AUTOTUNE)
-        )
-        self.test_dataset = (
-            self.test_dataset
-                .shuffle(self.batch_size * 100)
-                .batch(self.batch_size)
-                .map(lambda x, y: (data_augmentation_layers(x), y),
-                     num_parallel_calls=tf.data.experimental.AUTOTUNE)
-                .prefetch(tf.data.experimental.AUTOTUNE)
-        )
-        self.validation_dataset = (
-            self.validation_dataset
-                .shuffle(self.batch_size * 100)
-                .batch(self.batch_size)
-                .map(lambda x, y: (data_augmentation_layers(x), y),
-                     num_parallel_calls=tf.data.experimental.AUTOTUNE)
-                .prefetch(tf.data.experimental.AUTOTUNE)
-        )
+    #     data_augmentation_layers = tf.keras.Sequential()
+    #     if rescale:
+    #         data_augmentation_layers.add(
+    #             tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255))
+    #     if random_flip:
+    #         data_augmentation_layers.add(
+    #             tf.keras.layers.RandomFlip('horizontal'))
+    #     if random_rotation:
+    #         data_augmentation_layers.add(tf.keras.layers.RandomRotation(0.2))
+    #     if not self.train_dataset:
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Training data is null")
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     if not self.validation_dataset:
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Validation data is null")
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     if not self.test_dataset:
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Test data is null")
+    #         return ret_values.IXO_RET_INVALID_INPUTS
+    #     self.train_dataset = (
+    #         self.train_dataset
+    #             .shuffle(self.batch_size * 100)
+    #             .batch(self.batch_size)
+    #             .map(lambda x, y: (data_augmentation_layers(x), y),
+    #                  num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    #             .prefetch(tf.data.experimental.AUTOTUNE)
+    #     )
+    #     self.test_dataset = (
+    #         self.test_dataset
+    #             .shuffle(self.batch_size * 100)
+    #             .batch(self.batch_size)
+    #             .map(lambda x, y: (data_augmentation_layers(x), y),
+    #                  num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    #             .prefetch(tf.data.experimental.AUTOTUNE)
+    #     )
+    #     self.validation_dataset = (
+    #         self.validation_dataset
+    #             .shuffle(self.batch_size * 100)
+    #             .batch(self.batch_size)
+    #             .map(lambda x, y: (data_augmentation_layers(x), y),
+    #                  num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    #             .prefetch(tf.data.experimental.AUTOTUNE)
+    #     )
 
-        return ret_values.IXO_RET_SUCCESS
+    #     return ret_values.IXO_RET_SUCCESS
 
     def _config_connectors(self, path: str):
         """Dataset supposed to be COCO format"""
@@ -220,70 +221,70 @@ class TfObjDetDataLoader:
         self.connector['val_file_path'] = os.path.join(
             path, 'val_annotations.json')
 
-    def load_data_from_url(
-        self,
-        url,
-        save_as=None,
-        data_dir=None,
-        augment=False,
-        rescale=True,
-        rand_flip=False,
-        rotate=False
-    ):
-        """_summary_
+    # def load_data_from_url(
+    #     self,
+    #     url,
+    #     save_as=None,
+    #     data_dir=None,
+    #     augment=False,
+    #     rescale=True,
+    #     rand_flip=False,
+    #     rotate=False
+    # ):
+    #     """_summary_
 
-        Parameters
-        ----------
-        url : _type_
-            _description_
-        save_as : _type_, optional
-            _description_, by default None
-        data_dir : _type_, optional
-            _description_, by default None
-        augment : bool, optional
-            _description_, by default False
-        rescale : bool, optional
-            _description_, by default True
-        rand_flip : bool, optional
-            _description_, by default False
-        rotate : bool, optional
-            _description_, by default False
+    #     Parameters
+    #     ----------
+    #     url : _type_
+    #         _description_
+    #     save_as : _type_, optional
+    #         _description_, by default None
+    #     data_dir : _type_, optional
+    #         _description_, by default None
+    #     augment : bool, optional
+    #         _description_, by default False
+    #     rescale : bool, optional
+    #         _description_, by default True
+    #     rand_flip : bool, optional
+    #         _description_, by default False
+    #     rotate : bool, optional
+    #         _description_, by default False
 
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        path_to_downloaded_dataset = tf.keras.utils.get_file(
-            save_as, origin=url, extract=True, cache_dir=data_dir)
-        base_path = os.path.join(os.path.dirname(
-            path_to_downloaded_dataset), save_as.partition(".")[0])
-        if not os.path.exists(base_path):
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__,
-                      "Invalid path for data: {} ".format(base_path))
-            return ret_values.IXO_RET_INVALID_INPUTS
+    #     Returns
+    #     -------
+    #     _type_
+    #         _description_
+    #     """
+    #     path_to_downloaded_dataset = tf.keras.utils.get_file(
+    #         save_as, origin=url, extract=True, cache_dir=data_dir)
+    #     base_path = os.path.join(os.path.dirname(
+    #         path_to_downloaded_dataset), save_as.partition(".")[0])
+    #     if not os.path.exists(base_path):
+    #         log.ERROR(sys._getframe().f_lineno,
+    #                   __file__, __name__,
+    #                   "Invalid path for data: {} ".format(base_path))
+    #         return ret_values.IXO_RET_INVALID_INPUTS
 
-        train_dir_full_path = os.path.join(base_path, 'train')
-        if os.path.exists(train_dir_full_path):
-            self.train_dir = train_dir_full_path
-        else:
-            self.train_dir = base_path
+    #     train_dir_full_path = os.path.join(base_path, 'train')
+    #     if os.path.exists(train_dir_full_path):
+    #         self.train_dir = train_dir_full_path
+    #     else:
+    #         self.train_dir = base_path
 
-        test_dir_full_path = os.path.join(base_path, 'test')
-        if os.path.exists(test_dir_full_path):
-            self.test_dir = test_dir_full_path
-        else:
-            self.test_dir = None
-        val_dir_full_path = os.path.join(base_path, 'validation')
-        if os.path.exists(val_dir_full_path):
-            self.val_dir = val_dir_full_path
-        else:
-            self.val_dir = None
-        if augment:
-            self.augment_data(
-                rescale=rescale, random_flip=rand_flip, random_rotation=rotate)
-        return ret_values.IXO_RET_SUCCESS, self.train_dir, self.test_dir, self.val_dir
+    #     test_dir_full_path = os.path.join(base_path, 'test')
+    #     if os.path.exists(test_dir_full_path):
+    #         self.test_dir = test_dir_full_path
+    #     else:
+    #         self.test_dir = None
+    #     val_dir_full_path = os.path.join(base_path, 'validation')
+    #     if os.path.exists(val_dir_full_path):
+    #         self.val_dir = val_dir_full_path
+    #     else:
+    #         self.val_dir = None
+    #     if augment:
+    #         self.augment_data(
+    #             rescale=rescale, random_flip=rand_flip, random_rotation=rotate)
+    #     return ret_values.IXO_RET_SUCCESS, self.train_dir, self.test_dir, self.val_dir
 
     def read_data(self, image_dir, annotation_file, dataset='train'):
         tfrecord_file = f'{dataset}.tfrecord'
@@ -291,13 +292,13 @@ class TfObjDetDataLoader:
             image_dir, annotation_file, tfrecord_file)
         return dataset, num_samples
 
-    def read_pred_data(self, path):
-        images = []
-        for img in glob.glob(path + "/*.png"):
-            img = tf.keras.preprocessing.image.load_img(
-                img, target_size=self.img_size)
-            img_arr = tf.keras.preprocessing.image.img_to_array(img)
-            images.append(img_arr)
-        images = np.array(images)
-        dataset = tf.data.Dataset.from_tensors((images))
-        return dataset
+    # def read_pred_data(self, path):
+    #     images = []
+    #     for img in glob.glob(path + "/*.png"):
+    #         img = tf.keras.preprocessing.image.load_img(
+    #             img, target_size=self.img_size)
+    #         img_arr = tf.keras.preprocessing.image.img_to_array(img)
+    #         images.append(img_arr)
+    #     images = np.array(images)
+    #     dataset = tf.data.Dataset.from_tensors((images))
+    #     return dataset
