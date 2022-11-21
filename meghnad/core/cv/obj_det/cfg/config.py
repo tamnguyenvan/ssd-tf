@@ -1,4 +1,4 @@
- #######################################################################################################################
+#######################################################################################################################
 # Configurations for Object Detection.
 #
 # Copyright: All rights reserved. Inxite Out. 2022.
@@ -30,7 +30,6 @@ _obj_det_cfg = {
     'data_cfg':
     {
         'path': '',
-        'num_classes': 10 + 1,  # num_classes + background
         'train_test_val_split': (0.7, 0.2, 0.1),
     },
     'model_cfg':
@@ -39,6 +38,7 @@ _obj_det_cfg = {
             'arch': 'MobileNetV2',
             'pretrained': None,
             'input_shape': (300, 300, 3),
+            'num_classes': 10 + 1,  # num_classes + background
             'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
             'num_anchors': [4, 6, 6, 6, 4, 4],
             'feature_map_sizes': [19, 10, 5, 3, 2, 1],
