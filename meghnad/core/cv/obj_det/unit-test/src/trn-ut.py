@@ -12,6 +12,8 @@ if gpus:
 import cv2
 
 from meghnad.core.cv.obj_det.src.tensorflow.train import TFObjDetTrn
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader import TFObjDetDataLoader
+from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 import unittest
 
 
@@ -22,118 +24,20 @@ def test_case1():
     trainer.config_connectors(path)
     trainer.train(epochs=10)
 
-def test_case9(path):
-    settings = ['light']
-    trainer = TFObjDetTrn(settings=settings)
-    trainer.config_connectors(path)
-    trainer.train(epochs=10)
 
-    # model_name = 'MobileNetV2'
-    # data_config = config.get_data_cfg()
-    # model_config = config.get_model_cfg(model_name)
-    # model_params = config.get_model_params(model_name)
-    # print('Model name:', model_name)
-    # print('Model config')
-    # print(model_config)
-    # print('Model params')
-    # print(model_params)
+def test_case2():
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    cfg_obj = ObjDetConfig()
+    data_cfg = cfg_obj.get_data_cfg()
+    model_cfg = cfg_obj.get_model_cfg('MobileNetV2')
+    dataloader = TFObjDetDataLoader(path)
 
-    # # label_encoder = LabelEncoder()
-    # img_size = model_config['input_shape'][:2]
-    # print('image size', img_size)
-    # d_loader = DataLoader(
-    #     num_classes=data_config['num_classes'],
-    #     batch_size=model_params['batch_size'],
-    #     img_size=img_size,
-    #     scales=model_config['scales'],
-    #     feature_map_sizes=model_config['feature_map_sizes'],
-    #     aspect_ratios=model_config['aspect_ratios']
-    # )
-    # d_loader.load_data_from_directory(
-    #     path=path, augment=False, rescale=False, rand_flip=False, rotate=False
-    # )
-    # m_loader = ModelLoader(
-    #     aarch=model_name,
-    #     num_classes=data_config['num_classes'],
-    #     model_config=model_config
-    # )
-    # m_loader.load_model()
-    # trainer = ModelTrainer(
-    #     data_loader=d_loader,
-    #     model_loader=m_loader,
-    #     model_config=model_config,
-    #     learning_rate=model_params['learning_rate'],
-    #     loss=SSDLoss(model_config['neg_ratio'], data_config['num_classes'])
-    # )
-    # trainer.compile_model()
-    # trainer.train(epochs=200)
-
-    # best_checkpoint_path = trainer.get_best_model()
-    # evaluator = ModelEvaluator(
-    #     m_loader,
-    #     model_config,
-    #     d_loader,
-    #     ckpt_path=best_checkpoint_path,
-    #     phase='validation'
-    # )
-    # evaluator.eval()
-
-def test_case2(path):
-    config = cfg.ObjDetConfig()
-    model_name = 'MobileNetV2'
-    data_config = config.get_data_cfg()
-    model_config = config.get_model_cfg(model_name)
-    model_params = config.get_model_params(model_name)
-    print('Model config')
-    print(model_config)
-    print('Model params')
-    print(model_params)
-
-    img_size = model_config['input_shape'][:2]
-    print('image size', img_size)
-    d_loader = TfObjDetDataLoader(
-        num_classes=data_config['num_classes'],
-        batch_size=model_params['batch_size'],
-        img_size=img_size,
-        scales=model_config['scales'],
-        feature_map_sizes=model_config['feature_map_sizes'],
-        aspect_ratios=model_config['aspect_ratios']
-    )
-    d_loader.load_data_from_directory(
-        path=path, augment=False, rescale=False, rand_flip=False, rotate=False
-    )
-    m_loader = TfObjDetModelLoader(
-        aarch=model_name,
-        num_classes=data_config['num_classes'],
-        model_config=model_config
-    )
-    m_loader.load_model()
-
-    evaluator = TfObjDetTrn(
-        m_loader,
-        model_config,
-        d_loader,
-        ckpt_path='./checkpoints/MobileNetV2_best.ckpt',
-        phase='test',
-        image_out_dir='D:\\output',
-        draw_predictions=True,
-        from_hub=False
-    )
-    evaluator.eval()
-
-    # image = cv2.imread(path)
-    # print(image.shape)
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # success, (bboxes, classes, scores) = predictor.predict(image)
-    # #class_map = {1: 'Cat', 2: 'Dog'}
-    # image = vis_utils.draw_bboxes(image, bboxes, classes, scores)
-    # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    #
-    #cv2.imshow('output', image)
-    # cv2.waitKey(0)
+    for images, gt_confs, gt_locs in dataloader.train_dataset.take(1):
+        break
+    print(images.shape)
 
 
-def test_case12(dataset_path):
+def test_case3(dataset_path):
     image_dir = os.path.join(dataset_path, 'images')
     test_ann_file = os.path.join(dataset_path, 'test_annotations.json')
     import json

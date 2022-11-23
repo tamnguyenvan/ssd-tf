@@ -15,136 +15,153 @@ __all__ = ['ObjDetConfig']
 
 _obj_det_cfg = {
     'models':
-        {
-            'MobileNetV2',
-            'EfficientNetB3',
-            'EfficientNetB4',
-            'EfficientNetB5',
-            'EfficientNetV2S',
-            'EfficientNetV2M',
-            'EfficientNetV2L',
-        },
+    {
+        'MobileNetV2',
+        'EfficientNetB3',
+        'EfficientNetB4',
+        'EfficientNetB5',
+        'EfficientNetV2S',
+        'EfficientNetV2M',
+        'EfficientNetV2L',
+    },
     'data_cfg':
+    {
+        'path': '',
+        'train_test_val_split': (0.7, 0.2, 0.1),
+        'augmentations':
         {
-            'path': '',
-            'train_test_val_split': (0.7, 0.2, 0.1),
-        },
+            'train':
+            {
+                'random_crop': {'width': 300, 'height': 300},
+                'random_fliplr': {'p': 0.5},
+                'random_brightness': {'p': 0.2},
+                'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
+            },
+            'test':
+            {
+                'center_crop': {'width': 300, 'height': 300},
+                'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
+            }
+        }
+    },
     'model_cfg':
+    {
+        'MobileNetV2':
         {
-            'MobileNetV2': {
-                'arch': 'MobileNetV2',
-                'pretrained': None,
-                'input_shape': (300, 300, 3),
-                'num_classes': 10 + 1,  # num_classes + background
-                'classes': [],
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 6, 4, 4],
-                'feature_map_sizes': [19, 10, 5, 3, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'Adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetB3': {
-                'arch': 'EfficientNetB3',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetB4': {
-                'arch': 'EfficientNetB4',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetB5': {
-                'arch': 'EfficientNetB5',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetV2S': {
-                'arch': 'EfficientNetV2S',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetV2M': {
-                'arch': 'EfficientNetV2M',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
-            },
-            'EfficientNetV2L': {
-                'arch': 'EfficientNetV2L',
-                'input_shape': (512, 512, 3),
-                'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
-                'num_anchors': [4, 6, 6, 4, 4],
-                'feature_map_sizes': [16, 8, 4, 2, 1],
-                'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
-                'neg_ratio': 3,
-                'hyp_params':
-                    {
-                        'batch_size': 8,
-                        'optimizer': 'adam',
-                        'learning_rate': 0.0001,
-                }
+            'arch': 'MobileNetV2',
+            'pretrained': None,
+            'input_shape': (300, 300, 3),
+            'num_classes': 10 + 1,  # num_classes + background
+            'classes': [],
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 6, 4, 4],
+            'feature_map_sizes': [19, 10, 5, 3, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'Adam',
+                'learning_rate': 0.0001,
             }
         },
-    'model_settings':
+        'EfficientNetB3':
         {
-            'default_models': ['MobileNetV2', 'EfficientNetB3'],
-            'light_models': ['MobileNetV2']
+            'arch': 'EfficientNetB3',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
+        },
+        'EfficientNetB4': {
+            'arch': 'EfficientNetB4',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
+        },
+        'EfficientNetB5': {
+            'arch': 'EfficientNetB5',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
+        },
+        'EfficientNetV2S': {
+            'arch': 'EfficientNetV2S',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
+        },
+        'EfficientNetV2M': {
+            'arch': 'EfficientNetV2M',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
+        },
+        'EfficientNetV2L': {
+            'arch': 'EfficientNetV2L',
+            'input_shape': (512, 512, 3),
+            'aspect_ratios': [[2], [2, 3], [2, 3], [2], [2]],
+            'num_anchors': [4, 6, 6, 4, 4],
+            'feature_map_sizes': [16, 8, 4, 2, 1],
+            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9],
+            'neg_ratio': 3,
+            'hyp_params':
+            {
+                'batch_size': 8,
+                'optimizer': 'adam',
+                'learning_rate': 0.0001,
+            }
         }
+    },
+    'model_settings':
+    {
+        'default_models': ['MobileNetV2', 'EfficientNetB3'],
+        'light_models': ['MobileNetV2']
+    }
 }
 
 

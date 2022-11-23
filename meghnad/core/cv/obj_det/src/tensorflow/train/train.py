@@ -6,7 +6,7 @@ from typing import List, Tuple
 
 import tensorflow as tf
 
-from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import TFObjDetDataLoader
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader import TFObjDetDataLoader
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.losses import SSDLoss
 from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 
@@ -70,6 +70,8 @@ def train_step(
         loss += l2_loss
 
     gradients = tape.gradient(loss, model.trainable_variables)
+    # Normalize gradients
+    gradients = [tf.clip_by_norm(grad) for grad in gradients]
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
     return loss, conf_loss, loc_loss, l2_loss
@@ -196,7 +198,7 @@ class TFObjDetTrn:
                 ckpt.read(resume_path)
                 print(f'Resume training from {resume_path}')
             else:
-                if checkpoint_dir:
+                if checkpoint_dir and os.path.isdir(checkpoint_dir):
                     ckpt_filenames = os.listdir(checkpoint_dir)
                     prefix = f'{model_name}_last.ckpt'
                     for filename in ckpt_filenames:

@@ -1,20 +1,35 @@
+from typing import Tuple
 import sys
+
 import tensorflow as tf
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Conv2D, BatchNormalization, Activation, MaxPooling2D
+from tensorflow.keras.layers import Conv2D, BatchNormalization, Activation, MaxPooling2D, ReLU
+
 from utils import ret_values
 from utils.log import Log
 
 log = Log()
 
-#class UnsupportedBackboneError(Exception):
-#    pass
 
+def get_backbone(name, image_size=(300, 300)) -> Tuple:
+    """Get backbone network from given name.
 
-def get_backbone(name, image_size=(300, 300)):
-    if name == 'MobileNet':
-        pass
-    elif name == 'MobileNetV2':
+    Returns  a 3-tuple represents a model instance, a list of feature names, and
+    name of the output layer.
+
+    Parameters
+    ----------
+    name : str
+        Model name.
+    image_size : tuple, optional
+        Input image size, by default (300, 300)
+
+    Returns
+    -------
+    Tuple
+        _description_
+    """
+    if name == 'MobileNetV2':
         return [
             tf.keras.applications.MobileNetV2(
                 input_shape=(image_size[0], image_size[1], 3), include_top=False),
@@ -68,35 +83,33 @@ def get_backbone(name, image_size=(300, 300)):
                   __file__, __name__, f"Unsupported backbone {name}")
         return ret_values.IXO_RET_NOT_SUPPORTED
 
-        #raise UnsupportedBackboneError(f'Unsupported backbone {name}')
-
 
 def create_extra_layers(backbone):
     if backbone == 'MobileNetV2':
         extra_layers = [
             Sequential([
                 Conv2D(256, (1, 1), strides=(1, 1), padding="valid",
-                       activation="relu", name="extra1_1"),
+                       activation=ReLU(6.0), name="extra1_1"),
                 Conv2D(512, (3, 3), strides=(2, 2), padding="same",
-                       activation="relu", name="extra1_2"),
+                       activation=ReLU(6.0), name="extra1_2"),
             ]),
             Sequential([
                 Conv2D(128, (1, 1), strides=(1, 1), padding="valid",
-                       activation="relu", name="extra2_1"),
+                       activation=ReLU(6.0), name="extra2_1"),
                 Conv2D(256, (3, 3), strides=(2, 2), padding="same",
-                       activation="relu", name="extra2_2")
+                       activation=ReLU(6.0), name="extra2_2")
             ]),
             Sequential([
                 Conv2D(128, (1, 1), strides=(1, 1), padding="valid",
-                       activation="relu", name="extra3_1"),
+                       activation=ReLU(6.0), name="extra3_1"),
                 Conv2D(256, (3, 3), strides=(2, 2), padding="same",
-                       activation="relu", name="extra3_2")
+                       activation=ReLU(6.0), name="extra3_2")
             ]),
             Sequential([
                 Conv2D(128, (1, 1), strides=(1, 1), padding="valid",
-                       activation="relu", name="extra4_1"),
+                       activation=ReLU(6.0), name="extra4_1"),
                 Conv2D(256, (3, 3), strides=(2, 2), padding="same",
-                       activation="relu", name="extra4_2")
+                       activation=ReLU(6.0), name="extra4_2")
             ])
         ]
 
@@ -106,28 +119,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
@@ -140,28 +153,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
@@ -174,28 +187,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
@@ -208,28 +221,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
@@ -242,28 +255,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
@@ -276,28 +289,28 @@ def create_extra_layers(backbone):
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 Conv2D(320, (3, 3), strides=(1, 1), padding='same'),
                 BatchNormalization(),
-                Activation('relu'),
+                ReLU(6.0),
                 MaxPooling2D((2, 2))
             ]),
             Sequential([

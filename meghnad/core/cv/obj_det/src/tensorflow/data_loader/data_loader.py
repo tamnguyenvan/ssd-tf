@@ -7,6 +7,7 @@ from utils.log import Log
 from .loader_utils import get_tfrecord_dataset
 from ..model_loader.ssd.anchors import generate_default_boxes
 from ..model_loader.ssd.utils import compute_target
+from .transforms import build_transforms
 
 
 __all__ = ['TFObjDetDataLoader']
@@ -38,12 +39,22 @@ class TFObjDetDataLoader:
         self.test_dataset = None
         self.test_size = 0
 
+        self.train_transforms = build_transforms(
+            data_cfg['augmentations']['train'])
+        self.test_transforms = build_transforms(
+            data_cfg['augmentations']['test'])
+
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
 
         self._load_data_from_directory(data_path)
 
-    def _parse_tf_example(self, tf_example, training=True):
+    def _aug_fn(self, fn, image: tf.Tensor, bboxes: tf.Tensor, classes: tf.Tensor):
+        data = {'image': image, 'bboxes': bboxes, 'classes': classes}
+        aug_data = fn(**data)
+        return aug_data['image'], aug_data['bboxes'], aug_data['classes']
+
+    def _parse_tf_example(self, tf_example, to_targets=True, training=True):
         """_summary_
 
         Parameters
@@ -69,8 +80,7 @@ class TFObjDetDataLoader:
         image_height = tf.cast(parsed_example['image/height'], tf.int32)
         image_width = tf.cast(parsed_example['image/width'], tf.int32)
         image = tf.reshape(image, (image_height, image_width, 3))
-        image = tf.cast(tf.image.resize(image, self.img_size), tf.float32)
-        image /= 255.0
+        # image = tf.image.resize(image, self.img_size)
 
         xmins = tf.sparse.to_dense(parsed_example['image/object/bbox/xmin'])
         ymins = tf.sparse.to_dense(parsed_example['image/object/bbox/ymin'])
@@ -78,8 +88,6 @@ class TFObjDetDataLoader:
         ymaxs = tf.sparse.to_dense(parsed_example['image/object/bbox/ymax'])
         labels = tf.cast(tf.sparse.to_dense(
             parsed_example['image/object/class/label']), tf.int32)
-        num_pad = tf.maximum(0, self.max_boxes - tf.shape(labels)[0])
-        labels = tf.pad(labels, [[0, num_pad]])
 
         bboxes = tf.stack([
             xmins,
@@ -87,9 +95,22 @@ class TFObjDetDataLoader:
             xmaxs,
             ymaxs,
         ], 1)
+
+        # Transformations
+        fn = self.train_transforms if training else self.test_transforms
+        image, bboxes, labels = tf.numpy_function(
+            func=self._aug_fn,
+            inp=[fn, image, bboxes, labels],
+            Tout=[tf.float32, tf.float32, tf.int32])
+
+        # Pad
+        num_pad = tf.maximum(0, self.max_boxes - tf.shape(labels)[0])
         bboxes = tf.pad(bboxes, [[0, num_pad], [0, 0]])
+        labels = tf.pad(labels, [[0, num_pad]])
         bboxes = tf.reshape(bboxes, [self.max_boxes, 4])
         labels = tf.reshape(labels, [self.max_boxes])
+
+        # Compute targets
         gt_confs, gt_locs = compute_target(
             self.default_boxes, bboxes, labels)
         if training:
@@ -97,8 +118,7 @@ class TFObjDetDataLoader:
         else:
             return image_id, tf.stack([image_height, image_width]), image, gt_confs, gt_locs
 
-    def _load_data_from_directory(self, path, augment=False,
-                                  rescale=True, rand_flip=False, rotate=False):
+    def _load_data_from_directory(self, path):
         self._config_connectors(path)
         autotune = tf.data.AUTOTUNE
 
@@ -150,9 +170,6 @@ class TFObjDetDataLoader:
         test_dataset = test_dataset.apply(
             tf.data.experimental.ignore_errors())
         self.test_dataset = test_dataset.prefetch(autotune)
-        if augment:
-            self.augment_data(
-                rescale=rescale, random_flip=rand_flip, random_rotation=rotate)
         return self.train_dataset, self.validation_dataset, self.test_dataset
 
     def _config_connectors(self, path: str):
