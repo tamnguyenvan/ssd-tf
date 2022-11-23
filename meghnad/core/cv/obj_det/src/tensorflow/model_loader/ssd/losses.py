@@ -1,5 +1,8 @@
 import tensorflow as tf
 
+__all__ = ['SSDLoss']
+
+
 def hard_negative_mining(loss, gt_confs, neg_ratio):
     """ Hard negative mining algorithm
         to pick up negative examples for back-propagation

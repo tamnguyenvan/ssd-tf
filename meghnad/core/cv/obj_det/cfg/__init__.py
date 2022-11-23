@@ -1,1 +1,1 @@
-from config import ObjDetConfig
+from .config import ObjDetConfig

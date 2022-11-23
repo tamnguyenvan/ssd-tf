@@ -5,15 +5,18 @@ import sys
 from typing import List, Tuple
 
 import tensorflow as tf
+
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import TFObjDetDataLoader
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.losses import SSDLoss
+from meghnad.core.cv.obj_det.cfg import ObjDetConfig
+
 from utils import ret_values
 from utils.log import Log
-from meghnad.core.cv.obj_det.src.tensorflow.train.eval import TfObjDetEval
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_loss_utils import SSDLoss
-from meghnad.core.cv.obj_det.src.tensorflow.data_loader.data_loader import DataLoader
-from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 from utils.common_defs import class_header, method_header
 
 from .select_model import TFObjDetSelectModel
+from .eval import TFObjDetEval
+from .train_utils import get_optimizer
 
 
 __all__ = ['TFObjDetTrn']
@@ -23,7 +26,14 @@ log = Log()
 
 
 @tf.function
-def train_step(imgs, gt_confs, gt_locs, model, criterion, optimizer, weight_decay):
+def train_step(
+        imgs: tf.Tensor,
+        gt_confs: tf.Tensor,
+        gt_locs: tf.Tensor,
+        model,
+        criterion,
+        optimizer,
+        weight_decay: float = 1e-5):
     """Process a training step.
 
     Parameters
@@ -122,8 +132,7 @@ def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
     model_cfgs = []
     data_cfgs = []
     for setting in settings:
-        model_settings = cfg_obj.get_model_settings(setting)
-        model_names = model_settings[setting]
+        model_names = cfg_obj.get_model_settings(setting)
         for model_name in model_names:
             model_cfg = cfg_obj.get_model_cfg(model_name)
             model_cfgs.append(model_cfg)
@@ -131,21 +140,27 @@ def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
     return model_cfgs, data_cfgs
 
 
-@class_header()
+@class_header(description='')
 class TFObjDetTrn:
     def __init__(self, settings: List[str]) -> None:
         self.settings = settings
         self.model_cfgs, self.data_cfgs = load_config_from_settings(settings)
         self.model_selection = TFObjDetSelectModel(self.model_cfgs)
-        self.data_loaders = None
+        self.data_loaders = []
 
-    @method_header()
+    @method_header(description='')
     def config_connectors(self, data_path: str) -> None:
-        self.data_loaders = [DataLoader(data_path, data_cfg, model_cfg)
+        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg)
                              for data_cfg, model_cfg in zip(self.data_cfgs, self.model_cfgs)]
 
-    @method_header()
-    def train(self, epochs: int = 10, **kwargs) -> object:
+    @method_header(description='')
+    def train(self,
+              epochs: int = 10,
+              checkpoint_dir: str = './checkpoints',
+              logdir: str = './training_logs',
+              resume_path: str = None,
+              print_every: int = 10,
+              **kwargs) -> object:
         try:
             epochs = int(epochs)
             if epochs <= 0:
@@ -158,41 +173,47 @@ class TFObjDetTrn:
                       __file__, __name__, "Epochs value must be a positive integer")
             return ret_values.IXO_RET_INVALID_INPUTS
 
-        # if self.model is None:
-        #     log.ERROR(sys._getframe().f_lineno,
-        #               __file__, __name__, "Model not initialized")
-        #     return ret_values.IXO_RET_INVALID_INPUTS
-        # if not os.path.isdir(self.checkpoint_dir):
-        #     os.makedirs(self.checkpoint_dir, exist_ok=True)
-        print_every = kwargs.get('print_every', 10)
-        weight_decay = kwargs.get('weight_deay', 1e-4)
+        best_map_over_all_models = 0.
+        for i, model in enumerate(self.model_selection.models):
+            data_loader = self.data_loaders[i]
+            model_cfg = self.model_cfgs[i]
+            hyp = model_cfg['hyp_params']
+            opt = hyp.get('optimizer', 'Adam')
+            weight_decay = hyp.get('weight_decay', 1e-5)
 
-        for data_loader, (model, optimizer, loss), model_cfg in zip(self.data_loaders, self.model_selection.models, self.model_cfgs):
+            optimizer = get_optimizer(opt)
+            criterion = SSDLoss(
+                model_cfg['neg_ratio'], model_cfg['num_classes'])
+            evaluator = TFObjDetEval(model)
+
             model_name = model_cfg['arch']
-            log_dir = os.path.join(self.log_dir, model_name)
+            log_dir = os.path.join(logdir, model_name)
 
             # Found a checkpoint
             ckpt = tf.train.Checkpoint(
-                model=model, optimizer=self.optimizer, start_epoch=tf.Variable(0))
-            if self.resume_path:
-                ckpt.read(self.resume_path)
-                print(f'Resume training from {self.resume_path}')
+                model=model, optimizer=optimizer, start_epoch=tf.Variable(0))
+            if resume_path:
+                ckpt.read(resume_path)
+                print(f'Resume training from {resume_path}')
             else:
-                if self.checkpoint_dir:
-                    ckpt_filenames = os.listdir(self.checkpoint_dir)
+                if checkpoint_dir:
+                    ckpt_filenames = os.listdir(checkpoint_dir)
                     prefix = f'{model_name}_last.ckpt'
                     for filename in ckpt_filenames:
                         if filename.startswith(prefix):
                             ckpt_path = os.path.join(
-                                self.checkpoint_dir, prefix)
+                                checkpoint_dir, prefix)
                             ckpt.read(ckpt_path)
                             print(f'Resume training from {ckpt_path}')
                             break
+
+            # Setup summary writers
             train_log_dir = os.path.join(log_dir, 'train')
             val_log_dir = os.path.join(log_dir, 'val')
             train_summary_writer = tf.summary.create_file_writer(train_log_dir)
             val_summary_writer = tf.summary.create_file_writer(val_log_dir)
 
+            # Setup learning rate scheduler
             base_lr = float(optimizer.learning_rate.numpy())
             warmup_learning_rate = base_lr / 6
             warmup_steps = 2000
@@ -202,6 +223,7 @@ class TFObjDetTrn:
             total_steps = epochs * steps_per_epoch
             global_step = 0
 
+            # TODO: replace print by Log?
             print('Steps per epoch', steps_per_epoch)
             print('Total steps', total_steps)
 
@@ -218,7 +240,7 @@ class TFObjDetTrn:
                     # Forward + Backward
                     loss, conf_loss, loc_loss, l2_loss = train_step(
                         imgs, gt_confs, gt_locs,
-                        model, loss, optimizer, weight_decay
+                        model, criterion, optimizer, weight_decay
                     )
 
                     # Compute average losses
@@ -246,11 +268,11 @@ class TFObjDetTrn:
                              ) / float(total_steps - warmup_steps)))
                         optimizer.learning_rate.assign(new_lr)
                 print('Current learning rate:',
-                      self.optimizer.learning_rate.numpy())
+                      optimizer.learning_rate.numpy())
 
                 # Start evaluation at the end of epoch
                 print('Evaluating...')
-                map, map50 = self.evaluator.eval()
+                map, map50 = evaluator.eval(data_loader)
 
                 with train_summary_writer.as_default():
                     tf.summary.scalar('loss', avg_loss, step=epoch)
@@ -263,18 +285,22 @@ class TFObjDetTrn:
                 # Checkpoint
                 ckpt.start_epoch.assign_add(1)
                 save_path = ckpt.write(os.path.join(
-                    self.checkpoint_dir, f'{model_name}_last.ckpt'))
+                    checkpoint_dir, f'{model_name}_last.ckpt'))
                 print("Saved checkpoint for epoch {}: {}".format(
                     int(ckpt.start_epoch), save_path))
 
                 # Save the best
                 if map > best_map:
                     best_map = map
-                    self.best_path = ckpt.write(os.path.join(
-                        self.checkpoint_dir, f'{model_name}_best.ckpt'))
-                    print(f'Saved best model as {self.best_path}')
+                    best_path = ckpt.write(os.path.join(
+                        checkpoint_dir, f'{model_name}_best.ckpt'))
+                    print(f'Saved best model as {best_path}')
 
-                self.total_epochs_ran += 1
+                if map > best_map_over_all_models:
+                    best_map_over_all_models = map
+                    self.model_selection.best_model = model
+
+            # TODO: save the best model here
             return ret_values.IXO_RET_SUCCESS
 
     def get_best_model(self):

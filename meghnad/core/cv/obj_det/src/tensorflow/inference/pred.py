@@ -8,7 +8,7 @@ import tensorflow as tf
 from PIL import Image, ImageDraw
 
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.anchors import generate_default_boxes
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils.ssd_box_utils import decode, compute_nms
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.ssd_box_utils import decode, compute_nms
 from utils import ret_values
 from utils.log import Log
 
@@ -16,11 +16,11 @@ from utils.log import Log
 log = Log()
 
 
-#class NoInferenceInputError(Exception):
+# class NoInferenceInputError(Exception):
 #    pass
 
 
-#class NotSupportedTypeError(Exception):
+# class NotSupportedTypeError(Exception):
 #    pass
 
 
