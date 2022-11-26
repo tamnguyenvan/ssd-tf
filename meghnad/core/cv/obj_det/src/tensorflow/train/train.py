@@ -26,7 +26,7 @@ log = Log()
 
 
 @tf.function
-def train_step(
+def _train_step(
         imgs: tf.Tensor,
         gt_confs: tf.Tensor,
         gt_locs: tf.Tensor,
@@ -71,14 +71,14 @@ def train_step(
 
     gradients = tape.gradient(loss, model.trainable_variables)
     # Normalize gradients
-    gradients = [tf.clip_by_norm(grad) for grad in gradients]
+    gradients = [tf.clip_by_norm(grad, 0.2) for grad in gradients]
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
     return loss, conf_loss, loc_loss, l2_loss
 
 
 @tf.function
-def test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
+def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
     """Process a testing step
 
     Parameters

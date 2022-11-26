@@ -108,6 +108,10 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
             class_name = categories_dict[category_id]['name']
 
             xmin, ymin, w, h = ann['bbox']
+            if w <= 0 or h <= 0:
+                print(images_dict[image_id]["file_name"], ann)
+                continue
+
             xmax = xmin + w
             ymax = ymin + h
 
@@ -118,6 +122,8 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
             ymin /= image_h
             xmax /= image_w
             ymax /= image_h
+            assert xmin < xmax, f'xmin {xmin} xmax {xmax} w {w} ann {ann}'
+            assert ymin < ymax, f'ymin {ymin} ymax {ymax} h {h}'
 
             data[image_id]['bboxes'].append((xmin, xmax, ymin, ymax))
             data[image_id]['class_names'].append(class_name)

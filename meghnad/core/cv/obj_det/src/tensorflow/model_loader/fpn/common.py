@@ -323,6 +323,9 @@ def create_extra_layers(backbone):
                   __file__, __name__, f"Unsupported backbone {backbone}")
         return ret_values.IXO_RET_NOT_SUPPORTED
 
+        #UnsupportedBackboneError(f'Unsupported backbone {backbone}')
+
+
 def create_heads(backbone, num_classes, num_anchors):
     if backbone == 'MobileNetV2':
         conf_head_layers = []
@@ -363,3 +366,9 @@ def create_heads(backbone, num_classes, num_anchors):
                        kernel_size=3, strides=1, padding='same')
             )
         return conf_head_layers, loc_head_layers
+
+
+def build_fpn(feat_size):
+    return Sequential([
+        Conv2D(64, feat_size)
+    ])

@@ -1,7 +1,4 @@
-import sys
-sys.path.append('D:\\10-27-22\ixolerator')
 import os
-
 
 import tensorflow as tf
 
@@ -18,6 +15,7 @@ import unittest
 
 
 def test_case1():
+    """Test training pipeline"""
     settings = ['light']
     path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
     trainer = TFObjDetTrn(settings=settings)
@@ -26,15 +24,19 @@ def test_case1():
 
 
 def test_case2():
+    """Test data loader"""
     path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
     cfg_obj = ObjDetConfig()
     data_cfg = cfg_obj.get_data_cfg()
     model_cfg = cfg_obj.get_model_cfg('MobileNetV2')
-    dataloader = TFObjDetDataLoader(path)
+    dataloader = TFObjDetDataLoader(path, data_cfg, model_cfg)
 
     for images, gt_confs, gt_locs in dataloader.train_dataset.take(1):
         break
-    print(images.shape)
+
+    image = images.numpy()[0]
+    gt_conf = gt_confs.numpy()[0]
+    gt_loc = gt_locs.numpy()[0]
 
 
 def test_case3(dataset_path):

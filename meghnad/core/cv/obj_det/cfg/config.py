@@ -32,14 +32,14 @@ _obj_det_cfg = {
         {
             'train':
             {
-                'random_crop': {'width': 300, 'height': 300},
+                'resize': {'width': 300, 'height': 300},
                 'random_fliplr': {'p': 0.5},
                 'random_brightness': {'p': 0.2},
                 'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
             },
             'test':
             {
-                'center_crop': {'width': 300, 'height': 300},
+                'resize': {'width': 300, 'height': 300},
                 'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
             }
         }

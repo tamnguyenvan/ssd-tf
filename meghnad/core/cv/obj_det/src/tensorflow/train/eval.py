@@ -85,7 +85,7 @@ class TFObjDetEval:
 
                 boxes = tf.clip_by_value(out_boxes, 0.0, 1.0).numpy()
                 boxes_resized = boxes * \
-                    np.array([[*data_loader.img_size * 2]]).astype(np.float32)
+                    np.array([[*data_loader.input_shape * 2]]).astype(np.float32)
                 boxes_resized = boxes_resized.astype(np.int32).tolist()
                 boxes = boxes * \
                     np.array([[image_width, image_height, image_width, image_height]]).astype(

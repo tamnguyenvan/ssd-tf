@@ -25,7 +25,6 @@ def draw_bboxes(image, bboxes, classes, scores, class_map=None):
     image_clone = image.copy()
     for bbox, cls, score in zip(bboxes, classes, scores):
         x1, y1, x2, y2 = list(map(int, bbox))
-        print(bbox, cls, score)
         color = colors(cls)
         cv2.rectangle(image_clone, (x1, y1), (x2, y2), color, 2)
         if class_map:

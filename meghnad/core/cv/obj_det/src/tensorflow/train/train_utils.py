@@ -5,9 +5,6 @@ import sys
 
 log = Log()
 
-#class NotSupportedOptimizer(Exception):
-#    pass
-
 
 def get_optimizer(name='Adam', **kwargs):
     if name == 'Adam':
@@ -16,4 +13,3 @@ def get_optimizer(name='Adam', **kwargs):
         log.ERROR(sys._getframe().f_lineno,
                   __file__, __name__, f"Unsupported optimizer {name}")
         return ret_values.IXO_RET_NOT_SUPPORTED
-        #NotSupportedOptimizer(f'Not supported optimizer: {name}')

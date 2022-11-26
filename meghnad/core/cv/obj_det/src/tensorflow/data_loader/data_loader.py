@@ -21,7 +21,7 @@ class TFObjDetDataLoader:
         self.model_cfg = model_cfg
 
         self.batch_size = model_cfg.get('batch_size', 4)
-        self.img_size = model_cfg['input_shape'][:2]
+        self.input_shape = model_cfg['input_shape'][:2]
         self.num_classes = model_cfg['num_classes']
         self.max_boxes = 100
         scales = model_cfg.get(
@@ -49,12 +49,14 @@ class TFObjDetDataLoader:
 
         self._load_data_from_directory(data_path)
 
-    def _aug_fn(self, fn, image: tf.Tensor, bboxes: tf.Tensor, classes: tf.Tensor):
+    def _aug_fn(self, training, image: tf.Tensor, bboxes: tf.Tensor, classes: tf.Tensor):
+        fn = self.train_transforms if training else self.test_transforms
         data = {'image': image, 'bboxes': bboxes, 'classes': classes}
         aug_data = fn(**data)
         return aug_data['image'], aug_data['bboxes'], aug_data['classes']
+        # return image, bboxes, classes
 
-    def _parse_tf_example(self, tf_example, to_targets=True, training=True):
+    def _parse_tf_example(self, tf_example, training=True):
         """_summary_
 
         Parameters
@@ -80,6 +82,7 @@ class TFObjDetDataLoader:
         image_height = tf.cast(parsed_example['image/height'], tf.int32)
         image_width = tf.cast(parsed_example['image/width'], tf.int32)
         image = tf.reshape(image, (image_height, image_width, 3))
+        image = tf.cast(image, tf.float32)
         # image = tf.image.resize(image, self.img_size)
 
         xmins = tf.sparse.to_dense(parsed_example['image/object/bbox/xmin'])
@@ -89,6 +92,9 @@ class TFObjDetDataLoader:
         labels = tf.cast(tf.sparse.to_dense(
             parsed_example['image/object/class/label']), tf.int32)
 
+        tf.debugging.assert_non_positive(tf.reduce_sum(tf.cast(xmins > xmaxs, tf.float32)))
+        tf.debugging.assert_non_positive(tf.reduce_sum(tf.cast(ymins > ymaxs, tf.float32)))
+
         bboxes = tf.stack([
             xmins,
             ymins,
@@ -96,11 +102,10 @@ class TFObjDetDataLoader:
             ymaxs,
         ], 1)
 
-        # Transformations
-        fn = self.train_transforms if training else self.test_transforms
+        # # Transformations
         image, bboxes, labels = tf.numpy_function(
             func=self._aug_fn,
-            inp=[fn, image, bboxes, labels],
+            inp=[training, image, bboxes, labels],
             Tout=[tf.float32, tf.float32, tf.int32])
 
         # Pad
@@ -109,6 +114,11 @@ class TFObjDetDataLoader:
         labels = tf.pad(labels, [[0, num_pad]])
         bboxes = tf.reshape(bboxes, [self.max_boxes, 4])
         labels = tf.reshape(labels, [self.max_boxes])
+
+        # Recover shapes
+        image.set_shape((self.input_shape[0], self.input_shape[1], 3))
+        bboxes.set_shape((self.max_boxes, 4))
+        labels.set_shape((self.max_boxes,))
 
         # Compute targets
         gt_confs, gt_locs = compute_target(
@@ -173,7 +183,7 @@ class TFObjDetDataLoader:
         return self.train_dataset, self.validation_dataset, self.test_dataset
 
     def _config_connectors(self, path: str):
-        """Dataset supposed to be COCO format"""
+
         self.connector = {}
         self.connector['trn_data_path'] = os.path.join(path, 'images')
         self.connector['trn_file_path'] = os.path.join(
