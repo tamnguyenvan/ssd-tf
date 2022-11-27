@@ -1,5 +1,5 @@
 import albumentations as A
-from utils.common_defs import class_header, method_header
+from utils.common_defs import method_header
 
 
 transforms_map = {
@@ -14,11 +14,11 @@ transforms_map = {
 
 @method_header(
     description='''
-        build transforms for the images.''',
-        arguments='''
+        build data augmentation for the images.''',
+    arguments='''
         cfg : dict _description_
         ''',
-        returns='''
+    returns='''
         returns a function that can except 2 params a list and a str for bbox_params''')
 def build_transforms(cfg: dict):
 

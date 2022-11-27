@@ -1,6 +1,7 @@
 import tensorflow as tf
-from tensorflow.keras import Model
-from .common import get_backbone, create_extra_layers, create_heads
+from tensorflow.keras import Model, Sequential
+from tensorflow.keras.layers import Conv2D, UpSampling2D
+from .backbones import get_backbone, create_extra_layers, create_heads
 
 
 def fpn(backbone, input_shape, num_classes, num_anchors):
@@ -27,7 +28,17 @@ def fpn(backbone, input_shape, num_classes, num_anchors):
     # Build heads
     confs = []
     locs = []
-    for i, feature in enumerate(features):
+    # for i, feature in enumerate(features):
+    for i in range(len(features) - 1, 0, -1):
+        feature = features[i]
+        feature_pyrimad_network = Sequential([
+            Conv2D(256, 3, strides=1),
+            UpSampling2D((2, 2))
+        ])
+        if i < len(features) - 1:
+            # Upsampling
+            feature = feature + feature_pyrimad_network(features[i + 1])
+
         conf = conf_head_layers[i](feature)
         loc = loc_head_layers[i](feature)
 

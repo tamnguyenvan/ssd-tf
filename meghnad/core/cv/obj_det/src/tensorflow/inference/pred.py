@@ -1,14 +1,11 @@
-import os
 import sys
-import json
 
 import cv2
 import numpy as np
 import tensorflow as tf
-from PIL import Image, ImageDraw
 
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.anchors import generate_default_boxes
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils import decode, compute_nms
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.anchors import generate_default_boxes
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, compute_nms
 from utils import ret_values
 from utils.log import Log
 from utils.common_defs import class_header, method_header
@@ -22,15 +19,10 @@ log = Log()
     Class for Object detection predictions''')
 class TfObjDetPred:
     def __init__(self,
-                 model_loader,
+                 saved_dir,
                  model_config,
-                 prediction_postprocessing=None,
-                 output_dir='results'):
-        self.model_loader = model_loader
-        self.model_config = model_config
-        self.input_shape = model_config['input_shape']
-        self.model = model_loader.model
-        self.prediction_postprocessing = prediction_postprocessing
+                 output_dir='./results'):
+        self.saved_dir = saved_dir
         self.output_dir = output_dir
         self.default_boxes = generate_default_boxes(
             model_config['scales'],
@@ -46,7 +38,7 @@ class TfObjDetPred:
                 ''',
         returns='''
                 returns image in form of a numpy array and a tuple having height and width''')
-    def preprocess(self, image):
+    def _preprocess(self, image):
         input_height, input_width = self.input_shape[:2]
         h, w = image.shape[:2]
         if h != input_height or w != input_width:
@@ -59,30 +51,38 @@ class TfObjDetPred:
         description='''
                 Predict the input''',
         arguments='''
-                input: input is image to the function''')
-    def predict(self, input, history=None):
+                input: input is image to the function
+                score_threshold: Score threshold value.
+                nms_threshold: NMS threshold value.
+                max_predictions: Maximum number of predictions per image.''')
+    def predict(self,
+                input,
+                score_threshold: float = 0.4,
+                nms_threshold: float = 0.5,
+                max_predictions: int = 100,
+                ):
         if not self.model:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, "Model is null")
             return ret_values.IXO_RET_INVALID_INPUTS
 
         if isinstance(input, np.ndarray):
-            input, shape = self.preprocess(input)
+            input, shape = self._preprocess(input)
         elif isinstance(input, str):
             image = cv2.imread(input)
             image = image[:, :, ::-1]
-            input, shape = self.preprocess(input)
+            input, shape = self._preprocess(input)
         else:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, "Not supoorted input type")
             return ret_values.IXO_RET_NOT_SUPPORTED
 
+        # (H, W, C) -> (N, H, W, C)
         inputs = np.expand_dims(input, 0)
         batch_confs, batch_locs = self.model(inputs, training=False)
         confs = batch_confs[0]
         locs = batch_locs[0]
         image_height, image_width = shape
-        print('==============', shape, type(image_height))
 
         confs = tf.math.softmax(confs, axis=-1)
 
@@ -92,14 +92,16 @@ class TfObjDetPred:
         out_labels = []
         out_scores = []
 
-        for c in range(1, 3):
+        num_classes = confs.shape[1]
+        for c in range(1, num_classes):
             cls_scores = confs[:, c]
 
-            score_idx = cls_scores > 0.6
+            score_idx = cls_scores > score_threshold
             cls_boxes = boxes[score_idx]
             cls_scores = cls_scores[score_idx]
 
-            nms_idx = compute_nms(cls_boxes, cls_scores, 0.45, 200)
+            nms_idx = compute_nms(cls_boxes, cls_scores,
+                                  nms_threshold, max_predictions)
             cls_boxes = tf.gather(cls_boxes, nms_idx)
             cls_scores = tf.gather(cls_scores, nms_idx)
             cls_labels = [c] * cls_boxes.shape[0]
@@ -118,26 +120,3 @@ class TfObjDetPred:
         scores = out_scores.numpy()
 
         return ret_values.IXO_RET_SUCCESS, (boxes, classes, scores)
-
-    @method_header(
-        description='''
-                Function to write predictions to the json file''',
-        arguments='''
-                path: path to where the predictions should be placed in json format''')
-    def write_prediction(self, path):
-        test_ann_file = os.path.join(path, 'test_annotations.json')
-        with open(test_ann_file, 'r') as f:
-            annotations = json.load(f)
-
-        for i, val in enumerate(annotations):
-            image_path = '%012d.jpg' % (val['image_id'])
-            full_path = path + 'test\\' + image_path
-            pred = predictions[i]
-            shape = ((pred[0], pred[1]),
-                     (pred[0] + pred[2], pred[1] + pred[3]))
-            image = Image.open(full_path)
-            draw = ImageDraw.Draw(image)
-            draw.rectangle(shape, outline='red')
-            if not (os.path.exists(self.output_dir)):
-                os.mkdir(self.output_dir)
-            image.save(self.output_dir + "\\" + image_path)

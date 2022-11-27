@@ -6,14 +6,15 @@ from utils.log import Log
 from utils.common_defs import class_header, method_header
 
 from .loader_utils import get_tfrecord_dataset
-from ..model_loader.ssd.anchors import generate_default_boxes
-from ..model_loader.ssd.utils import compute_target
+from ..model_loader.anchors import generate_default_boxes
+from ..model_loader.utils import compute_target
 from .transforms import build_transforms
 
 
 __all__ = ['TFObjDetDataLoader']
 
 log = Log()
+
 
 @class_header(
     description='''
@@ -111,8 +112,10 @@ class TFObjDetDataLoader:
         labels = tf.cast(tf.sparse.to_dense(
             parsed_example['image/object/class/label']), tf.int32)
 
-        tf.debugging.assert_non_positive(tf.reduce_sum(tf.cast(xmins > xmaxs, tf.float32)))
-        tf.debugging.assert_non_positive(tf.reduce_sum(tf.cast(ymins > ymaxs, tf.float32)))
+        tf.debugging.assert_non_positive(
+            tf.reduce_sum(tf.cast(xmins > xmaxs, tf.float32)))
+        tf.debugging.assert_non_positive(
+            tf.reduce_sum(tf.cast(ymins > ymaxs, tf.float32)))
 
         bboxes = tf.stack([
             xmins,

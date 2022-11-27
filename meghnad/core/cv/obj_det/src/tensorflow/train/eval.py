@@ -13,9 +13,10 @@ from utils import ret_values
 from utils.log import Log
 from utils.common_defs import class_header, method_header
 from meghnad.core.cv.obj_det.src.tensorflow.inference.vis_utils import draw_bboxes
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils import decode, compute_nms
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, compute_nms
 
 log = Log()
+
 
 @class_header(
     description='''
@@ -102,7 +103,8 @@ class TFObjDetEval:
 
                 boxes = tf.clip_by_value(out_boxes, 0.0, 1.0).numpy()
                 boxes_resized = boxes * \
-                    np.array([[*data_loader.input_shape * 2]]).astype(np.float32)
+                    np.array([[*data_loader.input_shape * 2]]
+                             ).astype(np.float32)
                 boxes_resized = boxes_resized.astype(np.int32).tolist()
                 boxes = boxes * \
                     np.array([[image_width, image_height, image_width, image_height]]).astype(

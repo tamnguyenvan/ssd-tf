@@ -7,7 +7,7 @@ from typing import List, Tuple
 import tensorflow as tf
 
 from meghnad.core.cv.obj_det.src.tensorflow.data_loader import TFObjDetDataLoader
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.losses import SSDLoss
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.losses import SSDLoss
 from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 
 from utils import ret_values
@@ -185,7 +185,7 @@ class TFObjDetTrn:
               logdir: str = './training_logs',
               resume_path: str = None,
               print_every: int = 10,
-              **kwargs) -> object:
+              **kwargs) -> int:
         try:
             epochs = int(epochs)
             if epochs <= 0:
@@ -315,25 +315,15 @@ class TFObjDetTrn:
                     int(ckpt.start_epoch), save_path))
 
                 # Save the best
-                if map > best_map:
-                    best_map = map
-                    best_path = ckpt.write(os.path.join(
-                        checkpoint_dir, f'{model_name}_best.ckpt'))
-                    print(f'Saved best model as {best_path}')
-
                 if map > best_map_over_all_models:
                     best_map_over_all_models = map
-                    self.model_selection.best_model = model
+                    best_ckpt_path = ckpt.write(os.path.join(
+                        checkpoint_dir, f'{model_name}_best.ckpt'))
+                    print(f'Saved best model as {best_ckpt_path}')
 
-            # TODO: save the best model here
+                    best_model_path = os.path.join(
+                        checkpoint_dir, f'{model_name}_saved_model')
+
+                    tf.saved_model.save(model, best_model_path)
+
             return ret_values.IXO_RET_SUCCESS
-
-    @method_header(
-        description='''
-            Function to get best model.
-            ''',
-        returns='''
-            path of the best model
-            ''')
-    def get_best_model(self):
-        return self.best_path
