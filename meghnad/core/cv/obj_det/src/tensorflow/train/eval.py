@@ -11,16 +11,33 @@ import cv2
 
 from utils import ret_values
 from utils.log import Log
+from utils.common_defs import class_header, method_header
 from meghnad.core.cv.obj_det.src.tensorflow.inference.vis_utils import draw_bboxes
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils import decode, compute_nms
 
 log = Log()
 
-
+@class_header(
+    description='''
+    Evaluation class to evaluate models after training''')
 class TFObjDetEval:
     def __init__(self, model):
         self.model = model
 
+    @method_header(
+        description='''
+                ''',
+        arguments='''
+                data_loader: data_loader to load data
+                phase [:optional]: select which data to be loaded by default it is (validation)
+                class_map: map with score and class_labels
+                nms_threshold: NMS threshold,
+                max_predictions: number of predictions per image,
+                image_out_dir: directory to which image should be placed after eval
+                draw_predictions: if true draw prediction on the images also
+                ''',
+        returns='''
+                a 2 value pair map, map50 containing evaluation stats''')
     def eval(self,
              data_loader,
              phase: str = 'validation',

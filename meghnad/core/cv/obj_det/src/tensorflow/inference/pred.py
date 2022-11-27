@@ -11,11 +11,15 @@ from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.anchors import gene
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.utils import decode, compute_nms
 from utils import ret_values
 from utils.log import Log
+from utils.common_defs import class_header, method_header
 
 
 log = Log()
 
 
+@class_header(
+    description='''
+    Class for Object detection predictions''')
 class TfObjDetPred:
     def __init__(self,
                  model_loader,
@@ -34,6 +38,14 @@ class TfObjDetPred:
             model_config['aspect_ratios']
         )
 
+    @method_header(
+        description='''
+                Function to preprocess images''',
+        arguments='''
+                image : image : Pass image to the function
+                ''',
+        returns='''
+                returns image in form of a numpy array and a tuple having height and width''')
     def preprocess(self, image):
         input_height, input_width = self.input_shape[:2]
         h, w = image.shape[:2]
@@ -43,6 +55,11 @@ class TfObjDetPred:
         image /= 255.
         return image, (h, w)
 
+    @method_header(
+        description='''
+                Predict the input''',
+        arguments='''
+                input: input is image to the function''')
     def predict(self, input, history=None):
         if not self.model:
             log.ERROR(sys._getframe().f_lineno,
@@ -102,6 +119,11 @@ class TfObjDetPred:
 
         return ret_values.IXO_RET_SUCCESS, (boxes, classes, scores)
 
+    @method_header(
+        description='''
+                Function to write predictions to the json file''',
+        arguments='''
+                path: path to where the predictions should be placed in json format''')
     def write_prediction(self, path):
         test_ann_file = os.path.join(path, 'test_annotations.json')
         with open(test_ann_file, 'r') as f:

@@ -7,12 +7,14 @@ from tensorflow.keras.layers import Conv2D, BatchNormalization, Activation, MaxP
 
 from utils import ret_values
 from utils.log import Log
+from utils.common_defs import class_header, method_header
+
 
 log = Log()
 
 
-def get_backbone(name, image_size=(300, 300)) -> Tuple:
-    """Get backbone network from given name.
+@method_header(
+    description="""Get backbone network from given name.
 
     Returns  a 3-tuple represents a model instance, a list of feature names, and
     name of the output layer.
@@ -23,12 +25,9 @@ def get_backbone(name, image_size=(300, 300)) -> Tuple:
         Model name.
     image_size : tuple, optional
         Input image size, by default (300, 300)
+    """)
+def get_backbone(name, image_size=(300, 300)) -> Tuple:
 
-    Returns
-    -------
-    Tuple
-        _description_
-    """
     if name == 'MobileNetV2':
         return [
             tf.keras.applications.MobileNetV2(
@@ -84,6 +83,14 @@ def get_backbone(name, image_size=(300, 300)) -> Tuple:
         return ret_values.IXO_RET_NOT_SUPPORTED
 
 
+@method_header(
+        description='''
+        Create extra layers on the backbone model''',
+        arguments='''
+        backbone : could be any backbone (OD model)
+        ''',
+        returns='''
+        model layers''')
 def create_extra_layers(backbone):
     if backbone == 'MobileNetV2':
         extra_layers = [
@@ -323,6 +330,17 @@ def create_extra_layers(backbone):
                   __file__, __name__, f"Unsupported backbone {backbone}")
         return ret_values.IXO_RET_NOT_SUPPORTED
 
+
+@method_header(
+        description='''Creates heads,
+        Parameters
+        ----------
+        backbone : could be any backbone (OD model)
+        num_classes: number of classes for classifictaion
+        num_anchors: anchors or the bboxes for spcifying objects
+        Returns
+        -------
+        head_layers and loc_head_layers in the form of model layers''')
 def create_heads(backbone, num_classes, num_anchors):
     if backbone == 'MobileNetV2':
         conf_head_layers = []

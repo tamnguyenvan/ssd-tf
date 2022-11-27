@@ -1,8 +1,20 @@
 import tensorflow as tf
 from tensorflow.keras import Model
 from .common import get_backbone, create_extra_layers, create_heads
+from utils.common_defs import class_header, method_header
 
 
+@method_header(
+        description='''
+        Config ssd model with input and locs''',
+        arguments='''
+        backbone: model: a pre-trained image classification network as a feature extractor
+        input_shape: nparray: shape of the input image
+        num_classes: int: number of classes for classification
+        num_anchors: int: number of bounding box (points for the bbox)
+        ''',
+        returns='''
+        model that accepts input of image_size and heads''')
 def ssd(backbone, input_shape, num_classes, num_anchors):
     image_size = input_shape[:2]
 

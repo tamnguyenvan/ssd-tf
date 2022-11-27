@@ -1,6 +1,10 @@
 import cv2
+from utils.common_defs import class_header, method_header
 
 
+@class_header(
+    description='''
+    Class for colors and boxes''')
 class Colors:
     # Ultralytics color palette https://ultralytics.com/
     def __init__(self):
@@ -21,6 +25,18 @@ class Colors:
 colors = Colors()
 
 
+@method_header(
+    description='''
+        Function to draw bounding boxes to the images''',
+        arguments='''
+        image: image : input image to the function
+        bboxes: pass bboxes to the function to draw bboxes around the objects
+        classes: number and type of classes to the function
+        scores: show scores on the top of bboxes
+        class_map: provides the class_labels and the keys
+        ''',
+        returns='''
+        returns an image_clone as an image''')
 def draw_bboxes(image, bboxes, classes, scores, class_map=None):
     image_clone = image.copy()
     for bbox, cls, score in zip(bboxes, classes, scores):

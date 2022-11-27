@@ -1,10 +1,11 @@
 import itertools
 import math
 import tensorflow as tf
+from utils.common_defs import class_header, method_header
 
 
-def generate_default_boxes(scales, feature_map_sizes, aspect_ratios):
-    """ Generate default boxes for all feature maps
+@method_header(
+    description=""" Generate default boxes for all feature maps
     Args:
         config: information of feature maps
             scales: boxes' size relative to image's size
@@ -13,7 +14,9 @@ def generate_default_boxes(scales, feature_map_sizes, aspect_ratios):
     Returns:
         default_boxes: tensor of shape (num_default, 4)
                        with format (cx, cy, w, h)
-    """
+    """)
+def generate_default_boxes(scales, feature_map_sizes, aspect_ratios):
+
     default_boxes = []
 
     for m, fm_size in enumerate(feature_map_sizes):

@@ -25,16 +25,8 @@ __all__ = ['TFObjDetTrn']
 log = Log()
 
 
-@tf.function
-def _train_step(
-        imgs: tf.Tensor,
-        gt_confs: tf.Tensor,
-        gt_locs: tf.Tensor,
-        model,
-        criterion,
-        optimizer,
-        weight_decay: float = 1e-5):
-    """Process a training step.
+@method_header(
+    description="""Process a training step.
 
     Parameters
     ----------
@@ -57,7 +49,17 @@ def _train_step(
     -------
     [loss, conf_loss, loc_loss, l2_loss]
         Returns a list of losses.
-    """
+    """)
+@tf.function
+def _train_step(
+        imgs: tf.Tensor,
+        gt_confs: tf.Tensor,
+        gt_locs: tf.Tensor,
+        model,
+        criterion,
+        optimizer,
+        weight_decay: float = 1e-5):
+
     with tf.GradientTape() as tape:
         confs, locs = model(imgs)
 
@@ -77,9 +79,8 @@ def _train_step(
     return loss, conf_loss, loc_loss, l2_loss
 
 
-@tf.function
-def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
-    """Process a testing step
+@method_header(
+    description="""Process a testing step
 
     Parameters
     ----------
@@ -100,7 +101,10 @@ def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
     -------
     [loss, conf_loss, loc_loss, l2_loss]
         Returns a list of losses.
-    """
+    """)
+@tf.function
+def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
+
     confs, locs = model(imgs, training=False)
 
     conf_loss, loc_loss = criterion(
@@ -114,8 +118,8 @@ def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
     return loss, conf_loss, loc_loss, l2_loss
 
 
-def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
-    """Returns configs from given settings
+@method_header(
+    description="""Returns configs from given settings
 
     Parameters
     ----------
@@ -126,7 +130,9 @@ def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
     -------
     [model_cfgs]
         A list of string represents corresponding model configs
-    """
+    """)
+def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
+
     settings = [f'{setting}_models' for setting in settings]
     cfg_obj = ObjDetConfig()
     data_cfg = cfg_obj.get_data_cfg()
@@ -142,7 +148,9 @@ def load_config_from_settings(settings: List[str]) -> Tuple[List, List]:
     return model_cfgs, data_cfgs
 
 
-@class_header(description='')
+@class_header(
+    description='''
+        Class for object detection model training''')
 class TFObjDetTrn:
     def __init__(self, settings: List[str]) -> None:
         self.settings = settings
@@ -150,12 +158,27 @@ class TFObjDetTrn:
         self.model_selection = TFObjDetSelectModel(self.model_cfgs)
         self.data_loaders = []
 
-    @method_header(description='')
+    @method_header(
+        description='''
+                Helper for configuring data connectors.''',
+        arguments='''
+                data_path: location of the training data (should point to the file in case of a single file, should point to
+                the directory in case data exists in multiple files in a directory structure)
+                ''')
     def config_connectors(self, data_path: str) -> None:
         self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg)
                              for data_cfg, model_cfg in zip(self.data_cfgs, self.model_cfgs)]
 
-    @method_header(description='')
+    @method_header(
+        description='''
+                Function to set training configurations and start training.''',
+        arguments='''
+                epochs: set epochs for the training by default it is 10
+                checkpoint_dir: directory from where the checkpoints should be loaded
+                logdir: directory where the logs should be saved
+                resume_path: The path/checkpoint from where the training should be resumed
+                print_every: an argument to specify when the function should print or after how many epochs
+                ''')
     def train(self,
               epochs: int = 10,
               checkpoint_dir: str = './checkpoints',
@@ -305,5 +328,12 @@ class TFObjDetTrn:
             # TODO: save the best model here
             return ret_values.IXO_RET_SUCCESS
 
+    @method_header(
+        description='''
+            Function to get best model.
+            ''',
+        returns='''
+            path of the best model
+            ''')
     def get_best_model(self):
         return self.best_path

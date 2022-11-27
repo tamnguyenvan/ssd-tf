@@ -3,6 +3,7 @@ import json
 import tensorflow as tf
 from utils import ret_values
 from utils.log import Log
+from utils.common_defs import class_header, method_header
 
 from .loader_utils import get_tfrecord_dataset
 from ..model_loader.ssd.anchors import generate_default_boxes
@@ -14,7 +15,10 @@ __all__ = ['TFObjDetDataLoader']
 
 log = Log()
 
-
+@class_header(
+    description='''
+    Data loader for object detection.
+    ''')
 class TFObjDetDataLoader:
     def __init__(self, data_path, data_cfg, model_cfg):
         self.data_cfg = data_cfg
@@ -49,6 +53,18 @@ class TFObjDetDataLoader:
 
         self._load_data_from_directory(data_path)
 
+    @method_header(
+        description='''
+            Function for data augmentation, it can be used for both training and testing configrations.
+            ''',
+        arguments='''
+            training: boolean : Toggle to specify in which setting it should run: training or testing.
+            image: tf.Tensor : it should be concerned image where augmentation will be applied, and it should strictly be a Tensor.
+            bboxes: tf.Tensor : the bounding boxes of objects within image where augmentation will be applied.
+            classes: tf.Tensor : The ground truth associated with each image.
+            ''',
+        returns='''
+            a 3 member tuple containing image bboxes and classes''')
     def _aug_fn(self, training, image: tf.Tensor, bboxes: tf.Tensor, classes: tf.Tensor):
         fn = self.train_transforms if training else self.test_transforms
         data = {'image': image, 'bboxes': bboxes, 'classes': classes}
@@ -56,14 +72,18 @@ class TFObjDetDataLoader:
         return aug_data['image'], aug_data['bboxes'], aug_data['classes']
         # return image, bboxes, classes
 
+    @method_header(
+        description='''
+            This function will prepare data in consumable format, that include decoding image, stacking multiple images using augmentation.
+            ''',
+        arguments='''
+            tf_example : tensor : Example that will be parsed, decoded, padded, and augmented using _aug_fn function.
+            training [optional]: boolean : toggle between training context and testing context. By default it is training.
+            ''',
+        returns='''
+            a integer i.e image_id, image_height and image_with in a tensorflow stack, image and  gt_confs, gt_locs in form of array''')
     def _parse_tf_example(self, tf_example, training=True):
-        """_summary_
 
-        Parameters
-        ----------
-        tf_example : _type_
-            _description_
-        """
         example_fmt = {
             'image/id': tf.io.FixedLenFeature([], tf.int64),
             'image/height': tf.io.FixedLenFeature([], tf.int64),
@@ -83,7 +103,6 @@ class TFObjDetDataLoader:
         image_width = tf.cast(parsed_example['image/width'], tf.int32)
         image = tf.reshape(image, (image_height, image_width, 3))
         image = tf.cast(image, tf.float32)
-        # image = tf.image.resize(image, self.img_size)
 
         xmins = tf.sparse.to_dense(parsed_example['image/object/bbox/xmin'])
         ymins = tf.sparse.to_dense(parsed_example['image/object/bbox/ymin'])
@@ -128,6 +147,15 @@ class TFObjDetDataLoader:
         else:
             return image_id, tf.stack([image_height, image_width]), image, gt_confs, gt_locs
 
+    @method_header(
+        description='''
+            Helper function for loading data from directory, distributing it into training, testing, and validation set.
+            ''',
+        arguments='''
+            path : string : The path where data is located, as of now only JSON format is supported.
+            ''',
+        returns='''
+            returns train, validation and test_datasets in form of tensors''')
     def _load_data_from_directory(self, path):
         self._config_connectors(path)
         autotune = tf.data.AUTOTUNE
@@ -182,6 +210,13 @@ class TFObjDetDataLoader:
         self.test_dataset = test_dataset.prefetch(autotune)
         return self.train_dataset, self.validation_dataset, self.test_dataset
 
+    @method_header(
+        description='''
+            Helper function for creating connecting dataset path to data directory.
+            ''',
+        arguments='''
+            path : string : Local dataset path where data is located, it should be parent directory of path and is required to be a string.
+            ''')
     def _config_connectors(self, path: str):
 
         self.connector = {}
@@ -195,6 +230,17 @@ class TFObjDetDataLoader:
         self.connector['val_file_path'] = os.path.join(
             path, 'val_annotations.json')
 
+    @method_header(
+        description='''
+            Helper function for creating connecting dataset path to data directory.
+            ''',
+        arguments='''
+            image_dir : string : directory where the images are present
+            annotation_file : string : path for the annotation file
+            dataset [optional]: string : which dataset to choose (train) is selected by default
+            ''',
+        returns='''
+            returns dataset and number of samples in the form of tensor records''')
     def read_data(self, image_dir, annotation_file, dataset='train'):
         tfrecord_file = f'{dataset}.tfrecord'
         dataset, num_samples = get_tfrecord_dataset(

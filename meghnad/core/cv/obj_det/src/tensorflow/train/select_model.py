@@ -2,7 +2,9 @@ from meghnad.core.cv.obj_det.src.tensorflow.model_loader import ssd
 from utils.common_defs import class_header
 
 
-@class_header(description='')
+@class_header(
+    description='''
+    Select Model and setup configurations''')
 class TFObjDetSelectModel:
     def __init__(self, model_configs):
         self.best_model = None

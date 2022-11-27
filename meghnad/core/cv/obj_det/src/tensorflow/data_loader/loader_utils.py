@@ -5,6 +5,8 @@ import numpy as np
 import tensorflow as tf
 import tqdm
 
+from utils.common_defs import class_header, method_header
+
 
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
@@ -30,6 +32,16 @@ def _float_list_feature(value):
     return tf.train.Feature(float_list=tf.train.FloatList(value=value))
 
 
+@method_header(
+    description='''
+    Build record for training or testing.
+    ''',
+    arguments='''
+    image_dir : string : directory where the test/train images are present
+    image_info : dict :information regarding the image i.e file_name etc
+        ''',
+    returns='''
+    a tensor with all image information''')
 def build_record(image_dir, image_info):
 
     image_path = os.path.join(image_dir, image_info['filename'])
@@ -64,6 +76,16 @@ def build_record(image_dir, image_info):
     return tf_example
 
 
+@method_header(
+    description='''
+    method to get records in form of tensorflow dataset.
+    ''',
+    arguments='''
+    image_dir: directory where the test/train images are present
+    ann_file: path where the annotation file is present
+        ''',
+    returns='''
+    returns dataset in form of tensor and number_of_samples in int''')
 def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
     if tfrecord_file is None:
         tfrecord_file = 'sample.tfrecord'
@@ -134,6 +156,6 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
                 example = build_record(image_dir, image_info)
                 writer.write(example.SerializeToString())
 
-    # Initialize a dataset from the above tfreocrd file
+    # Initialize a dataset from the above tf record file
     dataset = tf.data.TFRecordDataset(tfrecord_file)
     return dataset, num_samples

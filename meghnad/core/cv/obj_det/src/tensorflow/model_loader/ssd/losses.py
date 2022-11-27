@@ -1,10 +1,11 @@
 import tensorflow as tf
+from utils.common_defs import class_header, method_header
 
 __all__ = ['SSDLoss']
 
 
-def hard_negative_mining(loss, gt_confs, neg_ratio):
-    """ Hard negative mining algorithm
+@method_header(
+    description=""" Hard negative mining algorithm
         to pick up negative examples for back-propagation
         base on classification loss values
     Args:
@@ -14,7 +15,9 @@ def hard_negative_mining(loss, gt_confs, neg_ratio):
     Returns:
         conf_loss: classification loss
         loc_loss: regression loss
-    """
+    """)
+def hard_negative_mining(loss, gt_confs, neg_ratio):
+
     pos_idx = gt_confs > 0
     num_pos = tf.reduce_sum(tf.dtypes.cast(pos_idx, tf.int32), axis=1)
     num_neg = num_pos * neg_ratio
@@ -26,19 +29,20 @@ def hard_negative_mining(loss, gt_confs, neg_ratio):
     return pos_idx, neg_idx
 
 
-class SSDLoss(object):
-    """ Class for SSD Losses
+@class_header(
+    description=""" Class for SSD Losses
     Attributes:
         neg_ratio: negative / positive ratio
         num_classes: number of classes
-    """
+    """)
+class SSDLoss(object):
 
     def __init__(self, neg_ratio, num_classes):
         self.neg_ratio = neg_ratio
         self.num_classes = num_classes
 
-    def __call__(self, confs, locs, gt_confs, gt_locs):
-        """ Compute losses for SSD
+    @method_header(
+        description=""" Compute losses for SSD
             regression loss: smooth L1
             classification loss: cross entropy
         Args:
@@ -49,7 +53,9 @@ class SSDLoss(object):
         Returns:
             conf_loss: classification loss
             loc_loss: regression loss
-        """
+        """)
+    def __call__(self, confs, locs, gt_confs, gt_locs):
+
         cross_entropy = tf.keras.losses.SparseCategoricalCrossentropy(
             from_logits=True, reduction='none')
 
