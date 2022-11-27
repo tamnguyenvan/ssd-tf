@@ -263,7 +263,7 @@ class TFObjDetTrn:
                 start = time.time()
                 for i, (imgs, gt_confs, gt_locs) in enumerate(data_loader.train_dataset):
                     # Forward + Backward
-                    loss, conf_loss, loc_loss, l2_loss = train_step(
+                    loss, conf_loss, loc_loss, l2_loss = _train_step(
                         imgs, gt_confs, gt_locs,
                         model, criterion, optimizer, weight_decay
                     )
