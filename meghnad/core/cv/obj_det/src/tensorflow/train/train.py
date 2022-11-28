@@ -4,6 +4,7 @@ import math
 import sys
 from typing import List, Tuple
 
+import numpy as np
 import tensorflow as tf
 
 from meghnad.core.cv.obj_det.src.tensorflow.data_loader import TFObjDetDataLoader
@@ -322,8 +323,12 @@ class TFObjDetTrn:
                     print(f'Saved best model as {best_ckpt_path}')
 
                     best_model_path = os.path.join(
-                        checkpoint_dir, f'{model_name}_saved_model')
+                        checkpoint_dir, f'best_saved_model')
 
                     tf.saved_model.save(model, best_model_path)
+
+                    # save the corresponding default bounding boxes for inference
+                    np.save(os.path.join(checkpoint_dir,
+                            f'best_saved_model', 'default_boxes.npy'))
 
             return ret_values.IXO_RET_SUCCESS

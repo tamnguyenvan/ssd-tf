@@ -1,15 +1,17 @@
+import os
 import sys
 
 import cv2
 import numpy as np
 import tensorflow as tf
 
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.anchors import generate_default_boxes
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, compute_nms
 from utils import ret_values
 from utils.log import Log
 from utils.common_defs import class_header, method_header
 
+
+__all__ = ['TFObjDetPred']
 
 log = Log()
 
@@ -17,18 +19,14 @@ log = Log()
 @class_header(
     description='''
     Class for Object detection predictions''')
-class TfObjDetPred:
+class TFObjDetPred:
     def __init__(self,
                  saved_dir,
-                 model_config,
                  output_dir='./results'):
         self.saved_dir = saved_dir
         self.output_dir = output_dir
-        self.default_boxes = generate_default_boxes(
-            model_config['scales'],
-            model_config['feature_map_sizes'],
-            model_config['aspect_ratios']
-        )
+        self.default_boxes = np.load(
+            os.path.join(saved_dir, 'default_boxes.npy'))
 
     @method_header(
         description='''
