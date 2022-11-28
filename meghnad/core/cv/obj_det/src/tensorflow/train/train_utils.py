@@ -7,13 +7,16 @@ import sys
 log = Log()
 
 
+__all__ = ['get_optimizer']
+
+
 @method_header(
     description='''
         Function to get optimizer''',
-        arguments='''
+    arguments='''
         name: select optimizer by default (adam) is selected
         ''',
-        returns='''
+    returns='''
         tensorflow optimizer
         ''')
 def get_optimizer(name='Adam', **kwargs):

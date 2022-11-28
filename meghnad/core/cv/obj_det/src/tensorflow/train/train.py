@@ -81,45 +81,6 @@ def _train_step(
 
 
 @method_header(
-    description="""Process a testing step
-
-    Parameters
-    ----------
-    imgs : tf.Tensor
-        Images for training. A tensor has shape of [N, H, W, C]
-    gt_confs : tf.Tensor
-        Classification targets. A tensor has shape of [B, num_default]
-    gt_locs : tf.Tensor
-        Regression targets. A tensor has shape of [B, num_default, 4]
-    model : tf.keras.Model
-        An instance of tf.keras.Model
-    criterion : function
-        Loss function
-    weight_decay : float
-        Weights decay
-
-    Returns
-    -------
-    [loss, conf_loss, loc_loss, l2_loss]
-        Returns a list of losses.
-    """)
-@tf.function
-def _test_step(imgs, gt_confs, gt_locs, model, criterion, weight_decay):
-
-    confs, locs = model(imgs, training=False)
-
-    conf_loss, loc_loss = criterion(
-        confs, locs, gt_confs, gt_locs)
-
-    loss = conf_loss + loc_loss
-    l2_loss = [tf.nn.l2_loss(t) for t in model.trainable_variables]
-    l2_loss = weight_decay * tf.math.reduce_sum(l2_loss)
-    loss += l2_loss
-
-    return loss, conf_loss, loc_loss, l2_loss
-
-
-@method_header(
     description="""Returns configs from given settings
 
     Parameters

@@ -1,7 +1,6 @@
 import os
 import json
 import tensorflow as tf
-from utils import ret_values
 from utils.log import Log
 from utils.common_defs import class_header, method_header
 
@@ -170,9 +169,9 @@ class TFObjDetDataLoader:
                               for cate in test_ann_data['categories']}
 
         # Training set
-        train_dataset, self.train_size = self.read_data(self.connector['trn_data_path'],
-                                                        self.connector['trn_file_path'],
-                                                        dataset='train')
+        train_dataset, self.train_size = self._read_data(self.connector['trn_data_path'],
+                                                         self.connector['trn_file_path'],
+                                                         dataset='train')
         train_dataset = train_dataset.shuffle(8 * self.batch_size)
         train_dataset = train_dataset.map(
             lambda x: self._parse_tf_example(x, True), num_parallel_calls=autotune,
@@ -185,9 +184,9 @@ class TFObjDetDataLoader:
         self.train_dataset = train_dataset.prefetch(autotune)
 
         # Validation set
-        validation_dataset, self.val_size = self.read_data(self.connector['val_data_path'],
-                                                           self.connector['val_file_path'],
-                                                           dataset='val')
+        validation_dataset, self.val_size = self._read_data(self.connector['val_data_path'],
+                                                            self.connector['val_file_path'],
+                                                            dataset='val')
         validation_dataset = validation_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
@@ -199,9 +198,9 @@ class TFObjDetDataLoader:
         self.validation_dataset = validation_dataset.prefetch(autotune)
 
         # Testing set
-        test_dataset, self.test_size = self.read_data(self.connector['test_data_path'],
-                                                      self.connector['test_file_path'],
-                                                      dataset='test')
+        test_dataset, self.test_size = self._read_data(self.connector['test_data_path'],
+                                                       self.connector['test_file_path'],
+                                                       dataset='test')
         test_dataset = test_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
@@ -244,7 +243,7 @@ class TFObjDetDataLoader:
             ''',
         returns='''
             returns dataset and number of samples in the form of tensor records''')
-    def read_data(self, image_dir, annotation_file, dataset='train'):
+    def _read_data(self, image_dir, annotation_file, dataset='train'):
         tfrecord_file = f'{dataset}.tfrecord'
         dataset, num_samples = get_tfrecord_dataset(
             image_dir, annotation_file, tfrecord_file)

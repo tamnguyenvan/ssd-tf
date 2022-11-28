@@ -42,7 +42,7 @@ def _float_list_feature(value):
         ''',
     returns='''
     a tensor with all image information''')
-def build_record(image_dir, image_info):
+def _build_record(image_dir, image_info):
 
     image_path = os.path.join(image_dir, image_info['filename'])
     image = open(image_path, 'rb').read()
@@ -153,7 +153,7 @@ def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
 
         with tf.io.TFRecordWriter(tfrecord_file) as writer:
             for _, image_info in tqdm.tqdm(data.items()):
-                example = build_record(image_dir, image_info)
+                example = _build_record(image_dir, image_info)
                 writer.write(example.SerializeToString())
 
     # Initialize a dataset from the above tf record file

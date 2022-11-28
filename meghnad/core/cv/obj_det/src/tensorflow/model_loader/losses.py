@@ -12,11 +12,8 @@ import tensorflow as tf
 _EPSILON = tf.keras.backend.epsilon()
 
 
-def sparse_categorical_focal_loss(y_true, y_pred, gamma, *,
-                                  class_weight: Optional[Any] = None,
-                                  from_logits: bool = False, axis: int = -1
-                                  ) -> tf.Tensor:
-    r"""Focal loss function for multiclass classification with integer labels.
+@class_header(description='''
+    Focal loss function for multiclass classification with integer labels.
     This loss function generalizes multiclass softmax cross-entropy by
     introducing a hyperparameter called the *focusing parameter* that allows
     hard-to-classify examples to be penalized more heavily relative to
@@ -60,40 +57,16 @@ def sparse_categorical_focal_loss(y_true, y_pred, gamma, *,
         Whether `y_pred` contains logits or probabilities.
     axis : int, optional
         Channel axis in the `y_pred` tensor.
+
     Returns
     -------
     :class:`tf.Tensor`
         The focal loss for each example.
-    Examples
-    --------
-    This function computes the per-example focal loss between a one-dimensional
-    integer label vector and a two-dimensional prediction matrix:
-    >>> import numpy as np
-    >>> from focal_loss import sparse_categorical_focal_loss
-    >>> y_true = [0, 1, 2]
-    >>> y_pred = [[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.2, 0.2, 0.6]]
-    >>> loss = sparse_categorical_focal_loss(y_true, y_pred, gamma=2)
-    >>> np.set_printoptions(precision=3)
-    >>> print(loss.numpy())
-    [0.009 0.032 0.082]
-    Warnings
-    --------
-    This function does not reduce its output to a scalar, so it cannot be passed
-    to :meth:`tf.keras.Model.compile` as a `loss` argument. Instead, use the
-    wrapper class :class:`~focal_loss.SparseCategoricalFocalLoss`.
-    References
-    ----------
-    .. [1] T. Lin, P. Goyal, R. Girshick, K. He and P. Dollár. Focal loss for
-        dense object detection. IEEE Transactions on Pattern Analysis and
-        Machine Intelligence, 2018.
-        (`DOI <https://doi.org/10.1109/TPAMI.2018.2858826>`__)
-        (`arXiv preprint <https://arxiv.org/abs/1708.02002>`__)
-    See Also
-    --------
-    :meth:`~focal_loss.SparseCategoricalFocalLoss`
-        A wrapper around this function that makes it a
-        :class:`tf.keras.losses.Loss`.
-    """
+              ''')
+def sparse_categorical_focal_loss(y_true, y_pred, gamma, *,
+                                  class_weight: Optional[Any] = None,
+                                  from_logits: bool = False, axis: int = -1
+                                  ) -> tf.Tensor:
     # Process focusing parameter
     gamma = tf.convert_to_tensor(gamma, dtype=tf.dtypes.float32)
     gamma_rank = gamma.shape.rank
@@ -164,9 +137,8 @@ def sparse_categorical_focal_loss(y_true, y_pred, gamma, *,
     return loss
 
 
-@tf.keras.utils.register_keras_serializable()
-class SparseCategoricalFocalLoss(tf.keras.losses.Loss):
-    r"""Focal loss function for multiclass classification with integer labels.
+@class_header(description='''
+    Focal loss function for multiclass classification with integer labels.
     This loss function generalizes multiclass softmax cross-entropy by
     introducing a hyperparameter :math:`\gamma` (gamma), called the
     *focusing parameter*, that allows hard-to-classify examples to be penalized
@@ -190,37 +162,9 @@ class SparseCategoricalFocalLoss(tf.keras.losses.Loss):
     **kwargs : keyword arguments
         Other keyword arguments for :class:`tf.keras.losses.Loss` (e.g., `name`
         or `reduction`).
-    Examples
-    --------
-    An instance of this class is a callable that takes a rank-one tensor of
-    integer class labels `y_true` and a tensor of model predictions `y_pred` and
-    returns a scalar tensor obtained by reducing the per-example focal loss (the
-    default reduction is a batch-wise average).
-    >>> from focal_loss import SparseCategoricalFocalLoss
-    >>> loss_func = SparseCategoricalFocalLoss(gamma=2)
-    >>> y_true = [0, 1, 2]
-    >>> y_pred = [[0.8, 0.1, 0.1], [0.2, 0.7, 0.1], [0.2, 0.2, 0.6]]
-    >>> loss_func(y_true, y_pred)
-    <tf.Tensor: shape=(), dtype=float32, numpy=0.040919524>
-    Use this class in the :mod:`tf.keras` API like any other multiclass
-    classification loss function class that accepts integer labels found in
-    :mod:`tf.keras.losses` (e.g.,
-    :class:`tf.keras.losses.SparseCategoricalCrossentropy`:
-    .. code-block:: python
-        # Typical usage
-        model = tf.keras.Model(...)
-        model.compile(
-            optimizer=...,
-            loss=SparseCategoricalFocalLoss(gamma=2),  # Used here like a tf.keras loss
-            metrics=...,
-        )
-        history = model.fit(...)
-    See Also
-    --------
-    :meth:`~focal_loss.sparse_categorical_focal_loss`
-        The function that performs the focal loss computation, taking a label
-        tensor and a prediction tensor and outputting a loss.
-    """
+    ''')
+@tf.keras.utils.register_keras_serializable()
+class SparseCategoricalFocalLoss(tf.keras.losses.Loss):
 
     def __init__(self, gamma, class_weight: Optional[Any] = None,
                  from_logits: bool = False, **kwargs):
@@ -229,40 +173,44 @@ class SparseCategoricalFocalLoss(tf.keras.losses.Loss):
         self.class_weight = class_weight
         self.from_logits = from_logits
 
-    def get_config(self):
-        """Returns the config of the layer.
+    @method_header(
+        description='''
+        Returns the config of the layer.
         A layer config is a Python dictionary containing the configuration of a
         layer. The same layer can be re-instantiated later (without its trained
-        weights) from this configuration.
-        Returns
-        -------
+        weights) from this configuration.''',
+        returns='''
         dict
             This layer's config.
-        """
+        ''')
+    def get_config(self):
         config = super().get_config()
         config.update(gamma=self.gamma, class_weight=self.class_weight,
                       from_logits=self.from_logits)
         return config
 
-    def call(self, y_true, y_pred):
-        """Compute the per-example focal loss.
+    @method_header(
+        description='''
+        Compute the per - example focal loss.
         This method simply calls
-        :meth:`~focal_loss.sparse_categorical_focal_loss` with the appropriate
+        : meth: `~focal_loss.sparse_categorical_focal_loss` with the appropriate
         arguments.
-        Parameters
-        ----------
-        y_true : tensor-like, shape (N,)
+        Returns
+        -------''',
+        arguments='''
+        y_true: tensor - like, shape(N,)
             Integer class labels.
-        y_pred : tensor-like, shape (N, K)
+        y_pred: tensor - like, shape(N, K)
             Either probabilities or logits, depending on the `from_logits`
             parameter.
-        Returns
-        -------
-        :class:`tf.Tensor`
-            The per-example focal loss. Reduction to a scalar is handled by
+        ''',
+        returns='''
+        : class: `tf.Tensor`
+            The per - example focal loss. Reduction to a scalar is handled by
             this layer's
-            :meth:`~focal_loss.SparseCateogiricalFocalLoss.__call__` method.
-        """
+            : meth: `~focal_loss.SparseCateogiricalFocalLoss.__call__` method.
+        ''')
+    def call(self, y_true, y_pred):
         return sparse_categorical_focal_loss(y_true=y_true, y_pred=y_pred,
                                              class_weight=self.class_weight,
                                              gamma=self.gamma,
@@ -271,11 +219,11 @@ class SparseCategoricalFocalLoss(tf.keras.losses.Loss):
 
 @method_header(
     description=""" Hard negative mining algorithm
-        to pick up negative examples for back-propagation
+        to pick up negative examples for back - propagation
         base on classification loss values
     Args:
-        loss: list of classification losses of all default boxes (B, num_default)
-        gt_confs: classification targets (B, num_default)
+        loss: list of classification losses of all default boxes(B, num_default)
+        gt_confs: classification targets(B, num_default)
         neg_ratio: negative / positive ratio
     Returns:
         conf_loss: classification loss
@@ -299,7 +247,7 @@ def hard_negative_mining(loss, gt_confs, neg_ratio):
     Attributes:
         neg_ratio: negative / positive ratio
         num_classes: number of classes
-        focal_loss: Use focal loss or not.
+        focal_loss: Use focal loss or not .
     """)
 class SSDLoss(object):
 

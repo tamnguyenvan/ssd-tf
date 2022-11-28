@@ -18,6 +18,9 @@ from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, co
 log = Log()
 
 
+__all__ = ['TFObjDetEval']
+
+
 @class_header(
     description='''
     Evaluation class to evaluate models after training''')
