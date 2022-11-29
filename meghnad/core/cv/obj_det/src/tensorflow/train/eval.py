@@ -17,7 +17,6 @@ from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, co
 
 log = Log()
 
-
 __all__ = ['TFObjDetEval']
 
 
@@ -100,7 +99,6 @@ class TFObjDetEval:
                     out_boxes.append(cls_boxes)
                     out_labels.extend(cls_labels)
                     out_scores.append(cls_scores)
-
                 out_boxes = tf.concat(out_boxes, axis=0)
                 out_scores = tf.concat(out_scores, axis=0)
 
@@ -115,7 +113,6 @@ class TFObjDetEval:
                 boxes = boxes.astype(np.int32).tolist()
                 classes = np.array(out_labels)
                 scores = out_scores.numpy()
-
                 if draw_predictions:
                     dest_path = os.path.join(
                         image_out_dir, image_id_str + '.jpg')

@@ -1,7 +1,7 @@
 import itertools
 import math
 import tensorflow as tf
-from utils.common_defs import class_header, method_header
+from utils.common_defs import method_header
 
 
 @method_header(

@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 
 from meghnad.core.cv.obj_det.src.tensorflow.data_loader import TFObjDetDataLoader
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.losses import SSDLoss
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.losses import Loss
 from meghnad.core.cv.obj_det.cfg import ObjDetConfig
 
 from utils import ret_values
@@ -160,7 +160,7 @@ class TFObjDetTrn:
                       __file__, __name__, "Epochs value must be a positive integer")
             return ret_values.IXO_RET_INVALID_INPUTS
 
-        best_map_over_all_models = 0.
+        best_map_over_all_models = -1.0
         for i, model in enumerate(self.model_selection.models):
             data_loader = self.data_loaders[i]
             model_cfg = self.model_cfgs[i]
@@ -169,7 +169,7 @@ class TFObjDetTrn:
             weight_decay = hyp.get('weight_decay', 1e-5)
 
             optimizer = get_optimizer(opt)
-            criterion = SSDLoss(
+            criterion = Loss(
                 model_cfg['neg_ratio'], model_cfg['num_classes'])
             evaluator = TFObjDetEval(model)
 
@@ -289,7 +289,9 @@ class TFObjDetTrn:
                     tf.saved_model.save(model, best_model_path)
 
                     # save the corresponding default bounding boxes for inference
-                    np.save(os.path.join(checkpoint_dir,
-                            f'best_saved_model', 'default_boxes.npy'))
+                    metadata_path = os.path.join(checkpoint_dir,
+                            f'best_saved_model', 'metadata.npz')
+                    np.savez(metadata_path, default_boxes=data_loader.default_boxes, input_shape=data_loader.input_shape)
+                    print(f'Saved model metadata as {metadata_path}')
 
             return ret_values.IXO_RET_SUCCESS

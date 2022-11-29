@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import tqdm
 
-from utils.common_defs import class_header, method_header
+from utils.common_defs import method_header
 
 
 def _int64_feature(value):

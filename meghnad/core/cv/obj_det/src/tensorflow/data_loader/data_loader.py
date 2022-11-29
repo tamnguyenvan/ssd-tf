@@ -78,7 +78,7 @@ class TFObjDetDataLoader:
             ''',
         arguments='''
             tf_example : tensor : Example that will be parsed, decoded, padded, and augmented using _aug_fn function.
-            training [optional]: boolean : toggle between training context and testing context. By default it is training.
+            training [optional]: boolean : Need training or not.
             ''',
         returns='''
             a integer i.e image_id, image_height and image_with in a tensorflow stack, image and  gt_confs, gt_locs in form of array''')
@@ -170,8 +170,8 @@ class TFObjDetDataLoader:
 
         # Training set
         train_dataset, self.train_size = self._read_data(self.connector['trn_data_path'],
-                                                         self.connector['trn_file_path'],
-                                                         dataset='train')
+                                                        self.connector['trn_file_path'],
+                                                        dataset='train')
         train_dataset = train_dataset.shuffle(8 * self.batch_size)
         train_dataset = train_dataset.map(
             lambda x: self._parse_tf_example(x, True), num_parallel_calls=autotune,
@@ -185,8 +185,8 @@ class TFObjDetDataLoader:
 
         # Validation set
         validation_dataset, self.val_size = self._read_data(self.connector['val_data_path'],
-                                                            self.connector['val_file_path'],
-                                                            dataset='val')
+                                                           self.connector['val_file_path'],
+                                                           dataset='val')
         validation_dataset = validation_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )
@@ -199,8 +199,8 @@ class TFObjDetDataLoader:
 
         # Testing set
         test_dataset, self.test_size = self._read_data(self.connector['test_data_path'],
-                                                       self.connector['test_file_path'],
-                                                       dataset='test')
+                                                      self.connector['test_file_path'],
+                                                      dataset='test')
         test_dataset = test_dataset.map(
             lambda x: self._parse_tf_example(x, False), num_parallel_calls=autotune,
         )

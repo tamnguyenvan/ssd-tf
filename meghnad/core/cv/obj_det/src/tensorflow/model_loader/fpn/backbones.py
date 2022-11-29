@@ -323,8 +323,6 @@ def create_extra_layers(backbone):
                   __file__, __name__, f"Unsupported backbone {backbone}")
         return ret_values.IXO_RET_NOT_SUPPORTED
 
-        #UnsupportedBackboneError(f'Unsupported backbone {backbone}')
-
 
 def create_heads(backbone, num_classes, num_anchors):
     if backbone == 'MobileNetV2':
