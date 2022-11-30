@@ -50,8 +50,7 @@ def test_case4():
     trainer = TFObjDetTrn(settings=settings)
     trainer.config_connectors(path)
     trainer.train(
-        epochs=10
-        hyp={''}
+        hyp={'optimizer': 'Adam', 'learning_rate': 1e-4}
     )
 
 
