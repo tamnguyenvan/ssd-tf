@@ -4,10 +4,10 @@ import tensorflow as tf
 from utils.log import Log
 from utils.common_defs import class_header, method_header
 
-from .loader_utils import get_tfrecord_dataset
-from ..model_loader.anchors import generate_default_boxes
-from ..model_loader.utils import compute_target
-from .transforms import build_transforms
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader.loader_utils import get_tfrecord_dataset
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.anchors import generate_default_boxes
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import compute_target
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader.transforms import build_transforms
 
 
 __all__ = ['TFObjDetDataLoader']

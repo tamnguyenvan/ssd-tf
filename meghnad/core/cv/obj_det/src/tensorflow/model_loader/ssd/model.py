@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras import Model
-from .backbones import get_backbone, create_extra_layers, create_heads
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.ssd.backbones import get_backbone, create_extra_layers, create_heads
 from utils.common_defs import method_header
 
 

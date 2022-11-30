@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import Model, Sequential
 from tensorflow.keras.layers import Conv2D, UpSampling2D
-from .backbones import get_backbone, create_extra_layers, create_heads
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader.fpn.backbones import get_backbone, create_extra_layers, create_heads
 
 
 def fpn(backbone, input_shape, num_classes, num_anchors):

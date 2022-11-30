@@ -15,9 +15,9 @@ from utils import ret_values
 from utils.log import Log
 from utils.common_defs import class_header, method_header
 
-from .select_model import TFObjDetSelectModel
-from .eval import TFObjDetEval
-from .train_utils import get_optimizer
+from meghnad.core.cv.obj_det.src.tensorflow.train.select_model import TFObjDetSelectModel
+from meghnad.core.cv.obj_det.src.tensorflow.train.eval import TFObjDetEval
+from meghnad.core.cv.obj_det.src.tensorflow.train.train_utils import get_optimizer
 
 
 __all__ = ['TFObjDetTrn']

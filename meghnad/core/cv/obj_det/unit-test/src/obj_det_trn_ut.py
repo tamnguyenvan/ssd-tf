@@ -21,7 +21,7 @@ def test_case2():
 
 
 def _perform_tests():
-    test_case2()
+    test_case1()
 
 
 if __name__ == '__main__':
