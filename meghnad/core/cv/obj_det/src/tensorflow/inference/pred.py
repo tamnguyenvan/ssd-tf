@@ -25,8 +25,13 @@ class TFObjDetPred:
                  output_dir='./results'):
         self.saved_dir = saved_dir
         self.output_dir = output_dir
-        self.default_boxes = np.load(
-            os.path.join(saved_dir, 'default_boxes.npy'))
+        model_params_path = os.path.join(saved_dir, 'metadata.npz')
+        metadata = np.load(model_params_path)
+        self.default_boxes = metadata['default_boxes']
+        self.input_shape = metadata['input_shape']
+
+        self.model = tf.saved_model.load(saved_dir)
+        print(f'Loaded model from {saved_dir}')
 
     @method_header(
         description='''
@@ -69,7 +74,7 @@ class TFObjDetPred:
         elif isinstance(input, str):
             image = cv2.imread(input)
             image = image[:, :, ::-1]
-            input, shape = self._preprocess(input)
+            input, shape = self._preprocess(image)
         else:
             log.ERROR(sys._getframe().f_lineno,
                       __file__, __name__, "Not supoorted input type")

@@ -1,7 +1,6 @@
-import tensorflow as tf
 from utils.common_defs import class_header, method_header
 
-__all__ = ['SSDLoss']
+__all__ = ['Loss']
 
 
 import itertools
@@ -18,25 +17,6 @@ _EPSILON = tf.keras.backend.epsilon()
     introducing a hyperparameter called the *focusing parameter* that allows
     hard-to-classify examples to be penalized more heavily relative to
     easy-to-classify examples.
-    See :meth:`~focal_loss.binary_focal_loss` for a description of the focal
-    loss in the binary setting, as presented in the original work [1]_.
-    In the multiclass setting, with integer labels :math:`y`, focal loss is
-    defined as
-    .. math::
-        L(y, \hat{\mathbf{p}})
-        = -\left(1 - \hat{p}_y\right)^\gamma \log(\hat{p}_y)
-    where
-    *   :math:`y \in \{0, \ldots, K - 1\}` is an integer class label (:math:`K`
-        denotes the number of classes),
-    *   :math:`\hat{\mathbf{p}} = (\hat{p}_0, \ldots, \hat{p}_{K-1})
-        \in [0, 1]^K` is a vector representing an estimated probability
-        distribution over the :math:`K` classes,
-    *   :math:`\gamma` (gamma, not :math:`y`) is the *focusing parameter* that
-        specifies how much higher-confidence correct predictions contribute to
-        the overall loss (the higher the :math:`\gamma`, the higher the rate at
-        which easy-to-classify examples are down-weighted).
-    The usual multiclass softmax cross-entropy loss is recovered by setting
-    :math:`\gamma = 0`.
     Parameters
     ----------
     y_true : tensor-like
@@ -138,14 +118,6 @@ def sparse_categorical_focal_loss(y_true, y_pred, gamma, *,
 
 
 @class_header(description='''
-    Focal loss function for multiclass classification with integer labels.
-    This loss function generalizes multiclass softmax cross-entropy by
-    introducing a hyperparameter :math:`\gamma` (gamma), called the
-    *focusing parameter*, that allows hard-to-classify examples to be penalized
-    more heavily relative to easy-to-classify examples.
-    This class is a wrapper around
-    :class:`~focal_loss.sparse_categorical_focal_loss`. See the documentation
-    there for details about this loss function.
     Parameters
     ----------
     gamma : float or tensor-like of shape (K,)
@@ -249,7 +221,7 @@ def hard_negative_mining(loss, gt_confs, neg_ratio):
         num_classes: number of classes
         focal_loss: Use focal loss or not .
     """)
-class SSDLoss(object):
+class Loss(object):
 
     def __init__(self, neg_ratio, num_classes, focal_loss: bool = False):
         self.neg_ratio = neg_ratio

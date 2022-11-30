@@ -1,7 +1,6 @@
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader import ssd
 from utils.common_defs import class_header
 
-
 __all__ = ['TFObjDetSelectModel']
 
 

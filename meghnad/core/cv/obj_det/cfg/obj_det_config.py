@@ -6,9 +6,6 @@
 # Author: Prudhvi Raju
 #######################################################################################################################
 from typing import List
-
-from utils.common_defs import *
-from utils.ret_values import *
 from meghnad.cfg.config import MeghnadConfig
 
 __all__ = ['ObjDetConfig']
