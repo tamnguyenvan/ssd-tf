@@ -43,6 +43,18 @@ def test_case3():
     trainer.train(epochs=10)
 
 
+def test_case4():
+    """Test training pipeline + fine tune hypyerparameters"""
+    settings = ['light']
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    trainer = TFObjDetTrn(settings=settings)
+    trainer.config_connectors(path)
+    trainer.train(
+        epochs=10
+        hyp={''}
+    )
+
+
 def _perform_tests():
     test_case2()
 
