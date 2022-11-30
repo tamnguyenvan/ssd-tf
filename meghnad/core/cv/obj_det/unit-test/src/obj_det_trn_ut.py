@@ -9,7 +9,8 @@ def test_case1():
     path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
     trainer = TFObjDetTrn(settings=settings)
     trainer.config_connectors(path)
-    trainer.train(epochs=10)
+    success, best_model_path = trainer.train(epochs=10)
+    print('Best model path:', best_model_path)
 
 
 def test_case2():
