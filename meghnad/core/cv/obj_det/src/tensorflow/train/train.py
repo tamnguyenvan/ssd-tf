@@ -127,8 +127,8 @@ class TFObjDetTrn:
                 data_path: location of the training data (should point to the file in case of a single file, should point to
                 the directory in case data exists in multiple files in a directory structure)
                 ''')
-    def config_connectors(self, data_path: str) -> None:
-        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg)
+    def config_connectors(self, data_path: str, augmentations: dict = None) -> None:
+        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg, augmentations)
                              for data_cfg, model_cfg in zip(self.data_cfgs, self.model_cfgs)]
 
     @method_header(

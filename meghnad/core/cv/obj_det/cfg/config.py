@@ -28,21 +28,6 @@ _obj_det_cfg = {
     {
         'path': '',
         'train_test_val_split': (0.7, 0.2, 0.1),
-        'augmentations':
-        {
-            'train':
-            {
-                'resize': {'width': 300, 'height': 300},
-                'random_fliplr': {'p': 0.5},
-                'random_brightness': {'p': 0.2},
-                'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
-            },
-            'test':
-            {
-                'resize': {'width': 300, 'height': 300},
-                'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
-            }
-        }
     },
     'model_cfg':
     {

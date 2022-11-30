@@ -20,7 +20,7 @@ log = Log()
     Data loader for object detection.
     ''')
 class TFObjDetDataLoader:
-    def __init__(self, data_path, data_cfg, model_cfg):
+    def __init__(self, data_path, data_cfg, model_cfg, augmentations):
         self.data_cfg = data_cfg
         self.model_cfg = model_cfg
 
@@ -44,9 +44,9 @@ class TFObjDetDataLoader:
         self.test_size = 0
 
         self.train_transforms = build_transforms(
-            data_cfg['augmentations']['train'])
+            augmentations.get('train'))
         self.test_transforms = build_transforms(
-            data_cfg['augmentations']['test'])
+            augmentations.get('test'))
 
         self.default_boxes = generate_default_boxes(
             scales, feature_map_sizes, aspect_ratios)
