@@ -20,6 +20,40 @@ def test_case2():
     print(boxes.shape, classes.shape, scores.shape)
 
 
+def test_case3():
+    """Training + augmentations"""
+    settings = ['light']
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    trainer = TFObjDetTrn(settings=settings)
+    augmentations = {
+        'train':
+        {
+            'resize': {'width': 300, 'height': 300},
+            'random_fliplr': {'p': 0.5},
+            'random_brightness': {'p': 0.2},
+            'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
+        },
+        'test':
+        {
+            'resize': {'width': 300, 'height': 300},
+            'normalize': {'mean': (0.485, 0.456, 0.406), 'std': (0.229, 0.224, 0.225)}
+        }
+    }
+    trainer.config_connectors(path, augmentations)
+    trainer.train(epochs=10)
+
+
+def test_case4():
+    """Test training pipeline + fine tune hypyerparameters"""
+    settings = ['light']
+    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    trainer = TFObjDetTrn(settings=settings)
+    trainer.config_connectors(path)
+    trainer.train(
+        hyp={'optimizer': 'Adam', 'learning_rate': 1e-4}
+    )
+
+
 def _perform_tests():
     test_case1()
 

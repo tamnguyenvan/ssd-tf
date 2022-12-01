@@ -127,8 +127,8 @@ class TFObjDetTrn:
                 data_path: location of the training data (should point to the file in case of a single file, should point to
                 the directory in case data exists in multiple files in a directory structure)
                 ''')
-    def config_connectors(self, data_path: str) -> None:
-        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg)
+    def config_connectors(self, data_path: str, augmentations: dict = None) -> None:
+        self.data_loaders = [TFObjDetDataLoader(data_path, data_cfg, model_cfg, augmentations)
                              for data_cfg, model_cfg in zip(self.data_cfgs, self.model_cfgs)]
 
     @method_header(
@@ -147,7 +147,7 @@ class TFObjDetTrn:
               logdir: str = './training_logs',
               resume_path: str = None,
               print_every: int = 10,
-              **kwargs) -> int:
+              **hyp) -> int:
         try:
             epochs = int(epochs)
             if epochs <= 0:
@@ -164,7 +164,7 @@ class TFObjDetTrn:
         for i, model in enumerate(self.model_selection.models):
             data_loader = self.data_loaders[i]
             model_cfg = self.model_cfgs[i]
-            hyp = model_cfg['hyp_params']
+            # hyp = model_cfg['hyp_params']
             opt = hyp.get('optimizer', 'Adam')
             weight_decay = hyp.get('weight_decay', 1e-5)
 
@@ -290,8 +290,9 @@ class TFObjDetTrn:
 
                     # save the corresponding default bounding boxes for inference
                     metadata_path = os.path.join(checkpoint_dir,
-                            f'best_saved_model', 'metadata.npz')
-                    np.savez(metadata_path, default_boxes=data_loader.default_boxes, input_shape=data_loader.input_shape)
+                                                 f'best_saved_model', 'metadata.npz')
+                    np.savez(metadata_path, default_boxes=data_loader.default_boxes,
+                             input_shape=data_loader.input_shape)
                     print(f'Saved model metadata as {metadata_path}')
 
             return ret_values.IXO_RET_SUCCESS
