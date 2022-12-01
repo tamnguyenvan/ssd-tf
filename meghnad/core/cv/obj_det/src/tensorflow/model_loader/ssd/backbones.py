@@ -341,7 +341,7 @@ def create_extra_layers(backbone: str):
         Returns
         -------
         head_layers and loc_head_layers in the form of model layers''')
-def create_heads(backbone: str, num_classes: int, num_anchors: int):
+def create_heads(backbone: str, num_classes: int, num_anchors: list):
     if backbone == 'MobileNetV2':
         conf_head_layers = []
         loc_head_layers = []

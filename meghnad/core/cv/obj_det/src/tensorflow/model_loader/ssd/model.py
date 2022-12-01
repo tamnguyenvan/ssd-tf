@@ -15,7 +15,7 @@ from utils.common_defs import method_header
         ''',
     returns='''
         model that accepts input of image_size and heads''')
-def ssd(backbone: str, input_shape, num_classes: int, num_anchors: int):
+def ssd(backbone: str, input_shape, num_classes: int, num_anchors: list):
     image_size = input_shape[:2]
 
     base_model, feature_names, base_output_name = get_backbone(

@@ -324,7 +324,7 @@ def create_extra_layers(backbone: str):
         return ret_values.IXO_RET_NOT_SUPPORTED
 
 
-def create_heads(backbone: str, num_classes: int , num_anchors: int):
+def create_heads(backbone: str, num_classes: int , num_anchors: list):
     if backbone == 'MobileNetV2':
         conf_head_layers = []
         loc_head_layers = []

@@ -4,7 +4,7 @@ from tensorflow.keras.layers import Conv2D, UpSampling2D
 from meghnad.core.cv.obj_det.src.tensorflow.model_loader.fpn.backbones import get_backbone, create_extra_layers, create_heads
 
 
-def fpn(backbone: str, input_shape, num_classes: int, num_anchors: int):
+def fpn(backbone: str, input_shape, num_classes: int, num_anchors: list):
     image_size = input_shape[:2]
 
     base_model, feature_names, base_output_name = get_backbone(
