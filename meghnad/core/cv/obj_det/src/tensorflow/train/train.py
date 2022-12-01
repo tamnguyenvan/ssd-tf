@@ -58,7 +58,7 @@ def _train_step(
         gt_locs: tf.Tensor,
         model,
         criterion,
-        optimizer,
+        optimizer: str,
         weight_decay: float = 1e-5):
 
     with tf.GradientTape() as tape:
