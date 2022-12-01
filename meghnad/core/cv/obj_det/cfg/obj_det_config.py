@@ -45,6 +45,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'Adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetB3':

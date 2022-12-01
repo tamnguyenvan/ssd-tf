@@ -119,6 +119,7 @@ class TFObjDetTrn:
         self.model_cfgs, self.data_cfgs = load_config_from_settings(settings)
         self.model_selection = TFObjDetSelectModel(self.model_cfgs)
         self.data_loaders = []
+        self.best_model_path = None
 
     @method_header(
         description='''
@@ -215,7 +216,6 @@ class TFObjDetTrn:
             print('Total steps', total_steps)
 
             # Start training
-            best_map = 0
             start_epoch = ckpt.start_epoch.numpy()
             for epoch in range(start_epoch, epochs):
                 avg_loss = 0.0
@@ -279,20 +279,21 @@ class TFObjDetTrn:
                 # Save the best
                 if map > best_map_over_all_models:
                     best_map_over_all_models = map
-                    best_ckpt_path = ckpt.write(os.path.join(
-                        checkpoint_dir, f'{model_name}_best.ckpt'))
-                    print(f'Saved best model as {best_ckpt_path}')
+                    # self.best_ckpt_path = ckpt.write(os.path.join(
+                    #     checkpoint_dir, f'{model_name}_best.ckpt'))
+                    # print(f'Saved best model as {self.best_ckpt_path}')
 
-                    best_model_path = os.path.join(
-                        checkpoint_dir, f'best_saved_model')
+                    self.best_model_path = os.path.join(
+                        checkpoint_dir, f'best_saved_model', model_name)
 
-                    tf.saved_model.save(model, best_model_path)
+                    tf.saved_model.save(model, self.best_model_path)
+                    print(f'Saved the best model as {self.best_model_path}')
 
                     # save the corresponding default bounding boxes for inference
                     metadata_path = os.path.join(checkpoint_dir,
-                                                 f'best_saved_model', 'metadata.npz')
+                                                 f'best_saved_model', model_name, 'metadata.npz')
                     np.savez(metadata_path, default_boxes=data_loader.default_boxes,
                              input_shape=data_loader.input_shape)
                     print(f'Saved model metadata as {metadata_path}')
 
-            return ret_values.IXO_RET_SUCCESS
+            return ret_values.IXO_RET_SUCCESS, self.best_model_path
