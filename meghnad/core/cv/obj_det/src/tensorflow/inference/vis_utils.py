@@ -1,4 +1,5 @@
 import cv2
+import tensorflow as tf
 from utils.common_defs import class_header, method_header
 
 
@@ -13,7 +14,7 @@ class Colors:
         self.palette = [self.hex2rgb(f'#{c}') for c in hexs]
         self.n = len(self.palette)
 
-    def __call__(self, i, bgr=False):
+    def __call__(self, i, bgr: bool = False):
         c = self.palette[int(i) % self.n]
         return (c[2], c[1], c[0]) if bgr else c
 
@@ -37,7 +38,12 @@ colors = Colors()
         ''',
         returns='''
         returns an image_clone as an image''')
-def draw_bboxes(image, bboxes, classes, scores, class_map=None):
+def draw_bboxes(
+        image: tf.Tensor,
+        bboxes: tf.Tensor,
+        classes: tf.Tensor,
+        scores: tf.Tensor,
+        class_map=None):
     image_clone = image.copy()
     for bbox, cls, score in zip(bboxes, classes, scores):
         x1, y1, x2, y2 = list(map(int, bbox))

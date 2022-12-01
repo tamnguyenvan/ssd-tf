@@ -15,7 +15,7 @@ from utils.common_defs import method_header
         default_boxes: tensor of shape (num_default, 4)
                        with format (cx, cy, w, h)
     """)
-def generate_default_boxes(scales, feature_map_sizes, aspect_ratios):
+def generate_default_boxes(scales: list, feature_map_sizes: list, aspect_ratios: list):
 
     default_boxes = []
 

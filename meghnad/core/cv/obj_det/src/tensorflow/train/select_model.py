@@ -8,7 +8,7 @@ __all__ = ['TFObjDetSelectModel']
     description='''
     Select Model and setup configurations''')
 class TFObjDetSelectModel:
-    def __init__(self, model_configs):
+    def __init__(self, model_configs: dict):
         self.best_model = None
 
         self.model_configs = model_configs

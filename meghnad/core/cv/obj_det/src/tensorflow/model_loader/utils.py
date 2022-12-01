@@ -10,7 +10,7 @@ from utils.common_defs import method_header
     Returns:
         area: tensor (num_boxes,)
     """)
-def compute_area(top_left, bot_right):
+def compute_area(top_left: tf.Tensor, bot_right: tf.Tensor):
 
     # top_left: N x 2
     # bot_right: N x 2
@@ -28,7 +28,7 @@ def compute_area(top_left, bot_right):
     Returns:
         overlap: tensor (num_boxes_a, num_boxes_b)
     """)
-def compute_iou(boxes_a, boxes_b):
+def compute_iou(boxes_a: tf.Tensor, boxes_b: tf.Tensor):
 
     # boxes_a => num_boxes_a, 1, 4
     boxes_a = tf.expand_dims(boxes_a, 1)
@@ -59,7 +59,7 @@ def compute_iou(boxes_a, boxes_b):
         gt_confs: classification targets, tensor (num_default,)
         gt_locs: regression targets, tensor (num_default, 4)
     """)
-def compute_target(default_boxes, gt_boxes, gt_labels, iou_threshold=0.5):
+def compute_target(default_boxes: tf.Tensor, gt_boxes: tf.Tensor, gt_labels: tf.Tensor, iou_threshold: float = 0.5):
 
     # Convert default boxes to format (xmin, ymin, xmax, ymax)
     # in order to compute overlap with gt boxes
@@ -105,7 +105,7 @@ def compute_target(default_boxes, gt_boxes, gt_labels, iou_threshold=0.5):
     Returns:
         locs: regression values, tensor (num_default, 4)
     """)
-def encode(default_boxes, boxes, variance=[0.1, 0.2]):
+def encode(default_boxes: tf.Tensor, boxes: tf.Tensor, variance: list = [0.1, 0.2]):
 
     # Convert boxes to (cx, cy, w, h) format
     transformed_boxes = transform_corner_to_center(boxes)
@@ -131,7 +131,7 @@ def encode(default_boxes, boxes, variance=[0.1, 0.2]):
         boxes: tensor (num_default, 4)
                of format (xmin, ymin, xmax, ymax)
     """)
-def decode(default_boxes, locs, variance=[0.1, 0.2]):
+def decode(default_boxes: tf.Tensor, locs: tf.Tensor, variance: list = [0.1, 0.2]):
 
     locs = tf.concat([
         locs[..., :2] * variance[0] *
@@ -153,7 +153,7 @@ def decode(default_boxes, locs, variance=[0.1, 0.2]):
         boxes: tensor (num_boxes, 4)
                of format (cx, cy, w, h)
     """)
-def transform_corner_to_center(boxes):
+def transform_corner_to_center(boxes: tf.Tensor):
 
     center_box = tf.concat([
         (boxes[..., :2] + boxes[..., 2:]) / 2,
@@ -172,7 +172,7 @@ def transform_corner_to_center(boxes):
         boxes: tensor (num_boxes, 4)
                of format (xmin, ymin, xmax, ymax)
     """)
-def transform_center_to_corner(boxes):
+def transform_center_to_corner(boxes: tf.Tensor):
 
     corner_box = tf.concat([
         boxes[..., :2] - boxes[..., 2:] / 2,
@@ -193,7 +193,7 @@ def transform_center_to_corner(boxes):
     Returns:
         idx: indices of kept boxes
     """)
-def compute_nms(boxes, scores, nms_threshold, limit=200):
+def compute_nms(boxes: tf.Tensor, scores: tf.Tensor, nms_threshold: float, limit: int = 200):
 
     if boxes.shape[0] == 0:
         return tf.constant([], dtype=tf.int32)

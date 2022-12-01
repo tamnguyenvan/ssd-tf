@@ -20,7 +20,12 @@ log = Log()
     Data loader for object detection.
     ''')
 class TFObjDetDataLoader:
-    def __init__(self, data_path, data_cfg, model_cfg, augmentations):
+    def __init__(
+            self,
+            data_path: str,
+            data_cfg: dict,
+            model_cfg: dict,
+            augmentations):
         self.data_cfg = data_cfg
         self.model_cfg = model_cfg
 
@@ -65,7 +70,12 @@ class TFObjDetDataLoader:
             ''',
         returns='''
             a 3 member tuple containing image bboxes and classes''')
-    def _aug_fn(self, training, image: tf.Tensor, bboxes: tf.Tensor, classes: tf.Tensor):
+    def _aug_fn(
+            self,
+            training: bool,
+            image: tf.Tensor,
+            bboxes: tf.Tensor,
+            classes: tf.Tensor):
         fn = self.train_transforms if training else self.test_transforms
         data = {'image': image, 'bboxes': bboxes, 'classes': classes}
         aug_data = fn(**data)
@@ -82,7 +92,10 @@ class TFObjDetDataLoader:
             ''',
         returns='''
             a integer i.e image_id, image_height and image_with in a tensorflow stack, image and  gt_confs, gt_locs in form of array''')
-    def _parse_tf_example(self, tf_example, training=True):
+    def _parse_tf_example(
+            self,
+            tf_example,
+            training=True):
 
         example_fmt = {
             'image/id': tf.io.FixedLenFeature([], tf.int64),
@@ -158,7 +171,9 @@ class TFObjDetDataLoader:
             ''',
         returns='''
             returns train, validation and test_datasets in form of tensors''')
-    def _load_data_from_directory(self, path):
+    def _load_data_from_directory(
+            self,
+            path: str):
         self._config_connectors(path)
         autotune = tf.data.AUTOTUNE
 
@@ -219,7 +234,9 @@ class TFObjDetDataLoader:
         arguments='''
             path : string : Local dataset path where data is located, it should be parent directory of path and is required to be a string.
             ''')
-    def _config_connectors(self, path: str):
+    def _config_connectors(
+            self,
+            path: str):
 
         self.connector = {}
         self.connector['trn_data_path'] = os.path.join(path, 'images')
@@ -243,7 +260,11 @@ class TFObjDetDataLoader:
             ''',
         returns='''
             returns dataset and number of samples in the form of tensor records''')
-    def _read_data(self, image_dir, annotation_file, dataset='train'):
+    def _read_data(
+            self,
+            image_dir: str,
+            annotation_file: str,
+            dataset='train'):
         tfrecord_file = f'{dataset}.tfrecord'
         dataset, num_samples = get_tfrecord_dataset(
             image_dir, annotation_file, tfrecord_file)

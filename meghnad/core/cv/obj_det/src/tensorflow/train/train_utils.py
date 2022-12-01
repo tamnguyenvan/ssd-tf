@@ -19,7 +19,7 @@ __all__ = ['get_optimizer']
     returns='''
         tensorflow optimizer
         ''')
-def get_optimizer(name='Adam', **kwargs):
+def get_optimizer(name: str = 'Adam', **kwargs):
     if name == 'Adam':
         return tf.keras.optimizers.Adam(**kwargs)
     else:

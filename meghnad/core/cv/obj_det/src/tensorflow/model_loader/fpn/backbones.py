@@ -11,7 +11,7 @@ from utils.log import Log
 log = Log()
 
 
-def get_backbone(name, image_size=(300, 300)) -> Tuple:
+def get_backbone(name: str, image_size=(300, 300)) -> Tuple:
     """Get backbone network from given name.
 
     Returns  a 3-tuple represents a model instance, a list of feature names, and
@@ -84,7 +84,7 @@ def get_backbone(name, image_size=(300, 300)) -> Tuple:
         return ret_values.IXO_RET_NOT_SUPPORTED
 
 
-def create_extra_layers(backbone):
+def create_extra_layers(backbone: str):
     if backbone == 'MobileNetV2':
         extra_layers = [
             Sequential([
@@ -324,7 +324,7 @@ def create_extra_layers(backbone):
         return ret_values.IXO_RET_NOT_SUPPORTED
 
 
-def create_heads(backbone, num_classes, num_anchors):
+def create_heads(backbone: str, num_classes: int , num_anchors: int):
     if backbone == 'MobileNetV2':
         conf_head_layers = []
         loc_head_layers = []

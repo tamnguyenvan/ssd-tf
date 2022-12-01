@@ -62,6 +62,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetB4': {
@@ -77,6 +78,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetB5': {
@@ -92,6 +94,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetV2S': {
@@ -107,6 +110,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetV2M': {
@@ -122,6 +126,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         },
         'EfficientNetV2L': {
@@ -137,6 +142,7 @@ _obj_det_cfg = {
                 'batch_size': 8,
                 'optimizer': 'adam',
                 'learning_rate': 0.0001,
+                'weight_decay': 5e-4
             }
         }
     },

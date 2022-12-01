@@ -42,7 +42,7 @@ def _float_list_feature(value):
         ''',
     returns='''
     a tensor with all image information''')
-def _build_record(image_dir, image_info):
+def _build_record(image_dir: str, image_info):
 
     image_path = os.path.join(image_dir, image_info['filename'])
     image = open(image_path, 'rb').read()
@@ -86,7 +86,7 @@ def _build_record(image_dir, image_info):
         ''',
     returns='''
     returns dataset in form of tensor and number_of_samples in int''')
-def get_tfrecord_dataset(image_dir, ann_file, tfrecord_file=None):
+def get_tfrecord_dataset(image_dir: str, ann_file, tfrecord_file=None):
     if tfrecord_file is None:
         tfrecord_file = 'sample.tfrecord'
 

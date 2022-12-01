@@ -21,8 +21,8 @@ log = Log()
     Class for Object detection predictions''')
 class TFObjDetPred:
     def __init__(self,
-                 saved_dir,
-                 output_dir='./results'):
+                 saved_dir: str,
+                 output_dir: str = './results'):
         self.saved_dir = saved_dir
         self.output_dir = output_dir
         model_params_path = os.path.join(saved_dir, 'metadata.npz')
@@ -41,7 +41,7 @@ class TFObjDetPred:
                 ''',
         returns='''
                 returns image in form of a numpy array and a tuple having height and width''')
-    def _preprocess(self, image):
+    def _preprocess(self, image: tf.Tensor):
         input_height, input_width = self.input_shape[:2]
         h, w = image.shape[:2]
         if h != input_height or w != input_width:
