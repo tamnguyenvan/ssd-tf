@@ -13,7 +13,8 @@ __all__ = ['ObjDetConfig']
 _obj_det_cfg = {
     'models':
     {
-        'MobileNetV2',
+        'ssd_mobilenetv2_300',
+        'ssd_mobilenetv2_512',
         'EfficientNetB3',
         'EfficientNetB4',
         'EfficientNetB5',
@@ -21,30 +22,46 @@ _obj_det_cfg = {
         'EfficientNetV2M',
         'EfficientNetV2L',
     },
-    'data_cfg':
-    {
-        'path': '',
-        'train_test_val_split': (0.7, 0.2, 0.1),
-    },
     'model_cfg':
     {
-        'MobileNetV2':
+        'ssd_mobilenetv2_300':
         {
-            'arch': 'MobileNetV2',
+            'arch': 'ssd',
+            'backbone': 'mobilenetv2',
+            'loss': 'SSDLoss',
             'pretrained': None,
-            'input_shape': (300, 300, 3),
-            'num_classes': 10 + 1,  # num_classes + background
-            'classes': [],
-            'aspect_ratios': [[2], [2, 3], [2, 3], [2, 3], [2], [2]],
-            'num_anchors': [4, 6, 6, 6, 4, 4],
-            'feature_map_sizes': [19, 10, 5, 3, 2, 1],
-            'scales': [0.1, 0.2, 0.375, 0.55, 0.725, 0.9, 1.05],
-            'neg_ratio': 3,
+            'img_size': 300,
+            'include_background': True,
+            'feature_map_shapes': [19, 10, 5, 3, 2, 1],
+            'aspect_ratios': [[1., 2., 1. / 2.],
+                              [1., 2., 1. / 2., 3., 1. / 3.],
+                              [1., 2., 1. / 2., 3., 1. / 3.],
+                              [1., 2., 1. / 2., 3., 1. / 3.],
+                              [1., 2., 1. / 2.],
+                              [1., 2., 1. / 2.]],
+            'iou_threshold': 0.5,
+            'score_threshold': 0.4,
+            'neg_pos_ratio': 3,
+            'loc_loss_alpha': 1,
+            'variances': [0.1, 0.1, 0.2, 0.2],
+            'augmentations': {
+                'train': {
+                    'random_brightness': {},
+                    'random_contrast': {},
+                    'random_hue': {},
+                    'random_saturation': {},
+                    'patch': {},
+                    'flip_horizontally': {}
+                }
+            },
             'hyp_params':
             {
                 'batch_size': 8,
-                'optimizer': 'Adam',
-                'learning_rate': 0.0001,
+                'optimizer':
+                {
+                    'name': 'Adam',
+                    'learning_rate': 0.001,
+                },
                 'weight_decay': 5e-4
             }
         },
@@ -60,8 +77,11 @@ _obj_det_cfg = {
             'hyp_params':
             {
                 'batch_size': 8,
-                'optimizer': 'adam',
-                'learning_rate': 0.0001,
+                'optimizer':
+                {
+                    'name': 'Adam',
+                    'learning_rate': 0.001,
+                },
                 'weight_decay': 5e-4
             }
         },
@@ -148,14 +168,14 @@ _obj_det_cfg = {
     },
     'model_settings':
     {
-        'default_models': ['MobileNetV2', 'EfficientNetB3'],
-        'light_models': ['MobileNetV2']
+        'default_models': ['ssd_mobilenetv2_300'],
+        'light_models': ['ssd_mobilenetv2_300']
     }
 }
 
 
 class ObjDetConfig(MeghnadConfig):
-    def __init__(self, *args):
+    def __init__(self):
         super().__init__()
 
     def get_model_cfg(self, model_name: str) -> dict:
@@ -171,11 +191,11 @@ class ObjDetConfig(MeghnadConfig):
             return _obj_det_cfg['data_cfg']
 
     def get_model_settings(self, setting_name: str = None) -> dict:
-        if setting_name and setting_name in _obj_det_cfg['model_settings']:
+        if setting_name and setting_name + '_models' in _obj_det_cfg['model_settings']:
             try:
                 return _obj_det_cfg['model_settings'][setting_name].copy()
             except:
-                return _obj_det_cfg['model_settings'][setting_name]
+                return _obj_det_cfg['model_settings']['default_models']
 
     def set_user_cfg(self, user_cfg):
         for key in user_cfg:
@@ -183,9 +203,3 @@ class ObjDetConfig(MeghnadConfig):
 
     def get_user_cfg(self) -> dict:
         return self.user_cfg
-
-    def get_models_by_names(self) -> List[str]:
-        models = []
-        for key in _obj_det_cfg['model_archs']:
-            models.append(key)
-        return models

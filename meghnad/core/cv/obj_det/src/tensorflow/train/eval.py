@@ -1,158 +1,129 @@
-import os
-import sys
-import tempfile
-import json
+from typing import List, Dict
 
-import numpy as np
 import tensorflow as tf
-from pycocotools.coco import COCO
-from pycocotools.cocoeval import COCOeval
-import cv2
+import numpy as np
 
-from utils import ret_values
-from utils.log import Log
-from utils.common_defs import class_header, method_header
-from meghnad.core.cv.obj_det.src.tensorflow.inference.vis_utils import draw_bboxes
-from meghnad.core.cv.obj_det.src.tensorflow.model_loader.utils import decode, compute_nms
-
-log = Log()
-
-__all__ = ['TFObjDetEval']
+from tensorflow.keras.callbacks import Callback
+from meghnad.core.cv.obj_det.src.tensorflow.model_loader import build_eval_model
+from meghnad.core.cv.obj_det.src.tensorflow.data_loader import bbox_utils
 
 
-@class_header(
-    description='''
-    Evaluation class to evaluate models after training''')
-class TFObjDetEval:
-    def __init__(self, model):
-        self.model = model
+class EvaluationCallback(Callback):
+    def __init__(self,
+                 eval_dataset: tf.data.Dataset,
+                 labels: List) -> None:
+        super().__init__()
+        self.eval_dataset = eval_dataset
+        self.labels = labels
 
-    @method_header(
-        description='''
-                ''',
-        arguments='''
-                data_loader: data_loader to load data
-                phase [:optional]: select which data to be loaded by default it is (validation)
-                class_map: map with score and class_labels
-                nms_threshold: NMS threshold,
-                max_predictions: number of predictions per image,
-                image_out_dir: directory to which image should be placed after eval
-                draw_predictions: if true draw prediction on the images also
-                ''',
-        returns='''
-                a 2 value pair map, map50 containing evaluation stats''')
-    def eval(self,
-             data_loader,
-             phase: str = 'validation',
-             class_map: dict = dict(),
-             score_threshold: float = 0.4,
-             nms_threshold: float = 0.5,
-             max_predictions: int = 100,
-             image_out_dir: str = './results',
-             draw_predictions: bool = False,
-             ):
-        if self.model is None:
-            log.ERROR(sys._getframe().f_lineno,
-                      __file__, __name__, "Model is not fitted yet")
-            return ret_values.IXO_RET_INVALID_INPUTS
+    def on_epoch_end(self, epoch, logs=None) -> None:
+        eval_model = build_eval_model(self.model)
+        pred_bboxes, pred_labels, pred_scores = eval_model.predict(
+            self.eval_dataset, steps=self.eval_dataset.steps, verbose=1)
+        stats, mAP = evaluate_predictions(
+            self.eval_dataset, pred_bboxes, pred_labels, pred_scores, self.labels)
+        print(stats, mAP)
 
-        results = {'annotations': []}
-        ann_id = 0
-        if phase == 'validation':
-            dataset = data_loader.validation_dataset
-        else:
-            dataset = data_loader.test_dataset
-        for batch_image_ids, batch_image_shapes, batch_images, _, _ in dataset:
-            batch_confs, batch_locs = self.model(
-                batch_images, training=False)
-            for image, image_id, image_shape, confs, locs in zip(
-                batch_images, batch_image_ids, batch_image_shapes, batch_confs, batch_locs
-            ):
 
-                image_id = int(image_id)
-                image_id_str = str(image_id)
-                image_height, image_width = image_shape.numpy()[:2]
+def init_stats(labels: List):
+    stats = {}
+    for i, label in enumerate(labels):
+        if label == 'bg':
+            continue
+        stats[i] = {
+            "label": label,
+            "total": 0,
+            "tp": [],
+            "fp": [],
+            "scores": [],
+        }
+    return stats
 
-                confs = tf.math.softmax(confs, axis=-1)
-                classes = tf.math.argmax(confs, axis=-1)
-                scores = tf.math.reduce_max(confs, axis=-1)
 
-                boxes = decode(data_loader.default_boxes, locs)
+def update_stats(pred_bboxes, pred_labels, pred_scores, gt_boxes, gt_labels, stats):
+    iou_map = bbox_utils.generate_iou_map(pred_bboxes, gt_boxes)
+    merged_iou_map = tf.reduce_max(iou_map, axis=-1)
+    max_indices_each_gt = tf.argmax(iou_map, axis=-1, output_type=tf.int32)
+    sorted_ids = tf.argsort(merged_iou_map, direction="DESCENDING")
+    #
+    count_holder = tf.unique_with_counts(tf.reshape(gt_labels, (-1,)))
+    for i, gt_label in enumerate(count_holder[0]):
+        if gt_label == -1:
+            continue
+        gt_label = int(gt_label)
+        stats[gt_label]["total"] += int(count_holder[2][i])
+    for batch_id, m in enumerate(merged_iou_map):
+        true_labels = []
+        for i, sorted_id in enumerate(sorted_ids[batch_id]):
+            pred_label = pred_labels[batch_id, sorted_id]
+            if pred_label == 0:
+                continue
 
-                out_boxes = []
-                out_labels = []
-                out_scores = []
+            iou = merged_iou_map[batch_id, sorted_id]
+            gt_id = max_indices_each_gt[batch_id, sorted_id]
+            gt_label = int(gt_labels[batch_id, gt_id])
+            pred_label = int(pred_label)
+            score = pred_scores[batch_id, sorted_id]
+            stats[pred_label]["scores"].append(score)
+            stats[pred_label]["tp"].append(0)
+            stats[pred_label]["fp"].append(0)
+            if iou >= 0.5 and pred_label == gt_label and gt_id not in true_labels:
+                stats[pred_label]["tp"][-1] = 1
+                true_labels.append(gt_id)
+            else:
+                stats[pred_label]["fp"][-1] = 1
+    return stats
 
-                for c in range(1, data_loader.num_classes):
-                    cls_scores = confs[:, c]
 
-                    score_idx = cls_scores > score_threshold
-                    cls_boxes = boxes[score_idx]
-                    cls_scores = cls_scores[score_idx]
+def calculate_ap(recall: np.ndarray, precision: np.ndarray):
+    ap = 0
+    for r in np.arange(0, 1.1, 0.1):
+        prec_rec = precision[recall >= r]
+        if len(prec_rec) > 0:
+            ap += np.amax(prec_rec)
+    # By definition AP = sum(max(precision whose recall is above r))/11
+    ap /= 11
+    return ap
 
-                    nms_idx = compute_nms(
-                        cls_boxes, cls_scores, nms_threshold, max_predictions)
-                    cls_boxes = tf.gather(cls_boxes, nms_idx)
-                    cls_scores = tf.gather(cls_scores, nms_idx)
-                    cls_labels = [c] * cls_boxes.shape[0]
 
-                    out_boxes.append(cls_boxes)
-                    out_labels.extend(cls_labels)
-                    out_scores.append(cls_scores)
-                out_boxes = tf.concat(out_boxes, axis=0)
-                out_scores = tf.concat(out_scores, axis=0)
+def calculate_mAP(stats: Dict):
+    aps = []
+    for label in stats:
+        label_stats = stats[label]
+        tp = np.array(label_stats["tp"])
+        fp = np.array(label_stats["fp"])
+        scores = np.array(label_stats["scores"])
+        ids = np.argsort(-scores)
+        total = label_stats["total"]
+        accumulated_tp = np.cumsum(tp[ids])
+        accumulated_fp = np.cumsum(fp[ids])
+        recall = accumulated_tp / total
+        precision = accumulated_tp / (accumulated_fp + accumulated_tp)
+        ap = calculate_ap(recall, precision)
+        stats[label]["recall"] = recall
+        stats[label]["precision"] = precision
+        stats[label]["AP"] = ap
+        aps.append(ap)
+    mAP = np.mean(aps)
+    return stats, mAP
 
-                boxes = tf.clip_by_value(out_boxes, 0.0, 1.0).numpy()
-                boxes_resized = boxes * \
-                    np.array([[*data_loader.input_shape * 2]]
-                             ).astype(np.float32)
-                boxes_resized = boxes_resized.astype(np.int32).tolist()
-                boxes = boxes * \
-                    np.array([[image_width, image_height, image_width, image_height]]).astype(
-                        np.float32)
-                boxes = boxes.astype(np.int32).tolist()
-                classes = np.array(out_labels)
-                scores = out_scores.numpy()
-                if draw_predictions:
-                    dest_path = os.path.join(
-                        image_out_dir, image_id_str + '.jpg')
-                    image *= 255
-                    pred_bbox_image = draw_bboxes(
-                        image[..., ::-1].numpy(), boxes_resized, classes, scores, class_map)
-                    cv2.imwrite(dest_path, pred_bbox_image)
 
-                for box, cls, score in zip(boxes, classes, scores):
-                    x1, y1, x2, y2 = box
-                    ann_id += 1
-                    results['annotations'].append({
-                        'id': ann_id,
-                        'image_id': image_id,
-                        'bbox': [x1, y1, x2 - x1, y2 - y1],
-                        'area': (x2 - x1) * (y2 - y1),
-                        'category_id': int(cls),
-                        'score': float(score)
-                    })
+def evaluate_predictions(dataset: tf.data.Dataset,
+                         pred_bboxes: tf.Tensor,
+                         pred_labels: tf.Tensor,
+                         pred_scores: tf.Tensor,
+                         labels: List):
+    stats = init_stats(labels)
+    for batch_id, image_data in enumerate(dataset):
+        imgs, gt_boxes, gt_labels = image_data
+        batch_size = tf.shape(imgs)[0]
+        start = batch_id * batch_size
+        end = start + batch_size
+        batch_bboxes, batch_labels, batch_scores = pred_bboxes[
+            start:end], pred_labels[start:end], pred_scores[start:end]
 
-        ann_json = None
-        if phase == 'validation':
-            ann_json = data_loader.connector['val_file_path']
-        elif phase == 'test':
-            ann_json = data_loader.connector['test_file_path']
-        else:
-            raise FileNotFoundError(
-                'Not found ground truth annotation file')
-
-        pred_file = tempfile.NamedTemporaryFile('wt').name
-        with open(pred_file, 'wt') as f:
-            json.dump(results, f)
-
-        gt = COCO(ann_json)  # init annotations api
-        pred = COCO(pred_file)
-        eval = COCOeval(gt, pred, 'bbox')
-        eval.evaluate()
-        eval.accumulate()
-        eval.summarize()
-        map, map50 = eval.stats[:2]
-        if os.path.isfile(pred_file):
-            os.remove(pred_file)
-        return map, map50
+        stats = update_stats(batch_bboxes, batch_labels,
+                             batch_scores, gt_boxes, gt_labels, stats)
+    stats, mAP = calculate_mAP(stats)
+    print("mAP: {}".format(float(mAP)))
+    return stats, mAP
