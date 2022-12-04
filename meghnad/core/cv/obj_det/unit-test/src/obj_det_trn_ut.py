@@ -1,15 +1,16 @@
 import unittest
 from meghnad.core.cv.obj_det.src.tensorflow.train import TFObjDetTrn
-from meghnad.core.cv.obj_det.src.tensorflow.inference import TFObjDetPred
 
 
 def test_case1():
     """Training pipeline"""
     settings = ['light']
-    path = 'C:\\Users\\Prudhvi\\Downloads\\grocery_dataset'
+    path = '/home/tamnv/Projects/exp/tf-ssd/VOCdevkit/VOC2012'
     trainer = TFObjDetTrn(settings=settings)
-    trainer.config_connectors(path)
-    success, best_model_path = trainer.train(epochs=10)
+    trainer.config_connectors(path, 'voc')
+    best_model_path = trainer.train(
+        batch_size=2,
+        epochs=10)
     print('Best model path:', best_model_path)
 
 
